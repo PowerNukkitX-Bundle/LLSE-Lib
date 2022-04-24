@@ -15,6 +15,13 @@ function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
 	// TODO: 注册一个命令
 	return {};
 }
+
+/**
+ * 注册指定的监听函数
+ * @param event {string} 要监听的事件名
+ * @param callback {Function} 注册的监听函数
+ * @returns {boolean} 是否成功监听事件
+ */
 function listen(event,callback){
 	return Event[event].run(callback);
 }
