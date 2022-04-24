@@ -1,4 +1,4 @@
-import { DirectionAngle } from './DirectionAngle.js'
+import { DirectionAngle } from '../utils/DirectionAngle.js'
 
 export class Player {
 	constructor (PNXPlayer) {

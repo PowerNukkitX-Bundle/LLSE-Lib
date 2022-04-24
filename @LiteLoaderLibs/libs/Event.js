@@ -3,8 +3,7 @@ import { Player as PnxPlayer } from 'cn.nukkit.Player';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { PlayerInteractEvent } from 'cn.nukkit.event.player.PlayerInteractEvent';
 
-const EventNameMap = {  "onUseItemOn": 13,
-                        "onTakeItem": 14, "onDropItem": 15, "onEat": 17, "onConsumeTotem": 18, "onEffectAdded": 19, "onEffectUpdated": 20,
+const EventNameMap = {  "onEffectAdded": 19, "onEffectUpdated": 20,
                         "onEffectRemoved": 21, "onStartDestroyBlock": 22, "onDestroyBlock": 23, "onPlaceBlock": 24, "onOpenContainer": 25,
                         "onCloseContainer": 26, "onInventoryChange": 27, "onMove": 28, "onChangeSprinting": 29, "onSetArmor": 30, "onUseRespawnAnchor": 31,
                         "onOpenContainerScreen": 32,
@@ -79,7 +78,7 @@ const onRespawn = {
 const onPlayerDie = {
     run: (callback)=>{
         var isEntity = false;
-        let e2 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL,event=>{
+        let e1 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL,event=>{
             if(event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK){
                 isEntity = true;
             }else{
@@ -93,7 +92,7 @@ const onPlayerDie = {
                 }
             }
         });
-        let e1 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageByEntityEvent", EventPriority.NORMAL,event=>{
+        let e2 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageByEntityEvent", EventPriority.NORMAL,event=>{
             if(isEntity==true){
                 let player = event.getEntity();
                 if(player instanceof PnxPlayer){
@@ -223,6 +222,74 @@ const onUseItem = {
     }
 }
 
+const onUseItemOn = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerInteractEvent", EventPriority.NORMAL,event=>{
+            let player = event.getPlayer();
+            if(event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
+                let item = event.getItem();
+                let block = event.getBlock();
+                let face = event.getFace().getIndex();
+                let isCancel = callback(player,item,block,face);
+                if(isCancel==undefined) return;
+                else event.setCancelled(!isCancel);
+            }
+        });
+    }
+}
+
+const onTakeItem = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.inventory.InventoryPickupItemEvent", EventPriority.NORMAL,event=>{
+            let player = event.getViewers()[0];
+            let itemEntity = event.getItem();
+            let item = event.getItem().getItem();
+            let isCancel = callback(player,itemEntity,item);
+            if(isCancel==undefined) return;
+            else event.setCancelled(!isCancel);
+        });
+    }
+}
+
+const onEat = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerItemConsumeEvent", EventPriority.NORMAL,event=>{
+            let player = event.getPlayer();
+            let item = event.getItem();
+            let isCancel = callback(player,item);
+            if(isCancel==undefined) return;
+            else event.setCancelled(!isCancel);
+        });
+    }
+}
+
+const onDropItem = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerDropItemEvent", EventPriority.NORMAL,event=>{
+            let player = event.getPlayer();
+            let item = event.getItem();
+            let isCancel = callback(player,item);
+            if(isCancel==undefined) return;
+            else event.setCancelled(!isCancel);
+        });
+    }
+}
+
+const onConsumeTotem = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL,event=>{
+            let player = event.getEntity();
+            if(player instanceof PnxPlayer){
+                if(player.getHealth()-event.getDamage()<=0.2){
+                    let isCancel = callback(player);
+                    if(isCancel==undefined) return;
+                    else event.setCancelled(!isCancel);
+                }
+            }
+        });
+    }
+}
+
 export const Event = {
     onPreJoin: onPreJoin,//count=0
     onJoin: onJoin,
@@ -237,5 +304,9 @@ export const Event = {
     onAttackEntity: onAttackEntity,
     onAttackBlock: onAttackBlock,
     onUseItem: onUseItem,
+    onUseItemOn: onUseItemOn,
+    onTakeItem: onTakeItem,
+    onEat: onEat,
+    onDropItem: onDropItem,
+    onConsumeTotem: onConsumeTotem
 }
-//test
