@@ -1,4 +1,4 @@
-// noinspection NpmUsedModulesInstalled,JSUnresolvedFunction,JSValidateJSDoc,JSUnresolvedVariable
+// noinspection NpmUsedModulesInstalled,JSUnresolvedFunction,JSValidateJSDoc,JSUnresolvedVariable,JSUnusedGlobalSymbols
 
 import {Files} from "java.nio.file.Files";
 import {JString} from "java.lang.String";
@@ -24,7 +24,6 @@ const ByteArray = Java.type("byte[]");
 /**
  * @external java.io.RandomAccessFile
  */
-
 /**
  * @external java.io.BufferedReader
  */
@@ -49,7 +48,7 @@ const errCache = new Map();
  * @param path {java.nio.file.Path}
  * @returns {java.io.RandomAccessFile|null}
  */
-function getRAF(path) {
+export function getRAF(path) {
     return rafCache.get(path);
 }
 
@@ -59,7 +58,7 @@ function getRAF(path) {
  * @param mode {string} r => 以只读方式打开指定文件; rw => 以读取、写入方式打开指定文件。如果该文件不存在，则尝试创建文件; rws => 以读取、写入方式打开指定文件。相对于rw模式，还要求对文件的内容或元数据的每个更新都同步写入到底层存储设备; rwd => 与rws类似，只是仅对文件的内容同步更新到磁盘，而不修改文件的元数据
  * @returns {boolean}
  */
-function createRAF(path, mode) {
+export function createRAF(path, mode) {
     try {
         const raf = new RandomAccessFile(path.toFile(), mode);
         rafCache.set(path, raf);
@@ -79,6 +78,8 @@ function createRAF(path, mode) {
  */
 export function main(action, path, data, extra) {
     switch (action) {
+        case -2:
+            return getRAF(path);
         case -1:
             return createRAF(path, data);
         case 0: //read text async
@@ -107,6 +108,8 @@ export function main(action, path, data, extra) {
             return getSize(path);
         case 12:
             return close(path);
+        case 13:
+            return getPreviousErr(path);
     }
 }
 
@@ -325,6 +328,8 @@ export function close(path) {
     const raf = getRAF(path);
     if (raf) {
         try {
+            rafCache.delete(path);
+            errCache.delete(path);
             raf.close();
         } catch (e) {
             errCache.set(path, e);
@@ -333,4 +338,13 @@ export function close(path) {
     } else {
         return false;
     }
+}
+
+/**
+ * 获取前一个错误
+ * @param path {java.nio.file.Path}
+ * @returns {Error|null}
+ */
+export function getPreviousErr(path) {
+    return errCache.get(path);
 }
