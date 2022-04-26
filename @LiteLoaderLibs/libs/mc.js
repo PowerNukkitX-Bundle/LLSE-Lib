@@ -25,6 +25,7 @@ function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
 function listen(event,callback){
 	return Event[event].run(callback);
 }
+
 function getPlayer(info) {
 	var found = null;
 	if (isNaN(info)) {// 玩家名
