@@ -8,9 +8,7 @@ import { PlayerEnderChestInventory } from 'cn.nukkit.inventory.PlayerEnderChestI
 import { PlayerInventory } from 'cn.nukkit.inventory.PlayerInventory';
 import { SlotChangeAction } from 'cn.nukkit.inventory.transaction.action.SlotChangeAction';
 
-const EventNameMap = {  "onMove": 28, "onChangeSprinting": 29, "onSetArmor": 30, "onUseRespawnAnchor": 31,
-                        "onOpenContainerScreen": 32,
-                        /* Entity Events */
+const EventNameMap = {  /* Entity Events */
                         "onMobDie": 33, "onMobHurt": 34, "onEntityExplode": 35, "onProjectileHitEntity": 36, "onWitherBossDestroy": 37, "onRide": 38,
                         "onStepOnPressurePlate": 39, "onSpawnProjectile": 40, "onProjectileCreated": 41, "onNpcCmd": 42, "onChangeArmorStand": 43,
                         "onEntityTransformation": 44,
@@ -375,7 +373,7 @@ const onPlaceBlock = {
 const onOpenContainer = {
     run: (callback)=>{
         return pnx.listenEvent("cn.nukkit.event.inventory.InventoryOpenEvent", EventPriority.NORMAL,event=>{
-            if(event.getInventory() instanceof ContainerInventory){
+            if(event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory){
                 let player = event.getPlayer();
                 let block = player.getTargetBlock(player.getViewDistance());
                 let isCancel = callback(player,block);
@@ -398,7 +396,6 @@ const onCloseContainer = {
             if(event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory){
                 let player = event.getPlayer();
                 let isCancel = callback(player,map.get(player));
-                console.log(map.size);
                 if(isCancel) event.setCancelled(!isCancel);
             }
         });
@@ -419,6 +416,69 @@ const onInventoryChange = {
                         callback(player,slotNum,oldItem,newItem);
                     }
                 }
+            }
+        });
+    }
+}
+
+const onMove = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerMoveEvent", EventPriority.NORMAL,event=>{
+            let player = event.getPlayer();
+            let floatPos;
+            callback(player,floatPos);
+        });
+    }
+}
+
+const onChangeSprinting = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerToggleSprintEvent", EventPriority.NORMAL,event=>{
+            let player = event.getPlayer();
+            let sprinting = event.isSprinting();
+            callback(player,sprinting);
+        });
+    }
+}
+
+const onSetArmor = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.entity.EntityArmorChangeEvent", EventPriority.NORMAL,event=>{
+            let player = event.getEntity();
+            if(player instanceof PnxPlayer){
+                let slotNum = event.getSlot();
+                let item = event.getOldItem();
+                callback(player,slotNum,item);
+            }
+        });
+    }
+}
+
+const onUseRespawnAnchor = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerRespawnEvent", EventPriority.NORMAL,event=>{
+            let pos = event.getRespawnBlockPosition();
+            if(pos && pos.getLevel().getDimension() === 1){
+                let player = event.getPlayer();
+                let isCancel = callback(player,pos);
+                if(!isCancel){
+                    let spawnPos = player.getServer().getDefaultLevel().getSafeSpawn();
+                    if(spawnPos) event.setRespawnPosition(spawnPos);
+                    event.setConsumeCharge(isCancel);
+                }
+                print(event.isConsumeCharge());
+            }
+        });
+    }
+}
+
+const onOpenContainerScreen = {
+    run: (callback)=>{
+        return pnx.listenEvent("cn.nukkit.event.inventory.InventoryOpenEvent", EventPriority.NORMAL,event=>{
+            if(event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory){
+                let player = event.getPlayer();
+                let isCancel = callback(player);
+                if(isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -452,5 +512,11 @@ export const Event = {
     onPlaceBlock: onPlaceBlock,
     onOpenContainer: onOpenContainer,
     onCloseContainer: onCloseContainer,
-    onInventoryChange: onInventoryChange
+    onInventoryChange: onInventoryChange,
+    onMove: onMove,
+    onChangeSprinting: onChangeSprinting,
+    onSetArmor: onSetArmor,
+    onUseRespawnAnchor: onUseRespawnAnchor,
+    onOpenContainerScreen: onOpenContainerScreen
+    //实体事件
 }
