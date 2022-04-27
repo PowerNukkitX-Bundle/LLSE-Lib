@@ -1,5 +1,5 @@
 import { PermType } from './PermType.js'
-import { Player } from './Player.js'
+import { Player, sendText } from './Player.js'
 import { Event } from './Event.js'
 import { Server } from 'cn.nukkit.Server'
 const server = Server.getInstance();
@@ -30,26 +30,29 @@ function getPlayer(info) {
 	var found = null;
 	if (isNaN(info)) {// 玩家名
 		var delta = 0x7FFFFFFF;
-	    for (var player of server.getOnlinePlayers().values()) {
-	        if (player.getName().toLowerCase().startsWith(info)) {
-	            const curDelta = player.getName().length - info.length;
-	            if (curDelta < delta) {
-	                found = player;
-	                delta = curDelta;
-	            }
-	            if (curDelta == 0) {
-	                break;
-	            }
-	        }
-	    }
+		for (var player of server.getOnlinePlayers().values()) {
+			if (player.getName().toLowerCase().startsWith(info)) {
+				const curDelta = player.getName().length - info.length;
+				if (curDelta < delta) {
+					found = player;
+					delta = curDelta;
+				}
+				if (curDelta == 0) {
+					break;
+				}
+			}
+		}
 	} else {// xuid
 		var xuid = String(info);
-	    for (var player of server.getOnlinePlayers().values()) {
-	    	if (xuid === player.getLoginChainData().getXUID()) {
-	    		found = player;
-	    		break;
-	    	}
-	    }
+		for (var player of server.getOnlinePlayers().values()) {
+			if (xuid === player.getLoginChainData().getXUID()) {
+				found = player;
+				break;
+			}
+		}
+	}
+	if (found == null) {
+		return null;
 	}
 	return new Player(found);
 }
@@ -61,11 +64,20 @@ function getOnlinePlayers() {
 	return PlayerList;
 }
 
+function broadcast(msg, type = 0) {
+	//TODO: 发给所有玩家
+	for (var player of server.getOnlinePlayers().values()) {
+		sendText(server.getConsoleSender(), player, msg, type);
+	}
+	return true;
+}
+
 export const mc = {
 	runcmd: runcmd,
 	runcmdEx: runcmdEx,
 	newCommand: newCommand,
 	listen: listen,
 	getPlayer: getPlayer,
-	getOnlinePlayers: getOnlinePlayers
+	getOnlinePlayers: getOnlinePlayers,
+	broadcast: broadcast
 }
