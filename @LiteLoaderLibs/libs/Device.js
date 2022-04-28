@@ -1,12 +1,45 @@
+
+/**
+ * 玩家设备信息对象
+ * @class
+ * @param player {Player} 玩家对象
+ * @returns {Device} 设备信息对象
+ */
 export class Device {
 	constructor (player) {
+		/**
+		 * IP地址
+		 * @member {string}
+		 */
 		this.ip = player.getAddress();
+		/**
+		 * 平均ping值
+		 * @member {number}
+		 */
 		this.avgPing = player.getPing();
+		/**
+		 * 平均丢包率(0~1)
+		 * @member {number}
+		 */
 		this.avgPacketLoss = 0;
+		/**
+		 * 玩家设备名
+		 * @member {string}
+		 */
 		this.os = getPlayerDeviceOS(player);
+		/**
+		 * 客户端uuid识别码
+		 * @member {string}
+		 */
 		this.clientId = player.getLoginChainData().getDeviceId();
 	}
 }
+
+/**
+ * 获取玩家设备名
+ * @param player {Player} 玩家对象
+ * @returns {string} 设备名
+ */
 export function getPlayerDeviceOS(player) {
 	const os = player.getLoginChainData().getDeviceOS();
 	switch (os) {
