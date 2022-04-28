@@ -130,7 +130,7 @@ export class Player {
 	}
 	/**
 	 * 以某个玩家身份说话
-	 * @param target {string} (可选参数)模拟说话目标
+	 * @param target {Player} (可选参数)模拟说话目标
 	 * @param text {string} 模拟说话内容
 	 * @returns {boolean} 是否执行成功
 	 */	
