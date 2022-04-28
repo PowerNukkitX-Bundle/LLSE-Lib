@@ -50,7 +50,7 @@ function listen(event,callback){
 /**
  * 获取玩家对象
  * @param info {string} 玩家名/xuid
- * @returns {(Player|null)} 玩家对象
+ * @returns {Player|null} 玩家对象
  */
 function getPlayer(info) {
 	var found = null;
