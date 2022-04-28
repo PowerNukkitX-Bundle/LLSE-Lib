@@ -1,8 +1,8 @@
-import { DirectionAngle } from '../utils/DirectionAngle.js'
-import { IntPos } from './IntPos.js'
-import { FloatPos } from './FloatPos.js'
-import { Device } from './Device.js'
-import { Server } from 'cn.nukkit.Server'
+import { DirectionAngle } from '../utils/DirectionAngle.js';
+import { IntPos } from './IntPos.js';
+import { FloatPos } from './FloatPos.js';
+import { Device } from './Device.js';
+import { Server } from 'cn.nukkit.Server';
 import { PlayerChatEvent } from 'cn.nukkit.event.player.PlayerChatEvent';
 import { Position } from 'cn.nukkit.level.Position';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
@@ -14,7 +14,6 @@ export class Player {
 	constructor (PNXPlayer) {
 		this.PNXPlayer = PNXPlayer;
 		this.DirectionAngle = new DirectionAngle(this.PNXPlayer);
-
 		// TODO: 优化，使levels挂载到全局变量
 		this.levels = getLevels();
 	}
@@ -82,28 +81,59 @@ export class Player {
 	get uniqueId() {// 	玩家（实体的）唯一标识符	String
 		return this.PNXPlayer.getId();
 	}
-
+	/**
+	 * 判断玩家是否为OP
+	 * @returns {boolean} 玩家是否为OP
+	 */
 	isOP() {
 		return this.PNXPlayer.isOp();
 	}
+	/**
+	 * 断开玩家连接
+	 * @param msg {string} (可选参数)被踢出玩家出显示的断开原因
+	 * @returns {boolean} 是否成功断开连接
+	 */
 	kick(msg) {
 		return this.PNXPlayer.kick(msg);
 	}
+	/**
+	 * @see {@link kick}
+	 */
 	disconnect(msg) {
 		return this.kick(msg);
 	}
+	/**
+	 * 发送一个文本消息给玩家
+	 * @param msg {string} 待发送的文本
+	 * @param type {Integer} (可选参数)发送的文本消息类型，默认为 0
+	 * @returns {boolean} 是否成功发送
+	 */	
 	tell(msg, type = 0) {
 		if (!sendText(server.getConsoleSender(), this.PNXPlayer, msg, type)) {
 			return false;
 		}
 		return true;
 	}
+	/**
+	 * @see {@link tell}
+	 */
 	sendText(msg, type) {
 		return this.tell(msg, type);
 	}
+	/**
+	 * 以某个玩家身份执行一条命令
+	 * @param cmd {string} 待执行的命令
+	 * @returns {boolean} 是否执行成功
+	 */	
 	runcmd(cmd) {
 		return server.dispatchCommand(this.PNXPlayer, cmd);
 	}
+	/**
+	 * 以某个玩家身份说话
+	 * @param target {string} (可选参数)模拟说话目标
+	 * @param text {string} 模拟说话内容
+	 * @returns {boolean} 是否执行成功
+	 */	
 	talkAs(target, text) {
 		/*
 		args1: target, text
@@ -120,6 +150,11 @@ export class Player {
 			return true;
 		}
 	}
+	/**
+	 * 传送玩家至指定位置
+	 * @param x {IntPos|FloatPos} 目标位置坐标(或者使用 x, y, z, dimid 来确定玩家位置)
+	 * @returns {boolean} 是否成功传送
+	 */		
 	teleport(x, y, z, dimid) {
 		/*
 		args1: x, y, z, dim
@@ -138,10 +173,19 @@ export class Player {
 			return this.PNXPlayer.teleport(Position.fromObject(new Vector3(x, y, z), level));
 		}
 	}
+	/**
+	 * 杀死玩家
+	 * @returns {boolean} 是否成功执行
+	 */	
 	kill() {
 		this.PNXPlayer.kill();
 		return true;
 	}
+	/**
+	 * 对玩家造成伤害
+	 * @param damage {Integer} 对玩家造成的伤害数值
+	 * @returns {boolean} 是否造成伤害
+	 */	
 	hurt(entity) {
 		// test
 		var d;
@@ -153,23 +197,45 @@ export class Player {
 		this.PNXPlayer.displaySwing();
 		return entity.attack(new EntityDamageByEntityEvent(this.PNXPlayer, entity, EntityDamageEvent.DamageCause.ENTITY_ATTACK, d, 0.5));
 	}
+	/**
+	 * 使指定玩家着火
+	 * @param time {Integer} 着火时长，单位秒
+	 * @returns {boolean} 是否成功着火
+	 */	
 	setOnFire(time) {
 		// test
 		this.PNXPlayer.setOnFire(time);
 		return true;
 	}
+	/**
+	 * 重命名玩家
+	 * @param newname {string} 玩家的新名字
+	 * @returns {boolean} 是否重命名成功
+	 */	
 	rename(newname) {
 		// test
 		this.PNXPlayer.setDisplayName(newname);
 		return true;
 	}
+	/**
+	 * 获取玩家当前站立所在的方块
+	 * @returns {Block} 当前站立在的方块对象
+	 */	
 	getBlockStandingOn() {// 获取玩家脚下方块	Block
 		// TODO: 改为LLSE类型
 		return this.PNXPlayer.getPosition().add(0, -0.1).getLevelBlock();
 	}
+	/**
+	 * 获取玩家对应的设备信息对象
+	 * @returns {Device} 玩家对应的设备信息对象
+	 */	
 	getDevice() {// 获取设备信息对象	Device
 		return new Device(this.PNXPlayer);
 	}
+	/**
+	 * 获取玩家主手中的物品对象
+	 * @returns {Item} 玩家主手中的物品对象
+	 */	
 	getHand() {// 获取主手物品	Item
 		// TODO: 改为LLSE类型
 		return this.PNXPlayer.getInventory().getItemInHand();

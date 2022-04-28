@@ -1,7 +1,7 @@
-import { PermType } from './PermType.js'
-import { Player, sendText } from './Player.js'
-import { Event } from './Event.js'
-import { Server } from 'cn.nukkit.Server'
+import { PermType } from './PermType.js';
+import { Player, sendText } from './Player.js';
+import { Event } from './Event.js';
+import { Server } from 'cn.nukkit.Server';
 const server = Server.getInstance();
 
 function runcmd(cmd) {
