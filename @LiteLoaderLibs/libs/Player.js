@@ -9,6 +9,7 @@ import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageByEntityEvent';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
+import { InetSocketAddress } from 'java.net.InetSocketAddress';
 const server = Server.getInstance();
 
 export class Player {
@@ -140,7 +141,7 @@ export class Player {
 		args1: target, text
 		args2: text
 		*/
-		if (arguments.length == 2) {
+		if (arguments.length === 2) {
 			return sendText(this.PNXPlayer, target.PNXPlayer, text, 1);
 		} else {
 			var event = new PlayerChatEvent(this.PNXPlayer, target);
@@ -163,10 +164,10 @@ export class Player {
 		args1: x, y, z, dimid
 		args2: pos
 		*/
-		if (arguments.length == 1) {
+		if (arguments.length === 1) {
 			return this.PNXPlayer.teleport(x.position);
 		} else {
-			const level =  server.getLevelByName(isNaN(dimid) ? dimid: this.levels[dimid]);
+			const level = server.getLevelByName(isNaN(dimid) ? dimid: this.levels[dimid]);
 			if (level == null) {
 				console.log('\nUnknow worlds: '+dimid+'\n  at Player.js -> teleport()');
 				return false;
@@ -204,7 +205,6 @@ export class Player {
 	 * @returns {boolean} 是否成功着火
 	 */	
 	setOnFire(time) {
-		// test
 		this.PNXPlayer.setOnFire(time);
 		return true;
 	}
@@ -214,32 +214,372 @@ export class Player {
 	 * @returns {boolean} 是否重命名成功
 	 */	
 	rename(newname) {
-		// test
 		this.PNXPlayer.setDisplayName(newname);
 		return true;
 	}
 	/**
 	 * 获取玩家当前站立所在的方块
+	 * @todo 改为LLSE类型
 	 * @returns {Block} 当前站立在的方块对象
 	 */	
-	getBlockStandingOn() {// 获取玩家脚下方块	Block
-		// TODO: 改为LLSE类型
+	getBlockStandingOn() {
 		return this.PNXPlayer.getPosition().add(0, -0.1).getLevelBlock();
 	}
 	/**
 	 * 获取玩家对应的设备信息对象
 	 * @returns {Device} 玩家对应的设备信息对象
 	 */	
-	getDevice() {// 获取设备信息对象	Device
+	getDevice() {
 		return new Device(this.PNXPlayer);
 	}
 	/**
 	 * 获取玩家主手中的物品对象
+	 * @todo 改为LLSE类型
 	 * @returns {Item} 玩家主手中的物品对象
 	 */	
-	getHand() {// 获取主手物品	Item
-		// TODO: 改为LLSE类型
+	getHand() {
 		return this.PNXPlayer.getInventory().getItemInHand();
+	}
+
+	/**
+	 * 获取副手物品
+	 * @todo 更改返回为LLSE类型
+	 * @returns {Item} Item对象
+	 */
+	getOffHand() {
+		return this.PNXPlayer.getInventory().getItemInOffHand();
+	}
+
+	/**
+	 * 获取玩家背包对象
+	 * @todo 更改返回为LLSE类型
+	 * @returns {Container} Container对象
+	 */
+	getInventory() {
+		return this.PNXPlayer.getInventory();
+	}
+
+	/**
+	 * 获取玩家盔甲栏对象
+	 * @todo 更改返回为LLSE类型
+	 * @returns {Container} Container对象
+	 */
+	getArmor() {
+		return this.PNXPlayer.getInventory().getArmorContents();// Item[]
+	}
+
+	/**
+	 * 获取玩家末影箱对象
+	 * @todo 更改返回为LLSE类型
+	 * @returns {Container} Container对象
+	 */
+	getEnderChest() {
+		return this.PNXPlayer.getEnderChestInventory();
+	}
+
+	/**
+	 * 获取玩家重生点位置
+	 * @returns {IntPos} IntPos对象
+	 */
+	getRespawnPosition() {
+		return new IntPos(this.PNXPlayer.spawnPosition);
+	}
+
+	/**
+	 * 设置获取玩家重生点位置
+	 * @param x {number} x
+	 * @param y {number} y
+	 * @param z {number} z
+	 * @param dimid {number} 维度id
+	 * @returns {boolean} 是否成功修改
+	 */
+	setRespawnPosition(x, y, z, dimid) {
+		// args1: pos
+		// args2: x,y,z,dimid
+		// args2: x,y,z,dim
+		if (arguments.length === 1) {
+			return this.PNXPlayer.setSpawn(x.position);
+		} else {
+			const level = server.getLevelByName(isNaN(dimid) ? dimid: this.levels[dimid]);
+			if (level == null) {
+				console.log('\nUnknow worlds: '+dimid+'\n  at Player.js -> teleport()');
+				return false;
+			}
+			return this.PNXPlayer.setSpawn(Position.fromObject(new Vector3(x, y, z), level));
+		}
+		return true;
+	}
+
+	/**
+	 * 给予玩家一个物品
+	 * @todo 待实现LLSE类型的 Item
+	 * @param item {Item} 物品对象
+	 * @returns {boolean} 是否成功给予
+	 */
+	giveItem(item) {
+		this.PNXPlayer.giveItem(item);
+		return true;
+	}
+
+	/**
+	 * 清除玩家背包中所有指定类型的物品
+	 * @todo 待实现LLSE类型的 Item
+	 * @todo 类型未知
+	 * @param type {string} 要清除的物品对象类型名
+	 * @returns {number} 清除的物品个数
+	 */
+	clearItem(type) {
+		return 0;
+	}
+
+	/**
+	 * 刷新玩家物品栏、盔甲栏
+	 * @returns {boolean} 是否成功
+	 */
+	refreshItems() {
+		return true;
+	}
+
+	/**
+	 * 刷新玩家加载的所有区块
+	 * @returns {boolean} 是否成功
+	 */
+	refreshChunks() {
+		return true;
+	}
+
+	/**
+	 * 修改玩家操作权限 （0、1、4） 普通、OP、OP+
+	 * @param level {number} 目标操作权限等级
+	 * @returns {boolean} 是否成功
+	 */
+	setPermLevel(level) {
+		if (level < 1) {
+			this.PNXPlayer.setOp(false);
+		} else {
+			this.PNXPlayer.setOp(true);
+		}
+		return true;
+	}
+
+	/**
+	 * 修改玩家游戏模式（0~2）
+	 * @param mode {number} 目标游戏模式
+	 * @returns {boolean} 是否成功
+	 */
+	setGameMode(mode) {
+		return this.PNXPlayer.setGamemode(mode);
+	}
+
+	/**
+	 * 提高玩家经验等级
+	 * @param count {number} 要提升的经验等级
+	 * @returns {boolean} 是否成功
+	 */
+	addLevel(count) {
+		if (isNaN(count)) {
+			return false;
+		}
+		this.PNXPlayer.setExperience(this.PNXPlayer.getExperien(), this.PNXPlayer.getExperienceLevel() + Number(count));
+		return true;
+	}
+
+	/**
+	 * 获取玩家经验等级
+	 * @returns {number} 玩家经验等级
+	 */
+	getLevel() {
+		return this.PNXPlayer.getExperienceLevel();
+	}
+
+	/**
+	 * 重置玩家经验
+	 * @returns {boolean} 是否成功
+	 */
+	resetLevel() {
+		this.PNXPlayer.setExperience(0);
+		return true;
+	}
+
+	/**
+	 * 获取玩家升级所需的经验值
+	 * @returns {number} 玩家升级所需的经验值
+	 */
+	getXpNeededForNextLevel() {
+		const lv = this.getLevel();
+		if(lv < 1) {
+			lv = 0
+		}
+		return (lv > 16 ? lv > 31 ? 9*lv-158 : 5*lv-38 : 2*lv+7) - this.PNXPlayer.getExperien();
+	}
+
+	/**
+	 * 提高玩家经验值
+	 * @param count {number} 要提升的经验值
+	 * @returns {boolean} 是否成功
+	 */
+	addExperience(count) {
+		if (isNaN(count)) {
+			return false;
+		}
+		this.PNXPlayer.setExperience(this.PNXPlayer.getExperien() + Number(count), this.getLevel(), true);
+		return true;
+	}
+
+	/**
+	 * 传送玩家至指定服务器
+	 * @param server {string} 目标服务器 IP / 域名
+	 * @param [port=19132] {number} 目标服务器端口
+	 * @returns {boolean} 是否成功
+	 */
+	transServer(server, port = 19132) {
+		this.PNXPlayer.transfer(new InetSocketAddress(server, port));
+		return true;
+	}
+
+	/**
+	 * 使玩家客户端崩溃
+	 * @todo 待实现
+	 * @returns {boolean} 是否成功
+	 */
+	crash() {
+		return true;
+	}
+
+	/**
+	 * 设置玩家自定义侧边栏
+	 * @todo 待实现
+	 * @param title {string} 侧边栏标题
+	 * @param data {object} 侧边栏对象内容对象
+	 * @param [sortOrder=1] {number} 目标服务器端口
+	 * @returns {boolean} 是否成功
+	 */
+	setSidebar(title, data, sortOrder = 1) {
+		return true;
+	}
+
+	/**
+	 * 移除玩家自定义侧边栏
+	 * @todo 待实现
+	 * @returns {boolean} 是否成功
+	 */
+	removeSidebar() {
+		return true;
+	}
+
+	/**
+	 * 设置玩家看到的自定义 Boss 血条
+	 * @todo 待实现
+	 * @param title {string} 自定义血条标题
+	 * @param percent {number} 血条中的血量百分比（0~100）
+	 * @param color {number} 血条颜色 (默认值为 2 (RED))
+	 * @returns {boolean} 是否成功
+	 */
+	setBossBar(title, percent, color = 2) {
+		return true;
+	}
+
+	/**
+	 * 移除玩家看到的自定义 Boss 血条
+	 * @todo 待实现
+	 * @returns {boolean} 是否成功
+	 */
+	removeBossBar() {
+		return true;
+	}
+
+	/**
+	 * 获取玩家对应的 NBT 对象
+	 * @todo 待实现
+	 * @returns {NbtCompound} LLSE的NbtCompound对象
+	 */
+	getNbt() {
+		return true;
+	}
+
+	/**
+	 * 写入玩家对应的 NBT 对象
+	 * @todo 待实现
+	 * @param nbt {NbtCompound} NBT 对象
+	 * @returns {boolean} 是否成功
+	 */
+	setNbt(nbt) {
+		return true;
+	}
+
+	/**
+	 * 为玩家增加一个 Tag
+	 * @todo 待实现
+	 * @param tag {string} 要增加的 tag 字符串
+	 * @returns {boolean} 是否成功
+	 */
+	addTag(tag) {
+		return true;
+	}
+
+	/**
+	 * 为玩家移除一个 Tag
+	 * @todo 待实现
+	 * @param tag {string} 要移除的 tag 字符串
+	 * @returns {boolean} 是否成功
+	 */
+	removeTag(tag) {
+		return true;
+	}
+
+	/**
+	 * 检查玩家是否拥有某个 Tag
+	 * @todo 待实现
+	 * @param tag {string} 要检查的 tag 字符串
+	 * @returns {boolean} 是否拥有
+	 */
+	hasTag(tag) {
+		return true;
+	}
+
+	/**
+	 * 获取玩家拥有的所有 Tag 列表
+	 * @todo 待实现
+	 * @returns {String[]} 玩家所有的 tag 字符串列表
+	 */
+	getAllTags() {
+		return [];
+	}
+
+	/**
+	 * 获取玩家的 Abilities 能力列表（来自玩家 NBT）
+	 * @todo 待实现
+	 * @returns {object} 玩家所有能力信息的键 - 值对列表对象 例子：{'mayfly': number, ...}
+	 */
+	getAbilities(){
+		return {};
+	}
+
+	/**
+	 * 获取玩家的 Attributes 属性列表（来自玩家 NBT）
+	 * @todo 待实现
+	 * @returns {array} 玩家所有属性对象的数组 键名有：Base Current DefaultMax DefaultMin Max Min Name
+	 */
+	getAttributes(){
+		return [{}, {}];
+	}
+
+	/**
+	 * 获取玩家疾跑状态
+	 * @returns {boolean} 玩家疾跑状态
+	 */
+	isSprinting() {
+		return this.PNXPlayer.isSprinting();
+	}
+
+	/**
+	 * 设置玩家疾跑状态
+	 * @param sprinting {boolean} 疾跑状态
+	 * @returns {boolean} 是否成功
+	 */
+	setSprinting(sprinting) {
+		this.PNXPlayer.setSprinting(sprinting);
+		return true;
 	}
 }
 
