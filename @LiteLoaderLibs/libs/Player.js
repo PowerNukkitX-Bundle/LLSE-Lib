@@ -80,7 +80,7 @@ export class Player {
 	}
 
 	get uniqueId() {// 	玩家（实体的）唯一标识符	String
-		return this.PNXPlayer.getId();
+		return this.PNXPlayer.getUniqueId().toString();
 	}
 	/**
 	 * 判断玩家是否为OP
