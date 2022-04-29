@@ -8,6 +8,7 @@ import { Position } from 'cn.nukkit.level.Position';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageByEntityEvent';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
+import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 const server = Server.getInstance();
 
 export class Player {
@@ -267,9 +268,12 @@ export function sendText(sender = '', receiver, msg, type) {
 }
 export function getLevels() {
 	var levels = [];
-	for (var level of server.getLevels().values()) {
+	/*for (var level of server.getLevels().values()) {
 		levels[level.getDimension()] = level.getName();
 	}
-	levels[0] = server.getDefaultLevel().getName();
+	levels[0] = server.getDefaultLevel().getName();*/
+	levels[0] = EnumLevel.OVERWORLD.getLevel().getName();
+	levels[1] = EnumLevel.NETHER.getLevel().getName();
+	levels[2] = EnumLevel.THE_END.getLevel().getName();
 	return levels;
 }
