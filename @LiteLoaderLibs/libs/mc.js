@@ -1,7 +1,7 @@
-import { PermType } from './PermType.js'
-import { Player, sendText } from './Player.js'
-import { Event } from './Event.js'
-import { Server } from 'cn.nukkit.Server'
+import { PermType } from './PermType.js';
+import { Player, sendText } from './Player.js';
+import { Event } from './Event.js';
+import { Server } from 'cn.nukkit.Server';
 const server = Server.getInstance();
 
 /**
@@ -59,7 +59,7 @@ function listen(event,callback){
 /**
  * 获取玩家对象
  * @param info {string} 玩家名/xuid
- * @returns {(Player|null)} 玩家对象
+ * @returns {Player|null} 玩家对象
  */
 function getPlayer(info) {
 	var found = null;
