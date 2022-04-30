@@ -1,8 +1,17 @@
-import { PermType } from './PermType.js';
-import { Player, sendText } from './Player.js';
-import { Event } from './Event.js';
-import { Server } from 'cn.nukkit.Server';
+import { PermType } from './PermType.js'
+import { Player, sendText } from './Player.js'
+import { Event } from './Event.js'
+import { Server } from 'cn.nukkit.Server'
 const server = Server.getInstance();
+
+/**
+ * 插件关闭时需要主动调用，清除boss条等
+ */
+function close() {
+	for (const value of Player.PlayerMap.values()) {
+		console.log(value.removeBossBar());
+	}
+}
 
 /**
  * 执行一条命令并返回是否成功
@@ -50,7 +59,7 @@ function listen(event,callback){
 /**
  * 获取玩家对象
  * @param info {string} 玩家名/xuid
- * @returns {Player|null} 玩家对象
+ * @returns {(Player|null)} 玩家对象
  */
 function getPlayer(info) {
 	var found = null;
@@ -80,7 +89,7 @@ function getPlayer(info) {
 	if (found == null) {
 		return null;
 	}
-	return new Player(found);
+	return Player.getPlayer(found);
 }
 
 /**
@@ -89,8 +98,8 @@ function getPlayer(info) {
  */
 function getOnlinePlayers() {
 	var PlayerList = [];
-	for (var player of server.getOnlinePlayers().values()) {
-		PlayerList.push(new Player(player));
+	for (const player of server.getOnlinePlayers().values()) {
+		PlayerList.push(Player.getPlayer(player));
 	}
 	return PlayerList;
 }
@@ -109,6 +118,7 @@ function broadcast(msg, type = 0) {
 }
 
 export const mc = {
+	close: close,
 	runcmd: runcmd,
 	runcmdEx: runcmdEx,
 	newCommand: newCommand,
