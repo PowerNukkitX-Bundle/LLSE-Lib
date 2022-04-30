@@ -1,104 +1,115 @@
+import * as IO from "../utils/IO.js";
+import { Job } from ":concurrent";
+
 export class File {
-	constroctor(path, mode, isBinary = false){
-		/*
-		参数：
-			path : String
-			想要打开的文件路径
-			mode : Enum
-			文件的打开模式
-			isBinary : Boolean
-			（可选参数）是否以二进制模式打开文件，默认为 false
-		普通模式下，文件读写过程中，换行符将会被按本地格式转换。如果你使用二进制模式打开文件，表明此文件并非普通的文本格式，这些自动转换将不会发生。
-		返回值：打开的文件对象
-		返回值类型：File
-		如果打开失败，将抛出异常
-		*/
+	static ReadMode = "r";
+	static WriteMode = "rw";
+	static AppendMode = "rws";
+
+	/**
+	 * @type {Map<Job, boolean>}
+	 */
+	static jobs = new Map();
+
+	/**
+	 * @returns {Job}
+	 */
+	static requestJob() {
+		for (const [job, available] of this.jobs.entries) {
+			if (available) {
+				return job;
+			}
+		}
+		const newJob = new Job("utils/IO.js");
+		this.jobs.set(newJob, true);
+		return newJob;
 	}
+
+	/**
+	 * @param path {string} 文件路径
+	 * @param mode {string} 文件打开模式
+	 * @param isBinary {boolean} 是否为二进制文件
+	 */
+	constroctor(path, mode, isBinary = false) {
+		this._path = path;
+		this._mode = mode;
+		this._isBinary = isBinary;
+		if (!IO.createRAF(path, mode)) {
+			throw IO.getPreviousErr(path);
+		}
+	}
+	/**
+	 * @param path {string} 文件的路径
+	 */
 	static readFrom(path) {
-		/*
-		参数：
-			path : String
-			目标文件的路径，相对路径以 BDS 根目录为基准
-		返回值：文件的所有数据
-		返回值类型：String
-		如返回值为 Null 则表示读取失败
-		*/
+		if (IO.createRAF(path)) {
+			const content = IO.readAllText(path);
+			IO.close(path);
+			return content;
+		}
 		return null;
 	}
+	/**
+	 * @param path {string}
+	 * @param text {string}
+	 */
 	static writeTo(path, text) {
-		/*
-		参数：
-			path : String
-			目标文件的路径，相对路径以 BDS 根目录为基准
-			text : String
-			要写入的内容
-		返回值：是否写入成功
-		返回值类型：Boolean
-		*/
+		if (IO.createRAF(path)) {
+			if (IO.writeText(path, text)) {
+				IO.close(path);
+				return true;
+			}
+		}
 		return false;
 	}
+	/**
+	 * @param path {string}
+	 * @param text {string}
+	 */
 	static writeLine(path, text) {
-		/*
-		参数：
-			path : String
-			目标文件的路径，相对路径以 BDS 根目录为基准
-			text : String
-			要写入的内容
-		返回值：是否写入成功
-		返回值类型：Boolean
-		*/
+		if (IO.createRAF(path)) {
+			if (IO.seekTo(path, IO.getSize(path) - 1, false) && IO.writeText(path, text + "\n")) {
+				IO.close(path);
+				return true;
+			}
+		}
 		return false;
 	}
+	/**
+	 * @param cnt {number}
+	 */
 	readSync(cnt) {
-		/*
-		参数：
-			cnt : Number
-			要读取的字符数 / 字节数
-		返回值：读取的字符串内容 / 二进制数据
-		返回值类型：String / ByteBuffer
-		如返回值为 Null 则表示读取失败
-		*/
-		return null;
+		return this._isBinary ? IO.readBuffer(this._path, cnt) : IO.readText(this._path, cnt);
 	}
 	readLineSync() {
-		/*
-		返回值：读取的字符串内容
-		返回值类型：String
-		如返回值为 Null 则表示读取失败
-		注意，字符串尾部的换行符要自行处理
-		*/
-		return null;
+		return IO.readLine(this._path);
 	}
 	readAllSync() {
-		/*
-		返回值：读取的字符串内容 / 二进制数据
-		返回值类型：String / ByteBuffer
-		如返回值为 Null 则表示读取失败
-		*/
-		return null;
+		return this._isBinary ? IO.readAllBuffer(this._path) : IO.readAllText(this._path);
 	}
+	/**
+	 * @param str {String|ByteBuffer}
+	 */
 	writeSync(str) {
-		/*
-		参数：
-			str : String / ByteBuffer
-			要写入的内容
-		返回值：是否成功写入
-		返回值类型：Boolean
-		*/
+		if (typeof str === "string") {
+			return IO.writeText(this._path, str);
+		} else if (this._isBinary) {
+			return IO.writeBuffer(this._path, str);
+		}
 		return false;
 	}
+	/**
+	 * @param str {string}
+	 */
 	writeLineSync(str) {
-		/*
-		参数：
-			str : String
-			要写入的内容
-		返回值：是否成功写入
-		返回值类型：Boolean
-		此函数执行时，将在字符串尾自动添加换行符
-		*/
-		return false;
+		return IO.writeLine(this._path, str);
 	}
-	async read(cnt, callback) {
+	/**
+	 * @param cnt {number}
+	 * @param callback {(result: string|SharedArrayBuffer) => void}
+	 * @returns {Promise<string|SharedArrayBuffer>}
+	 */
+	read(cnt, callback) {
 		/*
 		参数：
 			cnt : Number
@@ -113,9 +124,26 @@ export class File {
 		如 result 为 Null 则表示读取失败
 		从当前文件指针处开始读取。如果文件以二进制模式打开，则返回 ByteBuffer，否则返回 String
 		*/
-		return callback(null);
+		const tmpJob = File.requestJob();
+		File.jobs.set(tmpJob, false);
+
+		return tmpJob.work(-1, this._path, this._mode).then(
+			() => tmpJob.work(this._isBinary ? 3 : 0, cnt).then(value => {
+				if (callback) callback(value);
+				File.jobs.set(tmpJob, true);
+				return Promise.resolve(value);
+			}, err => {
+				if (callback) callback(null);
+				File.jobs.set(tmpJob, true);
+				return Promise.reject(err);
+			})
+		)
 	}
-	async readLine(callback) {
+	/**
+	 * @param callback {(result: string|SharedArrayBuffer) => void}
+	 * @returns {Promise<string>}
+	 */
+	readLine(callback) {
 		/*
 		参数：
 			callback : Function
@@ -127,9 +155,25 @@ export class File {
 			读取到的文本
 		注意，字符串尾部的换行符要自行处理
 		*/
-		return callback('');
+		const tmpJob = File.requestJob();
+		File.jobs.set(tmpJob, false);
+		return tmpJob.work(-1, this._path, this._mode).then(
+			() => tmpJob.work(1).then(value => {
+				if (callback) callback(value);
+				File.jobs.set(tmpJob, true);
+				return Promise.resolve(value);
+			}, err => {
+				if (callback) callback(null);
+				File.jobs.set(tmpJob, true);
+				return Promise.reject(err);
+			})
+		)
 	}
-	async readAll(callback) {
+	/**
+	 * @param callback {(result: string|SharedArrayBuffer) => void}
+	 * @returns {Promise<string|SharedArrayBuffer>}
+	 */
+	readAll(callback) {
 		/*
 		参数：
 		callback : Function
@@ -142,8 +186,24 @@ export class File {
 		读取到的文本 / 二进制数据
 		如 result 为 Null 则表示读取失败
 		*/
-		return callback(null);
+		const tmpJob = File.requestJob();
+		File.jobs.set(tmpJob, false);
+		return tmpJob.work(-1, this._path, this._mode).then(
+			() => tmpJob.work(this._isBinary ? 4 : 2).then(value => {
+				if (callback) callback(value);
+				File.jobs.set(tmpJob, true);
+				return Promise.resolve(value);
+			}, err => {
+				if (callback) callback(null);
+				File.jobs.set(tmpJob, true);
+				return Promise.reject(err);
+			})
+		)
 	}
+	/**
+	 * @param callback {(result: string|SharedArrayBuffer) => void}
+	 * @returns {Promise<boolean>}
+	 */
 	async write(str, callback) {
 		/*
 		参数：
@@ -158,10 +218,24 @@ export class File {
 			result : Boolean
 			是否写入成功
 		*/
-		if (callback) {
-			callback(false);
-		}
+		const tmpJob = File.requestJob();
+		File.jobs.set(tmpJob, false);
+		return tmpJob.work(-1, this._path, this._mode).then(
+			() => tmpJob.work(this._isBinary ? 6 : 5, str).then(value => {
+				if (callback) callback(value);
+				File.jobs.set(tmpJob, true);
+				return Promise.resolve(value);
+			}, err => {
+				if (callback) callback(null);
+				File.jobs.set(tmpJob, true);
+				return Promise.reject(err);
+			})
+		)
 	}
+	/**
+	 * @param callback {(result: string|SharedArrayBuffer) => void}
+	 * @returns {Promise<boolean>}
+	 */
 	async writeLine(str, callback) {
 		/*
 		参数：
@@ -176,8 +250,18 @@ export class File {
 			是否写入成功
 		此函数执行时，将在字符串尾自动添加换行符
 		*/
-		if (callback) {
-			callback(false);
-		}
+		const tmpJob = File.requestJob();
+		File.jobs.set(tmpJob, false);
+		return tmpJob.work(-1, this._path, this._mode).then(
+			() => tmpJob.work(7, str).then(value => {
+				if (callback) callback(value);
+				File.jobs.set(tmpJob, true);
+				return Promise.resolve(value);
+			}, err => {
+				if (callback) callback(null);
+				File.jobs.set(tmpJob, true);
+				return Promise.reject(err);
+			})
+		)
 	}
 }
