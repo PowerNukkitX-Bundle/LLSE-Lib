@@ -10,9 +10,13 @@ import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageBy
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
+import { Player as JPlayer } from 'cn.nukkit.Player';
 const server = Server.getInstance();
 
 export class Player {
+	/**
+	 * @param PNXPlayer {JPlayer}
+	 */
 	constructor (PNXPlayer) {
 		this.PNXPlayer = PNXPlayer;
 		this.DirectionAngle = new DirectionAngle(this.PNXPlayer);
