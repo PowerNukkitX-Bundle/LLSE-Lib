@@ -2,6 +2,7 @@ import { PermType } from './PermType.js';
 import { Player, sendText } from './Player.js';
 import { Event } from './Event.js';
 import { Server } from 'cn.nukkit.Server';
+import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 const server = Server.getInstance();
 
 /**
@@ -13,6 +14,44 @@ function close() {
 	}
 }
 
+// 💻 服务端设置 API
+/**
+ * 获取服务器版本
+ * @returns {string} v1.18.30
+ */
+function getServerVersion() {
+	return server.getVersion();
+}
+
+/**
+ * 获取服务器协议号
+ * @returns {number} v1.18.30
+ */
+function getServerProtocolVersion() {
+	return ProtocolInfo.CURRENT_PROTOCOL;
+}
+
+/**
+ * 设置Motd
+ * @param motd {string} 目标 Motd 字符串
+ * @returns {boolean} 是否成功
+ */
+function setMotd(motd) {
+	server.setPropertyString('motd', motd);
+	return true;
+}
+
+/**
+ * 设置最大玩家数量
+ * @param num {number} 最大玩家数
+ * @returns {boolean} 是否成功
+ */
+function setMaxPlayers(num) {
+	server.setMaxPlayers(num);
+	return true;
+}
+
+// 🎨 LLSE - 游戏元素接口文档
 /**
  * 执行一条命令并返回是否成功
  * @param cmd {string} 命令
@@ -118,7 +157,14 @@ function broadcast(msg, type = 0) {
 }
 
 export const mc = {
+	//PNX 的API
 	close: close,
+	//💻 服务端设置 API
+	getBDSVersion: getServerVersion,
+	getServerProtocolVersion: getServerProtocolVersion,
+	setMotd: setMotd,
+	setMaxPlayers: setMaxPlayers,
+	//🎨 游戏元素接口文档
 	runcmd: runcmd,
 	runcmdEx: runcmdEx,
 	newCommand: newCommand,
