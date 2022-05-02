@@ -3,7 +3,16 @@ import { Player, sendText } from './Player.js';
 import { Event } from './Event.js';
 import { Server } from 'cn.nukkit.Server';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
+import { Explosion } from 'cn.nukkit.level.Explosion';
+import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
+import { Position } from 'cn.nukkit.level.Position';
 const server = Server.getInstance();
+
+function dimToLevel(dim){
+	if(dim===0) return EnumLevel.OVERWORLD.getLevel();
+	else if(dim===1) return EnumLevel.NETHER.getLevel();
+	else if(dim===2) return EnumLevel.THE_END.getLevel();
+}
 
 /**
  * 插件关闭时需要主动调用，清除boss条等
@@ -156,6 +165,30 @@ function broadcast(msg, type = 0) {
 	return true;
 }
 
+/**
+ * 在指定位置制造一次爆炸
+ * @param pos {IntPos | FloatPos} 引发爆炸的位置坐标(或者使用x,y,z,dimid来确定实体位置)
+ * @param source {Entity} 设置爆炸来源的实体对象，可以为 Null
+ * @param power {Float} 爆炸的威力值，影响爆炸的伤害大小和破坏范围
+ * @param range {Float} 爆炸的范围半径，影响爆炸的波及范围
+ * @param isDestroy {boolean} 爆炸是否破坏方块
+ * @param isFire {boolean} 爆炸结束后是否留下燃烧的火焰
+ * @returns {boolean} 是否成功制造爆炸
+ */
+function explode(x,y,z,dimid,source,power,range,isDestroy,isFire){
+	if (arguments.length === 6) {
+		var explode = new Explosion(x,range,source);
+		explode.doesDamage=isDestroy;
+		explode.setIncendiary(isFire);
+		return explode.explode();
+	} else if(arguments.length === 9){
+		var explode = new Explosion(new Position(x,y,z,dimToLevel(dimid)),range,source);
+		explode.doesDamage=isDestroy;
+		explode.setIncendiary(isFire);
+		return explode.explode();
+	}else throw new Error("mc.js explode()参数错误");
+}
+
 export const mc = {
 	//PNX 的API
 	close: close,
@@ -171,5 +204,6 @@ export const mc = {
 	listen: listen,
 	getPlayer: getPlayer,
 	getOnlinePlayers: getOnlinePlayers,
-	broadcast: broadcast
+	broadcast: broadcast,
+	explode: explode
 }

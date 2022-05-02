@@ -20,6 +20,7 @@ import { Scoreboard } from 'cn.nukkit.scoreboard.Scoreboard';
 import { ScoreboardManager } from 'cn.nukkit.scoreboard.ScoreboardManager';
 import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
 import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
+
 const server = Server.getInstance();
 const ASType = AdventureSettings.Type;
 
@@ -204,23 +205,15 @@ export class Player {
 	 */	
 	kill() {
 		this._PNXPlayer.kill();
-		return true;
+		return !this._PNXPlayer.isAlive();
 	}
 	/**
 	 * 对玩家造成伤害
 	 * @param damage {Integer} 对玩家造成的伤害数值
 	 * @returns {boolean} 是否造成伤害
 	 */	
-	hurt(entity) {
-		// test
-		var d;
-		if (this._PNXPlayer.getInventory().getItemInHand() != null) {
-			d = this._PNXPlayer.getInventory().getItemInHand().getAttackDamage();
-		} else {
-			d = 1;
-		}
-		this._PNXPlayer.displaySwing();
-		return entity.attack(new EntityDamageByEntityEvent(this._PNXPlayer, entity, EntityDamageEvent.DamageCause.ENTITY_ATTACK, d, 0.5));
+	hurt(damage) {
+		return this._PNXPlayer.attack(new EntityDamageByEntityEvent(this._PNXPlayer, EntityDamageEvent.DamageCause.NONE, damage));
 	}
 	/**
 	 * 使指定玩家着火
@@ -229,7 +222,7 @@ export class Player {
 	 */	
 	setOnFire(time) {
 		this._PNXPlayer.setOnFire(time);
-		return true;
+		return this._PNXPlayer.isOnFire();
 	}
 	/**
 	 * 重命名玩家

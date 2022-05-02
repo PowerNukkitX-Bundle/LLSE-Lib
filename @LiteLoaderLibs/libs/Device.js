@@ -1,4 +1,5 @@
 
+import { Player } from './Player';
 /**
  * 玩家设备信息对象
  * @class
