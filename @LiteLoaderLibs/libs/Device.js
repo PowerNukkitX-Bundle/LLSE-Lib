@@ -3,7 +3,7 @@ import { Player } from './Player.js';
 /**
  * 玩家设备信息对象
  * @class
- * @param player {Player} 玩家对象
+ * @param player {JPlayer} 玩家对象
  * @returns {Device} 设备信息对象
  */
 export class Device {
