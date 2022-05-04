@@ -1,7 +1,7 @@
 // noinspection NpmUsedModulesInstalled,JSUnresolvedFunction,JSValidateJSDoc,JSUnresolvedVariable,JSUnusedGlobalSymbols
 
 import {Files} from "java.nio.file.Files";
-import {JString} from "java.lang.String";
+import {String as JString} from "java.lang.String";
 import {ByteBuffer} from "java.nio.ByteBuffer";
 import {RandomAccessFile} from "java.io.RandomAccessFile";
 
