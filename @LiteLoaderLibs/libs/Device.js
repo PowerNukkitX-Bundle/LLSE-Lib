@@ -1,5 +1,5 @@
 
-import { Player } from './Player';
+import { Player } from './Player.js';
 /**
  * 玩家设备信息对象
  * @class
