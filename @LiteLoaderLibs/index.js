@@ -8,3 +8,4 @@ export function close() {
 
 export { mc } from './libs/mc.js'
 export { File } from './libs/File.js'
+export { WSClient } from './libs/WebSocket.js'
