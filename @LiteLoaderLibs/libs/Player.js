@@ -261,7 +261,6 @@ export class Player {
 	getHand() {
 		const handitem = Item.newItem(this._PNXPlayer.getInventory().getItemInHand());
 		if (handitem != null) {
-			print(this._PNXPlayer.getInventory().getHeldItemIndex())
 			handitem._reference = [this._PNXPlayer, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()];
 		}
 		return handitem;
