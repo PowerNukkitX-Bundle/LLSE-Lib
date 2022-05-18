@@ -6,6 +6,7 @@ import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { Position } from 'cn.nukkit.level.Position';
+import { Item } from './Item.js';
 const server = Server.getInstance();
 
 function dimToLevel(dim){
@@ -60,7 +61,7 @@ function setMaxPlayers(num) {
 	return true;
 }
 
-// 🎨 LLSE - 游戏元素接口文档
+// 🎨 游戏元素接口文档
 /**
  * 执行一条命令并返回是否成功
  * @param cmd {string} 命令
@@ -175,7 +176,7 @@ function broadcast(msg, type = 0) {
  * @param isFire {boolean} 爆炸结束后是否留下燃烧的火焰
  * @returns {boolean} 是否成功制造爆炸
  */
-function explode(x,y,z,dimid,source,power,range,isDestroy,isFire){
+function explode(x,y,z,dimid,source,power,range,isDestroy,isFire) {
 	if (arguments.length === 6) {
 		var explode = new Explosion(x,range,source);
 		explode.doesDamage=isDestroy;
@@ -187,6 +188,21 @@ function explode(x,y,z,dimid,source,power,range,isDestroy,isFire){
 		explode.setIncendiary(isFire);
 		return explode.explode();
 	}else throw new Error("mc.js explode()参数错误");
+}
+
+// 物品对象
+/**
+ * 生成新的物品对象
+ * @param name {String} 物品的标准类型名，如 minecraft:bread
+ * @param count {Number} 物品堆叠数量
+ * @returns {Item|null} 
+ */
+function newItem(name, count) {
+	/*
+	args1: name, count
+	args2: NbtCompound
+	*/
+	return Item.newItem(name, count);
 }
 
 export const mc = {
@@ -205,5 +221,7 @@ export const mc = {
 	getPlayer: getPlayer,
 	getOnlinePlayers: getOnlinePlayers,
 	broadcast: broadcast,
-	explode: explode
+	explode: explode,
+	// 物品对象
+	newItem: newItem
 }
