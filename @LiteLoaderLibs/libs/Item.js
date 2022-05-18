@@ -36,22 +36,22 @@ export class Item {
 	}
 
     _changeItem() {
-        if (!this._reference || !this._reference[0].isOnline()) {
-            return;
-        }
-        switch(this._reference[1]) {
-            case 'hand': {
-                this._reference[0].getInventory().setItem(this._reference[2], this._PNXItem);
-                break;
-            }
-            case 'offhand': {
-                this._reference[0].getOffhandInventory().setItem(this._reference[2], this._PNXItem);
-                break;
-            }
-            default:
-                return false;
-        }
-        return true;
+		if (!this._reference || !this._reference[0].isOnline()) {
+		    return;
+		}
+		switch(this._reference[1]) {
+		    case 'hand': {
+				this._reference[0].getInventory().setItem(this._reference[2], this._PNXItem);
+				break;
+		    }
+		    case 'offhand': {
+				this._reference[0].getOffhandInventory().setItem(this._reference[2], this._PNXItem);
+				break;
+		    }
+		    default:
+				return false;
+		}
+		return true;
     }
 
 	get id() {
@@ -63,7 +63,7 @@ export class Item {
 	}
 	set name(name) {
 		this._PNXItem.setCustomName(name);
-        this._changeItem();
+		this._changeItem();
 	}
 
 	get count() {
@@ -71,7 +71,7 @@ export class Item {
 	}
 	set count(num) {
 		this._PNXItem.setCount(num);
-        this._changeItem();
+		this._changeItem();
 	}
 
 	get aux() {
@@ -79,7 +79,7 @@ export class Item {
 	}
 	set aux(aux) {
 		this.setAux(aux);
-        this._changeItem();
+		this._changeItem();
 	}
 
 	get type() {
@@ -92,7 +92,7 @@ export class Item {
 	 */
 	setAux(aux) {
 		this._PNXItem.setDamage(aux);
-        this._changeItem();
+		this._changeItem();
 		return true;
 	}
 	/**
@@ -102,7 +102,7 @@ export class Item {
 	 */
 	setLore(names) {
 		this._PNXItem.setLore(names);
-        this._changeItem();
+		this._changeItem();
 		return true;
 	}
 	/**
@@ -118,7 +118,7 @@ export class Item {
 	 */
 	setNull() {
 		this._PNXItem.setCount(-1);
-        this._changeItem();
+		this._changeItem();
 		return true;
 	}
 	/**
@@ -166,7 +166,7 @@ export class Item {
 	 */
 	setNbt(nbt) {
 		// more code...
-        this._changeItem();
+		this._changeItem();
 	}
 	/**
 	 * 根据物品对象生成掉落物实体
