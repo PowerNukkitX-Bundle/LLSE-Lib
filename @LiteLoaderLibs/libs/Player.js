@@ -2,6 +2,8 @@ import { DirectionAngle } from '../utils/DirectionAngle.js';
 import { IntPos } from './IntPos.js';
 import { FloatPos } from './FloatPos.js';
 import { Device } from './Device.js';
+import { Item } from './Item.js';
+import { Container } from './Container.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
 import { Server } from 'cn.nukkit.Server';
@@ -12,6 +14,7 @@ import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageBy
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { Player as JPlayer } from 'cn.nukkit.Player';
+import { Item as JItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { DummyBossBar } from 'cn.nukkit.utils.DummyBossBar';
@@ -167,13 +170,15 @@ export class Player {
 		*/
 		if (arguments.length === 2) {
 			return sendText(this._PNXPlayer, target._PNXPlayer, text, 1);
-		} else {
+		} else if (arguments.length === 1) {
 			var event = new PlayerChatEvent(this._PNXPlayer, target);
 			server.getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				server.broadcastMessage(server.getLanguage().translateString(event.getFormat(), [event.getPlayer().getDisplayName(), event.getMessage()]), event.getRecipients());
 			}
 			return true;
+		} else {
+			throw 'Wrong number of parameters.';
 		}
 	}
 	/**
@@ -184,19 +189,20 @@ export class Player {
 	teleport(x, y, z, dimid) {
 		/*
 		args1: x, y, z, dim
-
 		args1: x, y, z, dimid
 		args2: pos
 		*/
 		if (arguments.length === 1) {
 			return this._PNXPlayer.teleport(x.position);
-		} else {
+		} else if (arguments.length === 4) {
 			const level = server.getLevelByName(isNaN(dimid) ? dimid: this.levels[dimid]);
 			if (level == null) {
 				console.log('\nUnknow worlds: '+dimid+'\n  at Player.js -> teleport()');
 				return false;
 			}
 			return this._PNXPlayer.teleport(Position.fromObject(new Vector3(x, y, z), level));
+		} else {
+			throw 'Wrong number of parameters.';
 		}
 	}
 	/**
@@ -250,34 +256,39 @@ export class Player {
 	}
 	/**
 	 * 获取玩家主手中的物品对象
-	 * @todo 改为LLSE类型
 	 * @returns {Item} 玩家主手中的物品对象
 	 */	
 	getHand() {
-		return this._PNXPlayer.getInventory().getItemInHand();
+		const handitem = Item.newItem(this._PNXPlayer.getInventory().getItemInHand());
+		if (handitem != null) {
+			handitem._reference = [this._PNXPlayer, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()];
+		}
+		return handitem;
 	}
 
 	/**
 	 * 获取副手物品
-	 * @todo 更改返回为LLSE类型
 	 * @returns {Item} Item对象
 	 */
 	getOffHand() {
-		return this._PNXPlayer.getInventory().getItemInOffHand();
+		const offhandItem = Item.newItem(this._PNXPlayer.getOffhandInventory().getItem(0));
+		if (offhandItem != null) {
+			offhandItem._reference = [this._PNXPlayer, 'offhand', 0];
+		}
+		return offhandItem;
 	}
 
 	/**
 	 * 获取玩家背包对象
-	 * @todo 更改返回为LLSE类型
 	 * @returns {Container} Container对象
 	 */
 	getInventory() {
-		return this._PNXPlayer.getInventory();
+		return new Container(this._PNXPlayer.getInventory());
 	}
 
 	/**
 	 * 获取玩家盔甲栏对象
-	 * @todo 更改返回为LLSE类型
+	 * @todo 需要更多...
 	 * @returns {Container} Container对象
 	 */
 	getArmor() {
@@ -286,11 +297,10 @@ export class Player {
 
 	/**
 	 * 获取玩家末影箱对象
-	 * @todo 更改返回为LLSE类型
 	 * @returns {Container} Container对象
 	 */
 	getEnderChest() {
-		return this._PNXPlayer.getEnderChestInventory();
+		return new Container(this._PNXPlayer.getEnderChestInventory());
 	}
 
 	/**
@@ -310,30 +320,39 @@ export class Player {
 	 * @returns {boolean} 是否成功修改
 	 */
 	setRespawnPosition(x, y, z, dimid) {
-		// args1: pos
-		// args2: x,y,z,dimid
-		// args2: x,y,z,dim
+		/*
+		args1: pos
+		args2: x,y,z,dimid
+		args2: x,y,z,dim
+		*/
 		if (arguments.length === 1) {
 			return this._PNXPlayer.setSpawn(x.position);
-		} else {
+		} else if (arguments.length === 4) {
 			const level = server.getLevelByName(isNaN(dimid) ? dimid: this.levels[dimid]);
 			if (level == null) {
 				console.log('\nUnknow worlds: '+dimid+'\n  at Player.js -> teleport()');
 				return false;
 			}
 			return this._PNXPlayer.setSpawn(Position.fromObject(new Vector3(x, y, z), level));
+		} else {
+			throw 'Wrong number of parameters.';
 		}
 		return true;
 	}
 
 	/**
 	 * 给予玩家一个物品
-	 * @todo 待实现LLSE类型的 Item
 	 * @param item {Item} 物品对象
 	 * @returns {boolean} 是否成功给予
 	 */
 	giveItem(item) {
-		this._PNXPlayer.giveItem(item);
+		if (item instanceof Item) {
+			this._PNXPlayer.giveItem(item._PNXItem);
+		} else if (item instanceof JItem) {
+			this._PNXPlayer.giveItem(item);
+		} else {
+			return false;
+		}
 		return true;
 	}
 
@@ -692,13 +711,9 @@ export function sendText(sender = '', receiver, msg, type) {
 	return true;
 }
 export function getLevels() {
-	var levels = [];
-	/*for (var level of server.getLevels().values()) {
-		levels[level.getDimension()] = level.getName();
-	}
-	levels[0] = server.getDefaultLevel().getName();*/
-	levels[0] = EnumLevel.OVERWORLD.getLevel().getName();
-	levels[1] = EnumLevel.NETHER.getLevel().getName();
-	levels[2] = EnumLevel.THE_END.getLevel().getName();
-	return levels;
+	return [
+		EnumLevel.OVERWORLD.getLevel().getName(),
+		EnumLevel.NETHER.getLevel().getName(),
+		EnumLevel.THE_END.getLevel().getName()
+	];
 }
