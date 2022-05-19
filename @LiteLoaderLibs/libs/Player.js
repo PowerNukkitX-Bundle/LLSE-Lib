@@ -280,16 +280,15 @@ export class Player {
 
 	/**
 	 * 获取玩家背包对象
-	 * @todo 更改返回为LLSE类型
 	 * @returns {Container} Container对象
 	 */
 	getInventory() {
-		return this._PNXPlayer.getInventory();
+		return new Container(this._PNXPlayer.getInventory());
 	}
 
 	/**
 	 * 获取玩家盔甲栏对象
-	 * @todo 更改返回为LLSE类型
+	 * @todo 需要更多...
 	 * @returns {Container} Container对象
 	 */
 	getArmor() {
@@ -298,11 +297,10 @@ export class Player {
 
 	/**
 	 * 获取玩家末影箱对象
-	 * @todo 更改返回为LLSE类型
 	 * @returns {Container} Container对象
 	 */
 	getEnderChest() {
-		return this._PNXPlayer.getEnderChestInventory();
+		return new Container(this._PNXPlayer.getEnderChestInventory());
 	}
 
 	/**
