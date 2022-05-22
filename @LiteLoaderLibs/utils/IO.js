@@ -128,7 +128,7 @@ export function readText(path, cnt) {
         }
         return new JString(chars);
     } catch (e) {
-        getIO(path).previousErr = e;
+        errCache.set(path, e);
         return null;
     }
 }
@@ -146,7 +146,7 @@ export function readBuffer(path, cnt) {
         raf.read(bytes);
         return new SharedArrayBuffer(ByteBuffer.wrap(bytes));
     } catch (e) {
-        getIO(path).previousErr = e;
+        errCache.set(path, e);
         return null;
     }
 }
@@ -160,7 +160,7 @@ export function readLine(path) {
     try {
         return getRAF(path).readLine();
     } catch (e) {
-        getIO(path).previousErr = e;
+        errCache.set(path, e);
         return null;
     }
 }
@@ -174,7 +174,7 @@ export function readAllText(path) {
     try {
         return Files.readString(path);
     } catch (e) {
-        getIO(path).previousErr = e;
+        errCache.set(path, e);
         return null;
     }
 }
@@ -188,7 +188,7 @@ export function readAllBuffer(path) {
     try {
         return new SharedArrayBuffer(ByteBuffer.wrap(Files.readAllBytes(path)));
     } catch (e) {
-        getIO(path).previousErr = e;
+        errCache.set(path, e);
         return null;
     }
 }
