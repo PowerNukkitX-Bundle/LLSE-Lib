@@ -357,12 +357,12 @@ export function getSize(path) {
  * @returns {boolean}
  */
 export function close(path) {
-    print(path)
+    print(path.toString())
     const raf = getRAF(path);
     if (raf) {
         try {
-            rafCache.delete(path);
-            errCache.delete(path);
+            rafCache.delete(path.toString());
+            errCache.delete(path.toString());
             raf.close();
         } catch (e) {
             if (debugMode) print(e);
