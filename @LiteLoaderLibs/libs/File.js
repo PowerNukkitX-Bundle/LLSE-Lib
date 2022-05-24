@@ -1,7 +1,41 @@
 import * as IO from "../utils/IO.js";
 import { Job } from ":concurrent";
+import { Paths } from "java.nio.file.Paths";
+import { Files } from "java.nio.file.Files";
 
 export class File {
+	/**
+	 * @param path {string} 文件路径
+	 * @param mode {string} 文件打开模式
+	 * @param isBinary {boolean} 是否为二进制文件
+	 */
+	constructor (path, mode, isBinary = false) {
+		this._path = Paths.get(path);
+		this._mode = mode;
+		this._isBinary = isBinary;
+		if (!IO.createRAF(this._path, mode)) {
+			throw IO.getPreviousErr(this._path);
+		}
+	}
+	/**
+	 * @returns {string}
+	 */
+	get path() {
+		return this._path.toString();
+	}
+	/**
+	 * @returns {string}
+	 */
+	get absolutePath() {
+		return this._path.toAbsolutePath();
+	}
+	/**
+	 * @returns {number}
+	 */
+	get size() {
+		return IO.getSize(this._path);
+	}
+
 	static ReadMode = "r";
 	static WriteMode = "rw";
 	static AppendMode = "rws";
@@ -26,50 +60,57 @@ export class File {
 	}
 
 	/**
-	 * @param path {string} 文件路径
-	 * @param mode {string} 文件打开模式
-	 * @param isBinary {boolean} 是否为二进制文件
-	 */
-	constroctor(path, mode, isBinary = false) {
-		this._path = path;
-		this._mode = mode;
-		this._isBinary = isBinary;
-		if (!IO.createRAF(path, mode)) {
-			throw IO.getPreviousErr(path);
-		}
-	}
-	/**
-	 * @param path {string} 文件的路径
+	 * 读入文件的所有内容
+	 * @param path {string} 目标文件的路径，相对路径以 PNX 根目录为基准
+	 * @returns {any} 返回null表示读取失败
 	 */
 	static readFrom(path) {
-		if (IO.createRAF(path)) {
-			const content = IO.readAllText(path);
-			IO.close(path);
+		const _path = Paths.get(path);
+		if (IO.createRAF(_path)) {
+			const content = IO.readAllText(_path);
+			IO.close(_path);
 			return content;
 		}
 		return null;
 	}
 	/**
-	 * @param path {string}
-	 * @param text {string}
+	 * 向指定文件写入内容
+	 * 若文件不存在会自动创建，若存在则会先将其清空再写入
+	 * @param path {string} 目标文件的路径，相对路径以 PNX 根目录为基准
+	 * @param text {string} 要写入的内容
+	 * @returns {boolean} 是否成功
 	 */
 	static writeTo(path, text) {
-		if (IO.createRAF(path)) {
-			if (IO.writeText(path, text)) {
-				IO.close(path);
+		const _path = Paths.get(path);
+		try {
+			if (!Files.exists(_path)) {// 判断是否存在，若不存在则创建
+				if (_path.getParent()) {
+					Files.createDirectory(_path.getParent());
+				}
+				Files.createFile(_path);
+			}
+		} catch(err) {
+			return false;
+		}
+		if (IO.createRAF(_path)) {
+			IO.resize(_path, 0);
+			if (IO.writeText(_path, text)) {
+				IO.close(_path);
 				return true;
 			}
 		}
 		return false;
 	}
 	/**
+	 * 向指定文件追加一行
 	 * @param path {string}
 	 * @param text {string}
 	 */
 	static writeLine(path, text) {
-		if (IO.createRAF(path)) {
-			if (IO.seekTo(path, IO.getSize(path) - 1, false) && IO.writeText(path, text + "\n")) {
-				IO.close(path);
+		const _path = Paths.get(path);
+		if (IO.createRAF(_path)) {
+			if (IO.seekTo(_path, IO.getSize(_path) - 1, false) && IO.writeText(_path, text + "\n")) {
+				IO.close(_path);
 				return true;
 			}
 		}
@@ -105,8 +146,8 @@ export class File {
 		return IO.writeLine(this._path, str);
 	}
 	/**
-	 * @param cnt {number}
-	 * @param callback {(result: string|SharedArrayBuffer) => void}
+	 * @param cnt {number} 要读取的字符数 / 字节数
+	 * @param callback {(result: string|SharedArrayBuffer) => void} 获取结果的回调函数
 	 * @returns {Promise<string|SharedArrayBuffer>}
 	 */
 	read(cnt, callback) {

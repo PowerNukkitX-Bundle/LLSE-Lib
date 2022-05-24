@@ -1,12 +1,14 @@
 // noinspection NpmUsedModulesInstalled,JSUnresolvedFunction,JSValidateJSDoc,JSUnresolvedVariable,JSUnusedGlobalSymbols
 
 import {Files} from "java.nio.file.Files";
+import {StandardCharsets} from "java.nio.charset.StandardCharsets";
 import {String as JString} from "java.lang.String";
 import {ByteBuffer} from "java.nio.ByteBuffer";
 import {RandomAccessFile} from "java.io.RandomAccessFile";
 
 const CharArray = Java.type("char[]");
 const ByteArray = Java.type("byte[]");
+const debugMode = true;
 
 /**
  * @abstract 这是一个基于RandomAccessFile的低效IO实现
@@ -35,7 +37,7 @@ const ByteArray = Java.type("byte[]");
  * RandomAccessFile缓存
  * @type {Map<java.nio.file.Path, java.io.RandomAccessFile>}
  */
-const rafCache = new Map();
+export const rafCache = new Map();
 
 /**
  * 错误对象缓存
@@ -49,7 +51,7 @@ const errCache = new Map();
  * @returns {java.io.RandomAccessFile|null}
  */
 export function getRAF(path) {
-    return rafCache.get(path);
+    return rafCache.get(path.toString());
 }
 
 /**
@@ -58,12 +60,13 @@ export function getRAF(path) {
  * @param mode {string} r => 以只读方式打开指定文件; rw => 以读取、写入方式打开指定文件。如果该文件不存在，则尝试创建文件; rws => 以读取、写入方式打开指定文件。相对于rw模式，还要求对文件的内容或元数据的每个更新都同步写入到底层存储设备; rwd => 与rws类似，只是仅对文件的内容同步更新到磁盘，而不修改文件的元数据
  * @returns {boolean}
  */
-export function createRAF(path, mode) {
+export function createRAF(path, mode = 'rw') {
     try {
         const raf = new RandomAccessFile(path.toFile(), mode);
-        rafCache.set(path, raf);
+        rafCache.set(path.toString(), raf);
         return true;
     } catch (e) {
+        if (debugMode) print(e);
         return false;
     }
 }
@@ -128,7 +131,8 @@ export function readText(path, cnt) {
         }
         return new JString(chars);
     } catch (e) {
-        errCache.set(path, e);
+        if (debugMode) print(e);
+        errCache.set(path.toString(), e);
         return null;
     }
 }
@@ -146,7 +150,8 @@ export function readBuffer(path, cnt) {
         raf.read(bytes);
         return new SharedArrayBuffer(ByteBuffer.wrap(bytes));
     } catch (e) {
-        errCache.set(path, e);
+        if (debugMode) print(e);
+        errCache.set(path.toString(), e);
         return null;
     }
 }
@@ -160,7 +165,8 @@ export function readLine(path) {
     try {
         return getRAF(path).readLine();
     } catch (e) {
-        errCache.set(path, e);
+        if (debugMode) print(e);
+        errCache.set(path.toString(), e);
         return null;
     }
 }
@@ -172,9 +178,10 @@ export function readLine(path) {
  */
 export function readAllText(path) {
     try {
-        return Files.readString(path);
+        return Files.readString(path, StandardCharsets.UTF_8);
     } catch (e) {
-        errCache.set(path, e);
+        if (debugMode) print(e);
+        errCache.set(path.toString(), e);
         return null;
     }
 }
@@ -188,23 +195,37 @@ export function readAllBuffer(path) {
     try {
         return new SharedArrayBuffer(ByteBuffer.wrap(Files.readAllBytes(path)));
     } catch (e) {
-        errCache.set(path, e);
+        if (debugMode) print(e);
+        errCache.set(path.toString(), e);
         return null;
     }
 }
 
 /**
  * 将字符串写入文件
+ * @todo writeUTF()方法 会在前面写入2个字节以记录写入内容的长度
  * @param path {java.nio.file.Path}
  * @param str {string}
  * @returns {boolean}
  */
 export function writeText(path, str) {
     try {
-        getRAF(path).writeUTF(str);
+        const raf = getRAF(path);
+        const beforeLength = raf.length();// 之前的长度
+        raf.writeUTF(str);
+        const afterLength = raf.length();// 之后的长度
+        raf.seek(beforeLength + 2);
+        const bytes = new ByteArray(afterLength - beforeLength - 2);
+        raf.read(bytes);
+        //print(new JString(bytes, 'UTF8'))
+        raf.setLength(beforeLength);// 设置正确的大小
+        raf.seek(beforeLength);// 移动指针,准备写入
+        raf.write(bytes);
+        raf.seek(0);// 移动指针,归位
         return true;
     } catch (e) {
-        errCache.set(path, e);
+        if (debugMode) print(e);
+        errCache.set(path.toString(), e);
         return false;
     }
 }
@@ -222,7 +243,8 @@ export function writeBuffer(path, buffer) {
         getRAF(path).write(Java.to(new Int8Array(buffer), "byte[]"));
         return true;
     } catch (e) {
-        errCache.set(path, e);
+        if (debugMode) print(e);
+        errCache.set(path.toString(), e);
         return false;
     }
 }
@@ -249,7 +271,7 @@ export function seekTo(path, newPos, isRelative) {
         const raf = getRAF(path);
         if (raf) {
             if (isRelative) {
-                raf.seek(getFilePointer + newPos);
+                raf.seek(raf.getFilePointer() + newPos);
             } else {
                 raf.seek(newPos);
             }
@@ -257,6 +279,7 @@ export function seekTo(path, newPos, isRelative) {
             return false;
         }
     } catch (e) {
+        if (debugMode) print(e);
         return false;
     }
 }
@@ -273,7 +296,8 @@ export function resize(path, newSize) {
         try {
             raf.setLength(newSize);
         } catch (e) {
-            errCache.set(path, e);
+            if (debugMode) print(e);
+            errCache.set(path.toString(), e);
             return false;
         }
     } else {
@@ -292,7 +316,8 @@ export function getPointerPos(path) {
         try {
             return raf.getFilePointer();
         } catch (e) {
-            errCache.set(path, e);
+            if (debugMode) print(e);
+            errCache.set(path.toString(), e);
             return null;
         }
     } else {
@@ -311,7 +336,8 @@ export function getSize(path) {
         try {
             return raf.length();
         } catch (e) {
-            errCache.set(path, e);
+            if (debugMode) print(e);
+            errCache.set(path.toString(), e);
             return null;
         }
     } else {
@@ -328,11 +354,12 @@ export function close(path) {
     const raf = getRAF(path);
     if (raf) {
         try {
-            rafCache.delete(path);
-            errCache.delete(path);
+            rafCache.delete(path.toString());
+            errCache.delete(path.toString());
             raf.close();
         } catch (e) {
-            errCache.set(path, e);
+            if (debugMode) print(e);
+            errCache.set(path.toString(), e);
             return false;
         }
     } else {

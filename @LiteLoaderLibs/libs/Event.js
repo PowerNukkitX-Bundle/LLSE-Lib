@@ -1,6 +1,7 @@
 import { PowerNukkitX as pnx, EventPriority} from ':powernukkitx';
-import { Player as PnxPlayer } from 'cn.nukkit.Player';
 import { Player } from './Player.js';
+import { Item } from './Item.js';
+import { Player as PnxPlayer } from 'cn.nukkit.Player';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { PlayerInteractEvent } from 'cn.nukkit.event.player.PlayerInteractEvent';
 import { ItemID } from 'cn.nukkit.item.ItemID';
@@ -32,7 +33,7 @@ const onPreJoin = {
     run: (callback)=>{
         return pnx.listenEvent("cn.nukkit.event.player.PlayerPreLoginEvent", EventPriority.NORMAL,event=>{
             let player = event.getPlayer();
-            let isCancel = callback(player);
+            let isCancel = callback(Player.getPlayer(player));
             if(isCancel) event.setCancelled(!isCancel);
         });
     }
@@ -183,6 +184,7 @@ const onAttackEntity = {
 }
 
 /**
+ * @todo block 需要改为LLSE类型
  * @see 未验证
  */
 const onAttackBlock = {
@@ -192,7 +194,7 @@ const onAttackBlock = {
             if(event.getAction() === PlayerInteractEvent.Action.LEFT_CLICK_BLOCK){
                 let item = event.getItem();
                 let block = event.getBlock();
-                let isCancel = callback(Player.getPlayer(player),block,item);
+                let isCancel = callback(Player.getPlayer(player), block, Item.newItem(item));
                 if(isCancel) event.setCancelled(!isCancel);
             }
         });
@@ -208,7 +210,7 @@ const onUseItem = {
             let player = event.getPlayer();
             if(event.getAction() === PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.getAction() === PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
                 let item = event.getItem();
-                let isCancel = callback(Player.getPlayer(player),item);
+                let isCancel = callback(Player.getPlayer(player), Item.newItem(item));
                 if(isCancel) event.setCancelled(!isCancel);
             }
         });
@@ -216,6 +218,7 @@ const onUseItem = {
 }
 
 /**
+ * @todo block 需改为LLSE类型
  * @see 未验证
  */
 const onUseItemOn = {
@@ -226,7 +229,7 @@ const onUseItemOn = {
                 let item = event.getItem();
                 let block = event.getBlock();
                 let face = event.getFace().getIndex();
-                let isCancel = callback(Player.getPlayer(player),item,block,face);
+                let isCancel = callback(Player.getPlayer(player), Item.newItem(item), block, face);
                 if(isCancel) event.setCancelled(!isCancel);
             }
         });
@@ -234,6 +237,7 @@ const onUseItemOn = {
 }
 
 /**
+ * @todo itemEntity 需改为LLSE类型
  * @see 未验证
  */
 const onTakeItem = {
@@ -242,7 +246,7 @@ const onTakeItem = {
             let player = event.getViewers()[0];
             let itemEntity = event.getItem();
             let item = event.getItem().getItem();
-            let isCancel = callback(Player.getPlayer(player),itemEntity,item);
+            let isCancel = callback(Player.getPlayer(player), itemEntity, Item.newItem(item));
             if(isCancel) event.setCancelled(!isCancel);
         });
     }
@@ -253,7 +257,7 @@ const onEat = {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerItemConsumeEvent", EventPriority.NORMAL,event=>{
             let player = event.getPlayer();
             let item = event.getItem();
-            let isCancel = callback(Player.getPlayer(player),item);
+            let isCancel = callback(Player.getPlayer(player), Item.newItem(item));
             if(isCancel) event.setCancelled(!isCancel);
         });
     }
@@ -264,7 +268,7 @@ const onDropItem = {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerDropItemEvent", EventPriority.NORMAL,event=>{
             let player = event.getPlayer();
             let item = event.getItem();
-            let isCancel = callback(Player.getPlayer(player),item);
+            let isCancel = callback(Player.getPlayer(player), Item.newItem(item));
             if(isCancel) event.setCancelled(!isCancel);
         });
     }
@@ -446,7 +450,7 @@ const onSetArmor = {
             if(player instanceof PnxPlayer){
                 let slotNum = event.getSlot();
                 let item = event.getOldItem();
-                callback(Player.getPlayer(player),slotNum,item);
+                callback(Player.getPlayer(player),slotNum, Item.newItem(item));
             }
         });
     }

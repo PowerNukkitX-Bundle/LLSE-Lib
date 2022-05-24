@@ -1,12 +1,13 @@
+import { PowerNukkitX as pnx } from ':powernukkitx';
 import { PermType } from './PermType.js';
 import { Player, sendText } from './Player.js';
 import { Event } from './Event.js';
+import { Item } from './Item.js';
 import { Server } from 'cn.nukkit.Server';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { Position } from 'cn.nukkit.level.Position';
-import { Item } from './Item.js';
 const server = Server.getInstance();
 
 function dimToLevel(dim){
@@ -73,12 +74,12 @@ function runcmd(cmd) {
 
 /**
  * 执行一条命令并返回更多信息
- * @todo 未实现
+ * @todo 待完善
  * @param cmd {string} 命令
  * @returns {{success: boolean, output: string}} 是否成功与输出信息
  */
 function runcmdEx(cmd) {
-	return {success: true, output: ''};
+	return {success: runcmd(cmd), output: ''};
 }
 
 /**
@@ -93,6 +94,26 @@ function runcmdEx(cmd) {
  */
 function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
 	return {};
+}
+/**
+ * 注册一个新的玩家命令（假命令）
+ * @param cmd {string} 待注册的命令
+ * @param description {string} 描述文本
+ * @param callback {Function} 注册的这个命令被执行时，接口自动调用的回调函数。
+ * @param [level=0] {number} 默认值
+ * @returns {boolean} 是否成功
+ */
+function regPlayerCmd(cmd, description, callback, level = 0) {
+	const commandBuilder = pnx.commandBuilder();
+	commandBuilder.setCommandName(cmd);
+	commandBuilder.setDescription(description);
+	commandBuilder.setCallback((sender, args) => {
+		if (sender.isPlayer() && level > 0 && !sender.isOp()) {// 权限不足时
+			return;
+		}
+		callback(Player.getPlayer(sender), args);
+	});
+	commandBuilder.register();
 }
 
 /**
@@ -114,7 +135,7 @@ function getPlayer(info) {
 	var found = null;
 	if (isNaN(info)) {// 玩家名
 		var delta = 0x7FFFFFFF;
-		for (var player of server.getOnlinePlayers().values()) {
+		for (const player of server.getOnlinePlayers().values()) {
 			if (player.getName().toLowerCase().startsWith(info)) {
 				const curDelta = player.getName().length - info.length;
 				if (curDelta < delta) {
@@ -127,8 +148,8 @@ function getPlayer(info) {
 			}
 		}
 	} else {// xuid
-		var xuid = String(info);
-		for (var player of server.getOnlinePlayers().values()) {
+		const xuid = String(info);
+		for (const player of server.getOnlinePlayers().values()) {
 			if (xuid === player.getLoginChainData().getXUID()) {
 				found = player;
 				break;
@@ -160,7 +181,7 @@ function getOnlinePlayers() {
  * @returns {boolean} 是否成功
  */
 function broadcast(msg, type = 0) {
-	for (var player of server.getOnlinePlayers().values()) {
+	for (const player of server.getOnlinePlayers().values()) {
 		sendText(server.getConsoleSender(), player, msg, type);
 	}
 	return true;
@@ -217,6 +238,7 @@ export const mc = {
 	runcmd: runcmd,
 	runcmdEx: runcmdEx,
 	newCommand: newCommand,
+	regPlayerCmd: regPlayerCmd,
 	listen: listen,
 	getPlayer: getPlayer,
 	getOnlinePlayers: getOnlinePlayers,
