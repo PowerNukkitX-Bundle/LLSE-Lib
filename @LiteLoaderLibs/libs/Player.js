@@ -40,11 +40,13 @@ export class Player {
 
 	static PlayerMap = new Map();
 
+	static ExtraDataMap = new Map();// '玩家名': {}
+
 	static getPlayer(PNXPlayer) {
-		if (!this.PlayerMap.has(PNXPlayer.name)) {
-			this.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
+		if (!Player.PlayerMap.has(PNXPlayer.name)) {
+			Player.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
 		}
-		return this.PlayerMap.get(PNXPlayer.name);
+		return Player.PlayerMap.get(PNXPlayer.name);
 	}
 
 	get name() {// 显示的玩家名	String
@@ -683,7 +685,50 @@ export class Player {
 	 */
 	setSprinting(sprinting) {
 		this._PNXPlayer.setSprinting(sprinting);
+		return this.isSprinting();
+	}
+
+	/**
+	 * 储存玩家绑定数据
+	 * @param name {string} 要储存到绑定数据的名字
+	 * @param data {any} 你要储存的绑定数据
+	 * @returns {boolean} 是否成功
+	 */
+	setExtraData(name, data) {
+		Player.ExtraDataMap.set(name, data);
 		return true;
+	}
+
+	/**
+	 * 获取玩家绑定数据
+	 * @param name {string} 要读取的绑定数据的名字
+	 * @returns {any} 返回获取的数据
+	 */
+	getExtraData(name) {
+		print(this.realName)
+		print(typeof(Player.ExtraDataMap))
+		print(Player.ExtraDataMap)
+		print(typeof(Player.PlayerMap))
+		print(Player.PlayerMap)
+		return Player.ExtraDataMap.get(name);
+	}
+
+	/**
+	 * 删除玩家绑定数据
+	 * @param name {string} 要删除的绑定数据的名字
+	 * @returns {boolean} 是否成功
+	 */
+	delExtraData(name) {
+		if (Player.ExtraDataMap.has(name)) {
+			Player.ExtraDataMap.delete(name);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	toString() {
+		return JSON.stringify({realName: this.realName});
 	}
 }
 
