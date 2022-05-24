@@ -1,6 +1,7 @@
 import * as IO from "../utils/IO.js";
 import { Job } from ":concurrent";
 import { Paths } from "java.nio.file.Paths";
+import { Files } from "java.nio.file.Files";
 
 export class File {
 	/**
@@ -15,6 +16,24 @@ export class File {
 		if (!IO.createRAF(this._path, mode)) {
 			throw IO.getPreviousErr(this._path);
 		}
+	}
+	/**
+	 * @returns {string}
+	 */
+	get path() {
+		return this._path.toString();
+	}
+	/**
+	 * @returns {string}
+	 */
+	get absolutePath() {
+		return this._path.toAbsolutePath();
+	}
+	/**
+	 * @returns {number}
+	 */
+	get size() {
+		return IO.getSize(this._path);
 	}
 
 	static ReadMode = "r";
@@ -41,7 +60,9 @@ export class File {
 	}
 
 	/**
-	 * @param path {string} 文件的路径
+	 * 读入文件的所有内容
+	 * @param path {string} 目标文件的路径，相对路径以 PNX 根目录为基准
+	 * @returns {any} 返回null表示读取失败
 	 */
 	static readFrom(path) {
 		const _path = Paths.get(path);
@@ -53,12 +74,26 @@ export class File {
 		return null;
 	}
 	/**
-	 * @param path {string}
-	 * @param text {string}
+	 * 向指定文件写入内容
+	 * 若文件不存在会自动创建，若存在则会先将其清空再写入
+	 * @param path {string} 目标文件的路径，相对路径以 PNX 根目录为基准
+	 * @param text {string} 要写入的内容
+	 * @returns {boolean} 是否成功
 	 */
 	static writeTo(path, text) {
 		const _path = Paths.get(path);
+		try {
+			if (!Files.exists(_path)) {// 判断是否存在，若不存在则创建
+				if (_path.getParent()) {
+					Files.createDirectory(_path.getParent());
+				}
+				Files.createFile(_path);
+			}
+		} catch(err) {
+			return false;
+		}
 		if (IO.createRAF(_path)) {
+			IO.resize(_path, 0);
 			if (IO.writeText(_path, text)) {
 				IO.close(_path);
 				return true;
