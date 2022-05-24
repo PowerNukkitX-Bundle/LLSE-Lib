@@ -210,30 +210,24 @@ export function readAllBuffer(path) {
  */
 export function writeText(path, str) {
     try {
-        print(new Int8Array(str2ab(str)))
-        getRAF(path).writeUTF(str);
-        //getRAF(path).write(Java.to(new Int8Array(str2ab(str)), "byte[]"));
+        const raf = getRAF(path);
+        const beforeLength = raf.length();// 之前的长度
+        raf.writeUTF(str);
+        const afterLength = raf.length();// 之后的长度
+        raf.seek(beforeLength + 2);
+        const bytes = new ByteArray(afterLength - beforeLength - 2);
+        raf.read(bytes);
+        //print(new JString(bytes, 'UTF8'))
+        raf.setLength(beforeLength);// 设置正确的大小
+        raf.seek(beforeLength);// 移动指针,准备写入
+        raf.write(bytes);
+        raf.seek(0);// 移动指针,归位
         return true;
     } catch (e) {
         if (debugMode) print(e);
         errCache.set(path.toString(), e);
         return false;
     }
-}
-
-/**
- * 转换JS String为JS ArrayBuffer
- * @todo 写入中文会乱码
- * @param str {string} JS中的字符串
- * @returns {ArrayBuffer} JS的ArrayBuffer
- */
-export function str2ab(str) {
-    var buf = new ArrayBuffer(str.length);// 2 bytes for each char
-    var bufView = new Uint8Array(buf);
-    for (var i=0, strLen=str.length; i<strLen; i++) {
-        bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
 }
 
 /**
@@ -277,7 +271,7 @@ export function seekTo(path, newPos, isRelative) {
         const raf = getRAF(path);
         if (raf) {
             if (isRelative) {
-                raf.seek(getFilePointer + newPos);
+                raf.seek(raf.getFilePointer() + newPos);
             } else {
                 raf.seek(newPos);
             }
@@ -357,7 +351,6 @@ export function getSize(path) {
  * @returns {boolean}
  */
 export function close(path) {
-    print(path.toString())
     const raf = getRAF(path);
     if (raf) {
         try {
