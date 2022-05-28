@@ -4,6 +4,9 @@ import { FloatPos } from './FloatPos.js';
 import { Device } from '../libs/Device.js';
 import { Item } from './Item.js';
 import { Container } from './Container.js';
+import { ModalForm } from '../window/ModalForm.js';
+import { SimpleForm } from '../window/SimpleForm.js';
+import { CustomForm } from '../window/CustomForm.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
 import { Server } from 'cn.nukkit.Server';
@@ -23,9 +26,35 @@ import { Scoreboard } from 'cn.nukkit.scoreboard.Scoreboard';
 import { ScoreboardManager } from 'cn.nukkit.scoreboard.ScoreboardManager';
 import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
 import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
+import { FormWindowModal } from 'cn.nukkit.form.window.FormWindowModal';
+import { FormWindowSimple } from 'cn.nukkit.form.window.FormWindowSimple';
+import { FormWindowCustom } from 'cn.nukkit.form.window.FormWindowCustom';
+import { FormResponseData } from 'cn.nukkit.form.response.FormResponseData';
 
 const server = Server.getInstance();
 const ASType = AdventureSettings.Type;
+const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHandler')))({
+	handle: function (player, formID){
+		if (!Player.FormCallbackMap.has(formID)) {
+			return;
+		}
+		var win = Player.FormCallbackMap.get(formID);
+		var res = win._Form.getResponse();
+		var wasClosed = win._Form.wasClosed();// 被玩家关闭而非提交时
+		if (win._Form instanceof FormWindowModal) {
+			win._callback(Player.getPlayer(player), wasClosed ? null : Boolean(res.getClickedButtonId()));
+		} else if (win._Form instanceof FormWindowSimple) {
+		 	win._callback(Player.getPlayer(player), wasClosed ? -1 : res.getClickedButtonId());
+		} else if (win._Form instanceof FormWindowCustom) {
+			var arr = [];
+			if (!wasClosed) {
+				res.getResponse().forEach((key, data) => arr.push(data instanceof FormResponseData ? data.getElementID() : data));
+			}
+			win._callback(Player.getPlayer(player), arr);
+		} 
+		Player.FormCallbackMap.delete(formID);
+	}
+});
 
 export class Player {
 	/**
@@ -41,6 +70,8 @@ export class Player {
 	static PlayerMap = new Map();
 
 	static ExtraDataMap = new Map();// '玩家名': {}
+
+	static FormCallbackMap = new Map();// 'formId': function(){}
 
 	static getPlayer(PNXPlayer) {
 		if (!Player.PlayerMap.has(PNXPlayer.name)) {
@@ -688,6 +719,7 @@ export class Player {
 		return this.isSprinting();
 	}
 
+	// 🏃‍♂️ 玩家绑定数据
 	/**
 	 * 储存玩家绑定数据
 	 * @param name {string} 要储存到绑定数据的名字
@@ -705,11 +737,6 @@ export class Player {
 	 * @returns {any} 返回获取的数据
 	 */
 	getExtraData(name) {
-		print(this.realName)
-		print(typeof(Player.ExtraDataMap))
-		print(Player.ExtraDataMap)
-		print(typeof(Player.PlayerMap))
-		print(Player.PlayerMap)
 		return Player.ExtraDataMap.get(name);
 	}
 
@@ -725,6 +752,83 @@ export class Player {
 		} else {
 			return false;
 		}
+	}
+
+	// 📊 表单相关 API
+	/**
+	 * 向玩家发送模式表单(对话表单)
+	 * @param title {string} 要删除表单标题的绑定数据的名字
+	 * @param content {string} 表单内容
+	 * @param button1 {string} 按钮 1 文本的字符串
+	 * @param button2 {string} 按钮 2 文本的字符串
+	 * @param callback {function} 玩家点击按钮之后被调用的回调函数。 call(Player player, Boolean result)
+	 * @returns {number} 发送的表单 ID
+	 */
+	sendModalForm(title, content, button1, button2, callback) {
+		const form = new ModalForm(title, content, button1, button2);
+		form.setCallback(callback);
+		form._Form.addHandler(impl);
+		Player.FormCallbackMap.set(form._id, form);
+		this._PNXPlayer.showFormWindow(form._Form, form._id);
+		return form._id;
+	}
+	/**
+	 * 向玩家发送普通表单
+	 * @param title {string} 要删除表单标题的绑定数据的名字
+	 * @param content {string} 表单内容
+	 * @param buttons {Array<String,...>} 各个按钮文本的字符串数组
+	 * @param images {Array<String,...>} 各个按钮对应的图片路径
+	 * @param callback {function} 玩家点击按钮之后被调用的回调函数。 call(Player player, Number id)
+	 * @returns {number} 发送的表单 ID
+	 */
+	sendSimpleForm(title, content, buttons, images, callback) {
+		const form = new SimpleForm(title, content);
+		form.setCallback(callback);
+		buttons.forEach((v, i) => {
+			form.addButton(v, images[i]);
+		});
+		form._Form.addHandler(impl);
+		Player.FormCallbackMap.set(form._id, form);
+		this._PNXPlayer.showFormWindow(form._Form, form._id);
+		return form._id;
+	}
+	/**
+	 * 向玩家发送自定义表单（Json 格式）
+	 * @todo 待实现，解析传入的json
+	 * @param json {string|object} 自定义表单 json
+	 * @param callback {function} 玩家点击按钮之后被调用的回调函数。 call(Player player, Array data)
+	 * @returns {number} 发送的表单 ID
+	 */
+	sendCustomForm(json, callback) {
+		const form = new CustomForm();
+		form.setCallback(callback);
+		form._Form.addHandler(impl);
+		return form._id;
+	}
+	/**
+	 * 构建一个空的简单表单对象
+	 * @returns {SimpleForm} 空的简单表单对象
+	 */
+	newSimpleForm() {
+		return new SimpleForm();
+	}
+	/**
+	 * 构建一个空的自定义表单对象
+	 * @returns {CustomForm} 空的自定义表单对象
+	 */
+	newCustomForm() {
+		return new CustomForm();
+	}
+	/**
+	 * 发送表单
+	 * @param form {CustomForm|SimpleForm} 表单对象
+	 * @param callback {function} 玩家点击按钮之后被调用的回调函数。 call(Player player, Array data)
+	 * @returns {number} 发送的表单 ID
+	 */
+	sendForm(form, callback) {
+		if (!callback) return null;
+		this._PNXPlayer.showFormWindow(form._Form, form._id);
+		return form._id;
 	}
 
 	toString() {
