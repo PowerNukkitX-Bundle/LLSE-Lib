@@ -35,24 +35,24 @@ export class Item {
 		return item;
 	}
 
-    _changeItem() {
+	_changeItem() {
 		if (!this._reference || !this._reference[0].isOnline()) {
-		    return;
+			return;
 		}
 		switch(this._reference[1]) {
-		    case 'hand': {
+			case 'hand': {
 				this._reference[0].getInventory().setItem(this._reference[2], this._PNXItem);
 				break;
-		    }
-		    case 'offhand': {
+			}
+			case 'offhand': {
 				this._reference[0].getOffhandInventory().setItem(this._reference[2], this._PNXItem);
 				break;
-		    }
-		    default:
+			}
+			default:
 				return false;
 		}
 		return true;
-    }
+	}
 
 	get id() {
 		return this._PNXItem.getId();
@@ -152,11 +152,12 @@ export class Item {
 	}
 	/**
 	 * 获取物品对应的 NBT 对象
-	 * @todo 改为LLSE类型
+	 * @todo 改为LLSE类型，目前为snbt
 	 * @returns {NbtCompound} 
 	 */
 	getNbt() {
-		return this._PNXItem.getNamedTag();
+		const nbtcomp = this._PNXItem.getNamedTag();
+		return nbtcomp.toSnbt().substr(3);// toSnbt返回例子 "": {object: {}}
 	}
 	/**
 	 * 写入物品对应的 NBT 对象
@@ -167,6 +168,7 @@ export class Item {
 	setNbt(nbt) {
 		// more code...
 		this._changeItem();
+		return false;
 	}
 	/**
 	 * 根据物品对象生成掉落物实体

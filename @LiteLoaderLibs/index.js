@@ -6,6 +6,8 @@ export function close() {
 	print("LiteLoader-Libs close");
 }
 
+export { Format } from './utils/Format.js'
+export { PermType } from './utils/PermType.js'
 export { ll } from './libs/ll.js'
 export { mc } from './libs/mc.js'
 export { File } from './libs/File.js'

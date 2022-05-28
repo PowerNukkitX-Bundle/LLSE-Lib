@@ -3,7 +3,7 @@
 
 ## demo
 ```javascript
-import { mc, File } from '@LiteLoaderLibs/index.js'
+import { ll, mc, WSClient, JsonConfigFile, File, PermType, Format } from '@LiteLoaderLibs/index.js'
 
 export function main() {
 	mc.runcmd('say hello!');
