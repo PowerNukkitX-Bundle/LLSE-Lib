@@ -1,6 +1,6 @@
 import { PowerNukkitX as pnx, EventPriority} from ':powernukkitx';
-import { Player } from './Player.js';
-import { Item } from './Item.js';
+import { Player } from '../object/Player.js';
+import { Item } from '../object/Item.js';
 import { Player as PnxPlayer } from 'cn.nukkit.Player';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { PlayerInteractEvent } from 'cn.nukkit.event.player.PlayerInteractEvent';

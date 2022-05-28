@@ -1,8 +1,8 @@
 import { PowerNukkitX as pnx } from ':powernukkitx';
-import { PermType } from './PermType.js';
-import { Player, sendText } from './Player.js';
+import { PermType } from '../utils/PermType.js';
+import { Player, sendText } from '../object/Player.js';
 import { Event } from './Event.js';
-import { Item } from './Item.js';
+import { Item } from '../object/Item.js';
 import { Server } from 'cn.nukkit.Server';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
