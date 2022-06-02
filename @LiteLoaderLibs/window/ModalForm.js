@@ -10,6 +10,13 @@ export class ModalForm {
 		this._Form = new FormWindowModal(this.title, this.content, this.button1, this.button2);
 		this._callback = function(){};
 	}
+	/**
+	 * 表单提交的内容
+	 * @returns {boolean|null}
+	 */
+	get _response() {
+		return this._Form.wasClosed() ? null : Boolean(this._Form.getResponse().getClickedButtonId() ? 0 : 1);
+	}
 	setCallback(func) {
 		if (typeof func != 'function') {
 			return false;

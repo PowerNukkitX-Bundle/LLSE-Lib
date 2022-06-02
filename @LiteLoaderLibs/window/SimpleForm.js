@@ -10,6 +10,13 @@ export class SimpleForm {
 		this._Form = new FormWindowSimple(this.title, this.content);
 		this._callback = function(){};
 	}
+	/**
+	 * 表单提交的内容
+	 * @returns {number|null}
+	 */
+	get _response() {
+		return this._Form.wasClosed() ? null : this._Form.getResponse().getClickedButtonId();
+	}
 	setCallback(func) {
 		if (typeof func != 'function') {
 			return false;

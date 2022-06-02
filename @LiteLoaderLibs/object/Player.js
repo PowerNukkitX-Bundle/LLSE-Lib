@@ -4,6 +4,7 @@ import { FloatPos } from './FloatPos.js';
 import { Device } from '../libs/Device.js';
 import { Item } from './Item.js';
 import { Container } from './Container.js';
+import { ScoreObjectives } from './ScoreObjectives.js';
 import { ModalForm } from '../window/ModalForm.js';
 import { SimpleForm } from '../window/SimpleForm.js';
 import { CustomForm } from '../window/CustomForm.js';
@@ -39,19 +40,7 @@ const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHand
 			return;
 		}
 		var win = Player.FormCallbackMap.get(formID);
-		var res = win._Form.getResponse();
-		var wasClosed = win._Form.wasClosed();// 被玩家关闭而非提交时
-		if (win._Form instanceof FormWindowModal) {
-			win._callback(Player.getPlayer(player), wasClosed ? null : Boolean(res.getClickedButtonId()));
-		} else if (win._Form instanceof FormWindowSimple) {
-		 	win._callback(Player.getPlayer(player), wasClosed ? -1 : res.getClickedButtonId());
-		} else if (win._Form instanceof FormWindowCustom) {
-			var arr = [];
-			if (!wasClosed) {
-				res.getResponse().forEach((key, data) => arr.push(data instanceof FormResponseData ? data.getElementID() : data));
-			}
-			win._callback(Player.getPlayer(player), arr);
-		} 
+		win._callback(Player.getPlayer(player), win._response);
 		Player.FormCallbackMap.delete(formID);
 	}
 });
@@ -803,21 +792,8 @@ export class Player {
 		const form = new CustomForm();
 		form.setCallback(callback);
 		form._Form.addHandler(impl);
+		Player.FormCallbackMap.set(form._id, form);
 		return form._id;
-	}
-	/**
-	 * 构建一个空的简单表单对象
-	 * @returns {SimpleForm} 空的简单表单对象
-	 */
-	newSimpleForm() {
-		return new SimpleForm();
-	}
-	/**
-	 * 构建一个空的自定义表单对象
-	 * @returns {CustomForm} 空的自定义表单对象
-	 */
-	newCustomForm() {
-		return new CustomForm();
 	}
 	/**
 	 * 发送表单
@@ -826,11 +802,60 @@ export class Player {
 	 * @returns {number} 发送的表单 ID
 	 */
 	sendForm(form, callback) {
-		if (!callback) return null;
+		if (!callback) {
+			return null;
+		}
+		form.setCallback(callback);
+		form._Form.addHandler(impl);
+		Player.FormCallbackMap.set(form._id, form);
 		this._PNXPlayer.showFormWindow(form._Form, form._id);
 		return form._id;
 	}
-
+	/**
+	 * 获取玩家计分项的分数
+	 * @param name {string} 计分项名称
+	 * @returns {number} 分数
+	 */
+	getScore(name) {
+		let score = ScoreObjectives.getObjectives(name);
+		return score.getScore(this);
+	}
+	/**
+	 * 修改玩家计分项的分数
+	 * @param name {string} 计分项名称
+	 * @param value {number} 计分项名称
+	 * @returns {boolean} 是否设置成功
+	 */
+	setScore(name, value) {
+		let score = ScoreObjectives.getObjectives(name);
+		return score.setScore(this, value) != null;
+	}
+	/**
+	 * 添加玩家计分项的分数
+	 * @see setScore
+	 */
+	addScore(name, value) {
+		let score = ScoreObjectives.getObjectives(name);
+		return score.addScore(this, value) != null;
+	}
+	/**
+	 * 减少玩家计分项的分数
+	 * @see setScore
+	 */
+	reduceScore(name, value) {
+		let score = ScoreObjectives.getObjectives(name);
+		return score.reduceScore(this, value) != null;
+	}
+	/**
+	 * 玩家停止跟踪计分项
+	 * @param name {string} 计分项名称
+	 * @returns {boolean} 是否成功
+	 */
+	deleteScore(name) {
+		let score = ScoreObjectives.getObjectives(name);
+		return score.deleteScore(this);
+	}
+	
 	toString() {
 		return JSON.stringify({realName: this.realName});
 	}

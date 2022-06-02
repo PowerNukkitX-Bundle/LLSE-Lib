@@ -44,7 +44,7 @@ const onPreJoin = {
  */
 const onJoin = {
     run: (callback)=>{
-        return pnx.listenEvent("cn.nukkit.event.player.PlayerJoinEvent", EventPriority.NORMAL,event=>{
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerLocallyInitializedEvent", EventPriority.NORMAL,event=>{
             let player = event.getPlayer();
             callback(Player.getPlayer(player));
         });

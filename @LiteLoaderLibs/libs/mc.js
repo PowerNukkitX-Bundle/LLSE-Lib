@@ -3,12 +3,17 @@ import { PermType } from '../utils/PermType.js';
 import { Player, sendText } from '../object/Player.js';
 import { Event } from './Event.js';
 import { Item } from '../object/Item.js';
+import { SimpleForm } from '../window/SimpleForm.js';
+import { CustomForm } from '../window/CustomForm.js';
 import { Server } from 'cn.nukkit.Server';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { Position } from 'cn.nukkit.level.Position';
+
 const server = Server.getInstance();
+const PlayerCommandMap = new Map();
+const ConsoleCommandMap = new Map();
 
 function dimToLevel(dim){
 	if(dim===0) return EnumLevel.OVERWORLD.getLevel();
@@ -48,7 +53,7 @@ function getServerProtocolVersion() {
  * @returns {boolean} 是否成功
  */
 function setMotd(motd) {
-	server.setPropertyString('motd', motd);
+	server.setPropertystring('motd', motd);
 	return true;
 }
 
@@ -104,14 +109,63 @@ function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
  * @returns {boolean} 是否成功
  */
 function regPlayerCmd(cmd, description, callback, level = 0) {
-	const commandBuilder = pnx.commandBuilder();
-	commandBuilder.setCommandName(cmd);
-	commandBuilder.setDescription(description);
-	commandBuilder.setCallback((sender, args) => {
+	if (server.getCommandMap().getCommand(cmd)) {// 存在于系统命令
+		if (ConsoleCommandMap.has(cmd)) {// 控制台命令中存在
+			PlayerCommandMap.set(cmd, (sender, args) => {
+				if (sender.isPlayer() && level > 0 && !sender.isOp()) {// 权限不足时
+					return;
+				}
+				callback(Player.getPlayer(sender), args);
+			});
+			return true;
+		}
+		return false;
+	}
+	PlayerCommandMap.set(cmd, (sender, args) => {
 		if (sender.isPlayer() && level > 0 && !sender.isOp()) {// 权限不足时
 			return;
 		}
 		callback(Player.getPlayer(sender), args);
+	});
+	const commandBuilder = pnx.commandBuilder();
+	commandBuilder.setCommandName(cmd);
+	commandBuilder.setDescription(description);
+	commandBuilder.setCallback((sender, args) => {
+		if (ConsoleCommandMap.has(cmd)) {
+			ConsoleCommandMap.get(cmd).call(this, sender, args);
+		}
+		PlayerCommandMap.get(cmd).call(this, sender, args);
+	});
+	commandBuilder.register();
+	return true;
+}
+function regConsoleCmd(cmd, description, callback) {
+	if (server.getCommandMap().getCommand(cmd)) {// 存在于系统命令
+		if (PlayerCommandMap.has(cmd)) {// 控制台命令中存在
+			ConsoleCommandMap.set(cmd, (sender, args) => {
+				if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
+					return;
+				}
+				callback(args);
+			});
+			return true;
+		}
+		return false;
+	}
+	ConsoleCommandMap.set(cmd, (sender, args) => {
+		if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
+			return;
+		}
+		callback(args);
+	});
+	const commandBuilder = pnx.commandBuilder();
+	commandBuilder.setCommandName(cmd);
+	commandBuilder.setDescription(description);
+	commandBuilder.setCallback((sender, args) => {
+		if (PlayerCommandMap.has(cmd)) {
+			PlayerCommandMap.get(cmd).call(this, sender, args);
+		}
+		ConsoleCommandMap.get(cmd).call(this, sender, args);
 	});
 	commandBuilder.register();
 }
@@ -148,7 +202,7 @@ function getPlayer(info) {
 			}
 		}
 	} else {// xuid
-		const xuid = String(info);
+		const xuid = string(info);
 		for (const player of server.getOnlinePlayers().values()) {
 			if (xuid === player.getLoginChainData().getXUID()) {
 				found = player;
@@ -214,8 +268,8 @@ function explode(x,y,z,dimid,source,power,range,isDestroy,isFire) {
 // 物品对象
 /**
  * 生成新的物品对象
- * @param name {String} 物品的标准类型名，如 minecraft:bread
- * @param count {Number} 物品堆叠数量
+ * @param name {string} 物品的标准类型名，如 minecraft:bread
+ * @param count {number} 物品堆叠数量
  * @returns {Item|null} 
  */
 function newItem(name, count) {
@@ -224,6 +278,64 @@ function newItem(name, count) {
 	args2: NbtCompound
 	*/
 	return Item.newItem(name, count);
+}
+
+// 表单窗口相关
+/**
+ * 构建一个空的简单表单对象
+ * @returns {SimpleForm} 空的简单表单对象
+ */
+function newSimpleForm() {
+	return new SimpleForm();
+}
+/**
+ * 构建一个空的自定义表单对象
+ * @returns {CustomForm} 空的自定义表单对象
+ */
+function newCustomForm() {
+	return new CustomForm();
+}
+
+// 记分榜相关
+/**
+ * 移除一个已存在的计分项
+ * @param name {string} 计分项名称
+ * @returns {boolean} 是否清除成功
+ */
+function removeScoreObjective(name) {
+	const manager = server.getScoreboardManager();
+	if (manager.hasScoreboard(name)) {
+		manager.removeScoreBoard(name);
+		return true;
+	}
+	return false;
+}
+/**
+ * 使计分项停止显示
+ * @param slot {string} 显示槽位名称字符串，可以为 sidebar/belowname/list
+ * @returns {boolean} 是否清除成功
+ */
+function clearDisplayObjective(slot) {
+	const manager = server.getScoreboardManager();
+	switch (slot) {
+		case 'sidebar': {
+			slot = DisplaySlot.SIDEBAR;
+			break;
+		}
+		case 'belowname': {
+			slot = DisplaySlot.BELOW_NAME;
+			break;
+		}
+		case 'list': {
+			slot = DisplaySlot.LIST;
+			break;
+		}
+		default: {
+			return false;
+		}
+	}
+	manager.removeDisplay(slot);
+	return true;
 }
 
 export const mc = {
@@ -239,11 +351,18 @@ export const mc = {
 	runcmdEx: runcmdEx,
 	newCommand: newCommand,
 	regPlayerCmd: regPlayerCmd,
+	regConsoleCmd: regConsoleCmd,
 	listen: listen,
 	getPlayer: getPlayer,
 	getOnlinePlayers: getOnlinePlayers,
 	broadcast: broadcast,
 	explode: explode,
 	// 物品对象
-	newItem: newItem
+	newItem: newItem,
+	// 表单窗口相关
+	newSimpleForm: newSimpleForm,
+	newCustomForm: newCustomForm,
+	// 记分榜相关
+	removeScoreObjective: removeScoreObjective,
+	clearDisplayObjective: clearDisplayObjective
 }
