@@ -14,6 +14,29 @@ export class CustomForm {
 		this._Form = new FormWindowCustom(this.title);
 		this._callback = function(){};
 	}
+	/**
+	 * 表单提交的内容
+	 * @returns {array|null}
+	 */
+	get _response() {
+		if (this._Form.wasClosed()) {
+			return null;
+		}
+		let arr = [];
+		let res = this._Form.getResponse();
+		let content = this._Form.getElements();
+		for (let i = 0; i< content.size(); i++) {
+			let e = content.get(i);
+			if (e instanceof ElementDropdown) {
+				arr.push(res.getDropdownResponse(i).getElementID());
+			} else if (e instanceof ElementStepSlider) {
+				arr.push(res.getStepSliderResponse(i).getElementID());
+			} else {
+				arr.push(res.getResponses().get(i));
+			}
+		}
+		return arr;
+	}
 	setCallback(func) {
 		if (typeof func != 'function') {
 			return false;
