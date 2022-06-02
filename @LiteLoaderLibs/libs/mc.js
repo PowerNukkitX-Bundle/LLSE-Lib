@@ -53,7 +53,7 @@ function getServerProtocolVersion() {
  * @returns {boolean} 是否成功
  */
 function setMotd(motd) {
-	server.setPropertystring('motd', motd);
+	server.setPropertyString('motd', motd);
 	return true;
 }
 
@@ -202,7 +202,7 @@ function getPlayer(info) {
 			}
 		}
 	} else {// xuid
-		const xuid = string(info);
+		const xuid = String(info);
 		for (const player of server.getOnlinePlayers().values()) {
 			if (xuid === player.getLoginChainData().getXUID()) {
 				found = player;
