@@ -2,6 +2,9 @@ import { File } from './File.js'
 import { File as JFile } from 'java.io.File'
 
 
+/**
+ * @todo 应当改为缓存数据至内存，而非每次都从磁盘读取
+ */
 export class JsonConfigFile {
 	/**
 	 * @param path {string} 配置文件所在路径，以 PNX 根目录为基准
@@ -51,7 +54,9 @@ export class JsonConfigFile {
 	 * @returns {boolean} 是否写入成功
 	 */
 	set(name, data) {
-		this._data[name] = data;
+		var obj = this._data
+		obj[name] = data;
+		this._data = obj;
 		return true;
 	}
 	/**
@@ -69,7 +74,49 @@ export class JsonConfigFile {
 	 * @returns {boolean} 是否成功
 	 */
 	delete(name) {
-		delete this._data[name];
+		var obj = this._data
+		delete obj[name];
+		this._data = obj;
 		return true;
+	}
+	// 💼 配置文件通用方法
+	/**
+	 * 重新加载文件中的配置项
+	 * 当你确定文件被其它方法修改时，使用本方法更新缓存在内存的数据
+	 * @todo 待实现
+	 * @returns {boolean} 是否成功
+	 */
+	reload() {
+		return true;
+	}
+	/**
+	 * 关闭配置文件，关闭后请勿继续使用
+	 * @todo 待实现
+	 * @returns {boolean} 是否成功
+	 */
+	close() {
+		return true;
+	}
+	/**
+	 * 获取配置文件路径
+	 * @returns {string}
+	 */
+	getPath() {
+		return this._path;
+	}
+	/**
+	 * 读取整个配置文件的内容
+	 * @returns {boolean} 是否成功
+	 */
+	read() {
+		return File.readFrom(this._path);
+	}
+	/**
+	 * 写入整个配置文件的内容
+	 * @param content {string} 内容
+	 * @returns {boolean} 是否成功
+	 */
+	write(content) {
+		return File.writeTo(this._path, content);
 	}
 }
