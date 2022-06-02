@@ -10,6 +10,37 @@
 	// 用于更新 plugin.yml 信息
 }
 
+/**
+ * 导出函数
+ * @todo 待实现
+ * @param func {function} 要导出的函数
+ * @param namespace {string} 函数的命名空间名，只是方便用于区分不同插件导出的 API
+ * @param [name] {string} 函数的导出名称。其他插件根据导出名称来调用这个函数
+ * @returns {boolean} 是否成功导出
+ */
+function funcExport(func, namespace, name) {
+	if (!name) {
+		name = namespace;
+	}
+	exposeFunction(namespace, func);
+	return Boolean(contain(namespace));
+}
+
+/**
+ * 导入函数
+ * @todo 待实现
+ * @param name {string} 要导入的函数使用的导出名称
+ * @returns {function|null} 导入的函数
+ */
+function funcImport(namespace, name) {
+	if (!name) {
+		name = namespace;
+	}
+	return contain(namespace);
+}
+
 export const ll = {
-	registerPlugin: registerPlugin
+	registerPlugin: registerPlugin,
+	export: funcExport,
+	import: funcImport
 }
