@@ -203,25 +203,14 @@ export function readAllBuffer(path) {
 
 /**
  * 将字符串写入文件
- * @todo writeUTF()方法 会在前面写入2个字节以记录写入内容的长度
+ * @todo JString.getBytes('UTF-8') 无法使用
  * @param path {java.nio.file.Path}
  * @param str {string}
  * @returns {boolean}
  */
 export function writeText(path, str) {
     try {
-        const raf = getRAF(path);
-        const beforeLength = raf.length();// 之前的长度
-        raf.writeUTF(str);
-        const afterLength = raf.length();// 之后的长度
-        raf.seek(beforeLength + 2);
-        const bytes = new ByteArray(afterLength - beforeLength - 2);
-        raf.read(bytes);
-        //print(new JString(bytes, 'UTF8'))
-        raf.setLength(beforeLength);// 设置正确的大小
-        raf.seek(beforeLength);// 移动指针,准备写入
-        raf.write(bytes);
-        raf.seek(0);// 移动指针,归位
+        getRAF(path).write(Java.to(strToUtf8Bytes(str), "byte[]"));
         return true;
     } catch (e) {
         if (debugMode) print(e);
@@ -230,6 +219,44 @@ export function writeText(path, str) {
     }
 }
 
+/**
+ * 字符串转utf-8 Bytes
+ * @param str {string}
+ * @returns {Int8Array}
+ */
+function strToUtf8Bytes(str) {
+    const utf8 = [];
+    for (let i = 0; i < str.length; i++) {
+        let charCode = str.charCodeAt(i);
+        if (charCode < 0x80) {
+            utf8.push(charCode);
+        } else if (charCode < 0x800) {
+            utf8.push(0xc0 | (charCode >> 6), 0x80 | (charCode & 0x3f));
+        } else if (charCode < 0xd800 || charCode >= 0xe000) {
+            utf8.push(0xe0 | (charCode >> 12), 0x80 | ((charCode >> 6) & 0x3f), 0x80 | (charCode & 0x3f));
+        } else {
+            i++;
+            // Surrogate pair:
+            // UTF-16 encodes 0x10000-0x10FFFF by subtracting 0x10000 and
+            // splitting the 20 bits of 0x0-0xFFFFF into two halves
+            charCode = 0x10000 + (((charCode & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff));
+            utf8.push(
+            0xf0 | (charCode >> 18),
+            0x80 | ((charCode >> 12) & 0x3f),
+            0x80 | ((charCode >> 6) & 0x3f),
+            0x80 | (charCode & 0x3f),
+            );
+        }
+    }
+    // 兼容汉字，ASCII码表最大的值为127，大于127的值为特殊字符
+    for (let i = 0; i < utf8.length; i++) {
+        const code = utf8[i];
+        if (code > 127) {
+            utf8[i] = code - 256;
+        }
+    }
+    return new Int8Array(utf8);
+}
 /**
  * 将数据写入文件
  * @param path {java.nio.file.Path}
