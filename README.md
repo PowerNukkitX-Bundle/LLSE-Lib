@@ -3,7 +3,20 @@
 
 ## demo
 ```javascript
-import { ll, mc, WSClient, JsonConfigFile, File, PermType, Format } from '@LiteLoaderLibs/index.js'
+import {
+	ll, 
+	mc, 
+	Format, 
+	PermType,
+	system,
+	logger,
+	File, 
+	WSClient, 
+	NBT,
+	JsonConfigFile, 
+	colorLog,
+	log,
+} from '@LiteLoaderLibs/index.js'
 
 export function main() {
 	mc.runcmd('say hello!');
