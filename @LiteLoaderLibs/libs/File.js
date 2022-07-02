@@ -11,6 +11,9 @@ export class File {
 	 * @param isBinary {boolean} 是否为二进制文件
 	 */
 	constructor (path, mode, isBinary = false) {
+		if (typeof(mode) === 'number') {// Enum
+			mode = [File.ReadMode, File.WriteMode, File.AppendMode][mode];
+		}
 		this._path = Paths.get(path);
 		this._mode = mode;
 		this._isBinary = isBinary;
@@ -67,7 +70,7 @@ export class File {
 	 */
 	static createDir(path) {
 		const _path = Paths.get(path);
-		Files.createDirectory(_path);
+		Files.createDirectories(_path);
 		return Files.exists(_path);
 	}
 	/**

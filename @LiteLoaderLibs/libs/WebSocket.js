@@ -1,98 +1,113 @@
-import { URI } from 'java.net.URI';
-import { HttpClient } from 'java.net.http.HttpClient';
+import { WsClientBuilder } from 'WsClient';
 import { ByteBuffer } from "java.nio.ByteBuffer";
-//import { WebSocket as JWebSocket } from 'java.net.http.WebSocket';
-class WebSocket {
+
+export class WebSocket {
 	constructor() {
 	}
 }
 export class WSClient extends WebSocket {
 	constructor() {
 		super();
-		this._events = {};
-		this._lasterror
+		this._lasterror;
+		this._ws = null;
+		this._textParts = "";
+		this._binaryParts = "";
+		this.status = WSClient.Closed;
+		WsClientBuilder.setTimeout(5000)// 设置超时时间（ms）
+		.onOpen((ws)=>{
+			ws.request(1);
+			//console.log('Open');
+			this.status = WSClient.Open;
+		})
+		.onText((ws, data, last)=>{
+			ws.request(1);
+			//console.log('Text', data, last);
+		})
+		.onClose((ws, statusCode, reason)=>{
+			ws.request(1);
+			//console.log('Close', statusCode, reason);
+			this.status = WSClient.Closed;
+		})
+		.onBinary((ws, data, last)=>{
+			ws.request(1);
+			//console.log('Binary', data, last);
+		})
+		.onPing((ws, message)=>{
+			ws.request(1);
+			//console.log('Ping', message);
+		})
+		.onPong((ws, message)=>{
+			ws.request(1);
+			//console.log('Pong', message);
+		})
+		.onError((ws, error)=>{
+			ws.request(1);
+			//console.log('Error', error);
+			this.status = WSClient.Closed;
+		});
 	}
+
+	/**
+	 * 处于正常连接中
+	 * @readonly
+	 * @enum {number}
+	 */
+	static Open = 0;
+	/**
+	 * 正在断开连接
+	 * @readonly
+	 * @enum {number}
+	 */
+	static Closing = 1;
+	/**
+	 * 未连接
+	 * @readonly
+	 * @enum {number}
+	 */
+	static Closed = 2;
+
 	/**
 	 * 建立链接（同步）
-	 * @todo 由于异步传染性无法正常返回布尔值（多线程也许能够解决这个问题）
+	 * @deprecated 已弃用
 	 * @param wsurl {String} ws链接 ws://ip:port
 	 * @returns {boolean} 是否成功
 	 */
 	connect(wsurl) {
-		this.connectAsync(wsurl, (succ)=>{return succ});
-		return true;
+		throw "You shouldn't do this sync connect: "+wsurl;
+		try {
+			this._ws = WsClientBuilder.setURI(wsurl)
+			.buildAsync()// 返回Java Promise
+			.waitAndGet();
+			this._lasterror = null;
+			console.log(this._ws)
+			return true;
+		} catch(err) {
+			this._ws = null;
+			this._lasterror = err;
+			console.error(this._lasterror)
+			return false;
+		}
 	}
+
 	/**
 	 * 建立链接（异步）
 	 * @param wsurl {String} ws链接 ws://ip:port
 	 * @param callback {Function} args1是否成功 args2错误信息
 	 */
 	connectAsync(wsurl, callback = (succ, err)=>{}) {
-		new Promise((resolve, reject) => { 
-			HttpClient.newHttpClient().newWebSocketBuilder()
-			.buildAsync(URI.create(wsurl), this)
-			.whenComplete((webSocket, throable) => {
-				if (Boolean(throable)) {
-					reject(throable);
-				} else {
-					resolve(webSocket);
-				}
-			});
-		}).then(res => {
+		WsClientBuilder.setURI(wsurl)
+		.buildAsync()// 返回Java Promise
+		.then(res => {
 			this._ws = res;
+			this._lasterror = null;
 			callback(true);
-		}).catch(e => {
+		}, e => {
 			this._ws = null;
 			this._lasterror = e;
 			callback(false, e);
 		});
 	}
-	/**
-	 * 是否打开链接
-	 */
-	onOpen(webSocket) {
-		if (this._events['onOpen']) {
-			this._events['onOpen'].apply(this, arguments);
-		}
-	}
-	onPing(webSocket, msg) {
-		print('Ping: '+msg);
-		if (this._events['onPing']) {
-			this._events['onPing'].apply(this, arguments);
-		}
-	}
-	onPong(webSocket, msg) {
-		print('Pong: '+msg);
-		if (this._events['onPong']) {
-			this._events['onPong'].apply(this, arguments);
-		}
-	}
-	onText(webSocket, data, isLast) {
-		print(1)
-		print(data);
-		if (this._events['onTextReceived']) {
-			this._events['onTextReceived'].apply(this, arguments);
-		}
-	}
-	onBinary(webSocket, data, isLast) {
-		print(2)
-		print(data);
-		if (this._events['onBinaryReceived']) {
-			this._events['onBinaryReceived'].apply(this, arguments);
-		}
-	}
-	onClose(webSocket, statusCode, reason) {
-		print(reason);
-		if (this._events['onLostConnection']) {
-			this._events['onLostConnection'].apply(this, arguments);
-		}
-	}
-	onError(webSocket, error) {
-		print(error);
-		if (this._events['onError']) {
-			this._events['onError'].apply(this, arguments);
-		}
-	}
+
 	/**
 	 * 监听事件
 	 * @param event {String} 事件名onTextReceived,onError
@@ -100,7 +115,51 @@ export class WSClient extends WebSocket {
 	 * @returns {boolean} 是否成功
 	 */
 	listen(event, callback) {
-		this._events[event] = callback;
+		switch (event) {
+			case 'onTextReceived':
+				WsClientBuilder.onText((ws, data, last)=>{
+					ws.request(1);
+					this._textParts += data;
+					if (last) {
+						callback(this._textParts);
+						this._textParts = "";
+					}
+				});
+				break;
+			case 'onBinaryReceived':
+				WsClientBuilder.onBinary((ws, data, last)=>{
+					ws.request(1);
+					callback(data);
+				});
+				break;
+			case 'onLostConnection':
+				WsClientBuilder.onClose((ws, statusCode, reason)=>{
+					ws.request(1);
+					this.status = WSClient.Closed;
+					callback(reason);
+					this._lasterror = reason;
+				});
+				break;
+			case 'onError':
+				WsClientBuilder.onError((ws, error)=>{
+					ws.request(1);
+					this.status = WSClient.Closed;
+					callback(error);
+					this._lasterror = error;
+					console.error(error);
+				});
+				break;
+			case 'onOpen':
+				WsClientBuilder.onOpen((ws)=>{
+					ws.request(1);
+					this.status = WSClient.Open;
+					callback();
+				});
+				break;
+			default:
+				console.log('Event name error: '+event);
+				return false;
+		}
 		return true;
 	}
 	/**
@@ -109,6 +168,7 @@ export class WSClient extends WebSocket {
 	 */
 	close() {
 		this._ws.sendClose(1000, 'close');
+		this.status = WSClient.Closing;
 		return true;
 	}
 	/**
@@ -117,6 +177,7 @@ export class WSClient extends WebSocket {
 	 */
 	shutdown() {
 		this._ws.abort();
+		this.status = WSClient.Closed;
 		return true;
 	}
 	/**
@@ -141,7 +202,7 @@ export class WSClient extends WebSocket {
 		return true;
 	}
 }
-class WSServer extends WebSocket {
+export class WSServer extends WebSocket {
 	constructor() {
 		super();
 	}
