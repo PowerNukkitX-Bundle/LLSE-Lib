@@ -3,6 +3,7 @@ import { PermType } from '../utils/PermType.js';
 import { Player, sendText } from '../object/Player.js';
 import { Event } from './Event.js';
 import { Item } from '../object/Item.js';
+import { Block } from '../object/Block.js';
 import { SimpleForm } from '../window/SimpleForm.js';
 import { CustomForm } from '../window/CustomForm.js';
 import { Server } from 'cn.nukkit.Server';
@@ -10,13 +11,23 @@ import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { Position } from 'cn.nukkit.level.Position';
+import { Block as JBlock } from 'cn.nukkit.block.Block';
+import { BlockState } from 'cn.nukkit.blockstate.BlockState';
+import { BlockStateRegistry } from 'cn.nukkit.blockstate.BlockStateRegistry';
+import { Vector3 } from 'cn.nukkit.math.Vector3';
 
 const server = Server.getInstance();
 const PlayerCommandMap = new Map();
 const ConsoleCommandMap = new Map();
 
+/**
+ * 获取世界对象
+ * @param dim {string|number} 世界名或维度id
+ * @returns {cn.nukkit.level}
+ */
 function dimToLevel(dim){
-	if(dim===0) return EnumLevel.OVERWORLD.getLevel();
+	if(isNaN(dim)) return server.getLevelByName(dim);
+	else if(dim===0) return EnumLevel.OVERWORLD.getLevel();
 	else if(dim===1) return EnumLevel.NETHER.getLevel();
 	else if(dim===2) return EnumLevel.THE_END.getLevel();
 }
@@ -190,7 +201,7 @@ function getPlayer(info) {
 	if (isNaN(info)) {// 玩家名
 		var delta = 0x7FFFFFFF;
 		for (const player of server.getOnlinePlayers().values()) {
-			if (player.getName().toLowerCase().startsWith(info)) {
+			if (player.getName().toLowerCase().startsWith(info.toLowerCase())) {
 				const curDelta = player.getName().length - info.length;
 				if (curDelta < delta) {
 					found = player;
@@ -215,7 +226,6 @@ function getPlayer(info) {
 	}
 	return Player.getPlayer(found);
 }
-
 /**
  * 获取在线玩家列表
  * @returns {Player[]} 玩家对象数组
@@ -337,7 +347,130 @@ function clearDisplayObjective(slot) {
 	manager.removeDisplay(slot);
 	return true;
 }
-
+//📦 方块对象 API
+/**
+ * 通过坐标获取方块
+ * @param x {number} x
+ * @param y {number} y
+ * @param z {number} z
+ * @param dimid {number} 维度ID
+ * @returns {Block|null} 方块对象
+ */
+function getBlock(x, y, z, dimid){
+	/*
+	args1: x, y, z, dim
+	args1: x, y, z, dimid
+	args2: pos
+	*/
+	if (arguments.length === 4) {
+		const level = dimToLevel(dimid);
+		if (level === null) {
+			return null;
+		}
+		return Block.get(Position.fromObject(new Vector3(x, y, z), level).getLevelBlock());
+	} else if (arguments.length === 1) {
+		return Block.get(x.position.getLevelBlock());// Java Position
+	} else {
+		throw 'error arguments: '+JSON.stringify([...arguments]);
+	}
+}
+/**
+ * 设置指定位置的方块
+ * @param x {number} x
+ * @param y {number} y
+ * @param z {number} z
+ * @param dimid {number} 维度ID
+ * @param block {string|Block|NBTCompound} 要设置成的方块标准类型名（如 minecraft:stone）、方块对象或方块 NBT 数据
+ * @param [tiledata=0] {number} 方块状态值（默认0）
+ * @returns {boolean} 是否成功设置
+ */
+function setBlock(x, y, z, dimid, block, tiledata = 0){
+	/*
+	args2: pos, block, tiledata = 0
+	args1: x, y, z, dim, block, tiledata = 0
+	args1: x, y, z, dimid, block, tiledata = 0
+	*/
+	var _pos, _block;
+	if (block) {// 5 个参数
+		const level = dimToLevel(dimid);
+		if (level === null) {
+			return false;
+		}
+		_pos = Position.fromObject(new Vector3(x, y, z), level).getLevelBlock();
+		_block = block;
+	} else if (y) {// 2 个参数
+		_pos = x.position;
+		_block = y;
+		if (isNaN(z)) {// 设置默认值
+			tiledata = 0;
+		} else {
+			tiledata = z;
+		}
+	} else {
+		throw 'error arguments: '+JSON.stringify([...arguments]);
+	}
+	switch (_block.constructor.name) {
+		case 'String':
+			var blockid = BlockStateRegistry.getBlockId(_block);
+			if (!blockid) {
+				console.error('Unknow block: '+_block);
+				return false;
+			}
+			_block = JBlock.get(blockid, tiledata)
+			break;
+		case 'Block':
+			_block = _block._PNXBlock;
+			break;
+		case 'NbtCompound':
+			var state = _block._nbt.getString('name');
+			var statesMap = _block._nbt.getCompound('states').getTags();
+			for (let key of statesMap.keySet()) {
+				var value = statesMap.get(key).parseValue();
+				var res = isNaN(value) ? value : Number(value);
+				state += ';'+key+'='+String(res);
+			}
+			try {
+				_block = BlockState.of(state).getBlock();
+			} catch(err) {
+				console.error('Unknow states: '+state);
+				return false;
+			}
+			break;
+		default:
+			throw 'Error type: '+_block.constructor.name+' Error block: '+_block;
+	}
+	if (!_block) {
+		throw 'block parsing of failed: '+JSON.stringify([...arguments]);
+	}
+	return _pos.getLevel().setBlock(_pos, _block);
+}
+/**
+ * 在指定位置生成粒子效果
+ * @param x {number} x
+ * @param y {number} y
+ * @param z {number} z
+ * @param dimid {number} 维度ID
+ * @param type {string} 粒子效果名例如 minecraft:heart_particle
+ * @returns {boolean} 是否成功生成
+ */
+function spawnParticle(x, y, z, dimid, type) {
+	/*
+	args2: pos, type
+	args1: x, y, z, dim, type
+	args1: x, y, z, dimid, type
+	*/
+	if (arguments.length === 5) {
+		const level = dimToLevel(dimid);
+		if (level === null) {
+			return null;
+		}
+		return Position.fromObject(new Vector3(x, y, z), level);
+	} else if (arguments.length === 2) {
+		return x.position;// Java Position
+	} else {
+		throw 'error arguments: '+JSON.stringify([...arguments]);
+	}
+}
 export const mc = {
 	//PNX 的API
 	close: close,
@@ -364,5 +497,9 @@ export const mc = {
 	newCustomForm: newCustomForm,
 	// 记分榜相关
 	removeScoreObjective: removeScoreObjective,
-	clearDisplayObjective: clearDisplayObjective
+	clearDisplayObjective: clearDisplayObjective,
+	// 方块对象API
+	getBlock: getBlock,
+	setBlock: setBlock,
+	spawnParticle: spawnParticle
 }

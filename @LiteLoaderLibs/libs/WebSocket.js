@@ -1,7 +1,5 @@
 import { WsClientBuilder } from 'WsClient';
 import { ByteBuffer } from "java.nio.ByteBuffer";
-import { Thread } from "java.lang.Thread";
-import { Worker } from ":concurrent";
 
 export class WebSocket {
 	constructor() {
@@ -12,35 +10,40 @@ export class WSClient extends WebSocket {
 		super();
 		this._lasterror;
 		this._ws = null;
+		this._textParts = "";
+		this._binaryParts = "";
 		this.status = WSClient.Closed;
 		WsClientBuilder.setTimeout(5000)// 设置超时时间（ms）
 		.onOpen((ws)=>{
 			ws.request(1);
-			console.log('Open');
+			//console.log('Open');
+			this.status = WSClient.Open;
 		})
 		.onText((ws, data, last)=>{
 			ws.request(1);
-			console.log('Text', data, last);
+			//console.log('Text', data, last);
 		})
 		.onClose((ws, statusCode, reason)=>{
 			ws.request(1);
-			console.log('Close', statusCode, reason);
+			//console.log('Close', statusCode, reason);
+			this.status = WSClient.Closed;
 		})
 		.onBinary((ws, data, last)=>{
 			ws.request(1);
-			console.log('Binary', data, last);
+			//console.log('Binary', data, last);
 		})
 		.onPing((ws, message)=>{
 			ws.request(1);
-			console.log('Ping', message);
+			//console.log('Ping', message);
 		})
 		.onPong((ws, message)=>{
 			ws.request(1);
-			console.log('Pong', message);
+			//console.log('Pong', message);
 		})
 		.onError((ws, error)=>{
 			ws.request(1);
-			console.log('Error', error);
+			//console.log('Error', error);
+			this.status = WSClient.Closed;
 		});
 	}
 
@@ -65,10 +68,12 @@ export class WSClient extends WebSocket {
 
 	/**
 	 * 建立链接（同步）
+	 * @deprecated 已弃用
 	 * @param wsurl {String} ws链接 ws://ip:port
 	 * @returns {boolean} 是否成功
 	 */
 	connect(wsurl) {
+		throw "You shouldn't do this sync connect: "+wsurl;
 		try {
 			this._ws = WsClientBuilder.setURI(wsurl)
 			.buildAsync()// 返回Java Promise
@@ -79,7 +84,7 @@ export class WSClient extends WebSocket {
 		} catch(err) {
 			this._ws = null;
 			this._lasterror = err;
-			console.log(this._lasterror)
+			console.error(this._lasterror)
 			return false;
 		}
 	}
@@ -114,7 +119,11 @@ export class WSClient extends WebSocket {
 			case 'onTextReceived':
 				WsClientBuilder.onText((ws, data, last)=>{
 					ws.request(1);
-					callback(data);
+					this._textParts += data;
+					if (last) {
+						callback(this._textParts);
+						this._textParts = "";
+					}
 				});
 				break;
 			case 'onBinaryReceived':
@@ -126,6 +135,7 @@ export class WSClient extends WebSocket {
 			case 'onLostConnection':
 				WsClientBuilder.onClose((ws, statusCode, reason)=>{
 					ws.request(1);
+					this.status = WSClient.Closed;
 					callback(reason);
 					this._lasterror = reason;
 				});
@@ -133,13 +143,16 @@ export class WSClient extends WebSocket {
 			case 'onError':
 				WsClientBuilder.onError((ws, error)=>{
 					ws.request(1);
+					this.status = WSClient.Closed;
 					callback(error);
 					this._lasterror = error;
+					console.error(error);
 				});
 				break;
 			case 'onOpen':
 				WsClientBuilder.onOpen((ws)=>{
 					ws.request(1);
+					this.status = WSClient.Open;
 					callback();
 				});
 				break;
@@ -155,6 +168,7 @@ export class WSClient extends WebSocket {
 	 */
 	close() {
 		this._ws.sendClose(1000, 'close');
+		this.status = WSClient.Closing;
 		return true;
 	}
 	/**
@@ -163,6 +177,7 @@ export class WSClient extends WebSocket {
 	 */
 	shutdown() {
 		this._ws.abort();
+		this.status = WSClient.Closed;
 		return true;
 	}
 	/**

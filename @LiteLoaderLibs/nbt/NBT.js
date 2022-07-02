@@ -44,7 +44,12 @@ export class NBT {
 				lens = layerKeys[currIndex[1]];
 				currIndex[0] = layerIndex[currIndex[1]];// 访问过的index
 
+				if (currIndex[1] < 0) {// 结束，当最后一个不是 array|object 时
+					//currIndex: [undefined, -1]
+					break;
+				}
 				if (currIndex[1] === 0 && currIndex[0]+1 > lens.length) {// 结束
+					//currIndex: [maxIndex, 0]
 					break;
 				}
 
@@ -90,7 +95,7 @@ export class NBT {
 			currIndex[0] ++;
 			layerIndex[currIndex[1]]++;// 更新层索引防止回头
 		}
-		return results;
+		return new NbtCompound(results);
 	}
 	
 	/**
@@ -106,19 +111,20 @@ export class NBT {
 	 */
 	static parseLittleBinaryNBT(binary) {// 低位字节，未压缩的，be常用
 		const bytes = Java.to(new Int8Array(binary), "byte[]");
-		return NBTIO.read(bytes, ByteOrder.LITTLE_ENDIAN);
+		return new NbtCompound(NBTIO.read(bytes, ByteOrder.LITTLE_ENDIAN));
 	}
 	/**
 	 * @since future
 	 */
 	static parseBigBinaryNBT(binary) {// 高位字节，zlib压缩的，je常用
 		const bytes = Java.to(new Int8Array(binary), "byte[]");
-		return NBTIO.read(bytes, ByteOrder.BIG_ENDIAN);
+		return new NbtCompound(NBTIO.read(bytes, ByteOrder.BIG_ENDIAN));
 	}
 }
 
 /**
  * 将普通js数据转换为nukkit的nbt标签
+ * @pnxonly
  * @param name {string} 键名
  * @param value {any} 被转换的值
  * @returns {cn.nukkit.nbt.tag}
@@ -126,11 +132,14 @@ export class NBT {
 function toNBTType(name, value) {
 	switch (typeof(value)) {
 		case 'number': {
-			if (value >= Integer.MIN_VALUE && value <= Integer.MAX_VALUE) {
-				return new IntTag(name, value);
-			} else if (value >= Long.MIN_VALUE && value <= Long.MAX_VALUE) {
-				return new LongTag(name, value);
-			} else if (value >= Float.MIN_VALUE && value <= Float.MAX_VALUE) {
+			if (Number.isInteger(value)) {
+				if (value >= Integer.MIN_VALUE && value <= Integer.MAX_VALUE) {
+					return new IntTag(name, value);
+				} else if (value >= Long.MIN_VALUE && value <= Long.MAX_VALUE) {
+					return new LongTag(name, value);
+				}
+			}
+			if (value >= Float.MIN_VALUE && value <= Float.MAX_VALUE) {
 				return new FloatTag(name, value);
 			} else if (value >= Double.MIN_VALUE && value <= Double.MAX_VALUE) {
 				return new DoubleTag(name, value);

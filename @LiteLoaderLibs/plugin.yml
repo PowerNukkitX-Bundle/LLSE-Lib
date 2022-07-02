@@ -9,3 +9,6 @@ authors: # 此项可以不存在
 - Mcayear
 description: LiteLoader 的实现库
 website: https://vusv.cn
+features:
+- WsClient
+- testFeature
