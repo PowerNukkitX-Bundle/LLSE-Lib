@@ -21,16 +21,7 @@ import { Player as JPlayer } from 'cn.nukkit.Player';
 import { Item as JItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
-import { DummyBossBar } from 'cn.nukkit.utils.DummyBossBar';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
-import { Scoreboard } from 'cn.nukkit.scoreboard.Scoreboard';
-import { ScoreboardManager } from 'cn.nukkit.scoreboard.ScoreboardManager';
-import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
-import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
-import { FormWindowModal } from 'cn.nukkit.form.window.FormWindowModal';
-import { FormWindowSimple } from 'cn.nukkit.form.window.FormWindowSimple';
-import { FormWindowCustom } from 'cn.nukkit.form.window.FormWindowCustom';
-import { FormResponseData } from 'cn.nukkit.form.response.FormResponseData';
 
 const server = Server.getInstance();
 const ASType = AdventureSettings.Type;
@@ -170,6 +161,16 @@ export class Player {
 	 */
 	sendText(msg, type) {
 		return this.tell(msg, type);
+	}
+	/**
+	 * 在屏幕上方显示消息 (类似于成就完成)
+	 * @param title {string} 待发送的标题
+	 * @param context {string} 待发送的文本
+	 * @returns {boolean} 是否成功发送
+	 */	
+	sendToast(title, context) {
+		this._PNXPlayer.sendToast(title, context);
+		return true;
 	}
 	/**
 	 * 以某个玩家身份执行一条命令
