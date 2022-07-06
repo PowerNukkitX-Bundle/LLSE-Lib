@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": "../",
+    "paths": {
+      "cn.nukkit.*": [
+        "./src/core.d.ts",
+      ],
+      "java.*": [
+        "./src/java.base.d.ts",
+      ],
+      ":*": [
+        "./src/_*.d.ts",
+      ]
+    }
+  }
+}
