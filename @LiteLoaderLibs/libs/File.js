@@ -276,7 +276,7 @@ export class File {
 		File.jobs.set(tmpJob, false);
 
 		return tmpJob.work(-1, this._path, this._mode).then(
-			() => tmpJob.work(this._isBinary ? 3 : 0, cnt).then(value => {
+			() => tmpJob.work(this._isBinary ? 3 : 0, this._path, cnt).then(value => {
 				if (callback) callback(value);
 				File.jobs.set(tmpJob, true);
 				return Promise.resolve(value);
@@ -306,7 +306,7 @@ export class File {
 		const tmpJob = File.requestJob();
 		File.jobs.set(tmpJob, false);
 		return tmpJob.work(-1, this._path, this._mode).then(
-			() => tmpJob.work(1).then(value => {
+			() => tmpJob.work(1, this._path).then(value => {
 				if (callback) callback(value);
 				File.jobs.set(tmpJob, true);
 				return Promise.resolve(value);
@@ -357,7 +357,7 @@ export class File {
 		const tmpJob = File.requestJob();
 		File.jobs.set(tmpJob, false);
 		return tmpJob.work(-1, this._path, this._mode).then(
-			() => tmpJob.work(this._isBinary ? 6 : 5, str).then(value => {
+			() => tmpJob.work(this._isBinary ? 6 : 5, this._path, str).then(value => {
 				if (callback) callback(value);
 				File.jobs.set(tmpJob, true);
 				return Promise.resolve(value);
@@ -389,7 +389,7 @@ export class File {
 		const tmpJob = File.requestJob();
 		File.jobs.set(tmpJob, false);
 		return tmpJob.work(-1, this._path, this._mode).then(
-			() => tmpJob.work(7, str).then(value => {
+			() => tmpJob.work(7, this._path, str).then(value => {
 				if (callback) callback(value);
 				File.jobs.set(tmpJob, true);
 				return Promise.resolve(value);
@@ -399,5 +399,21 @@ export class File {
 				return Promise.reject(err);
 			})
 		)
+	}
+	/**
+	 * 关闭文件
+	 * @returns {boolean}
+	 */
+	close() {
+		return IO.close(this._path);
+	}
+	/**
+	 * 关闭并清理文件
+	 * @returns {boolean}
+	 */
+	clear() {
+		IO.close(this._path);
+		Files.delete(this._path);
+		return !Files.exists(this._path);
 	}
 }
