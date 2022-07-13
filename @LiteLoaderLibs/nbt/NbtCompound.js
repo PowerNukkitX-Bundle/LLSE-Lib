@@ -1,8 +1,6 @@
 import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
 import { NBTIO } from "cn.nukkit.nbt.NBTIO";
 import { ByteOrder } from "java.nio.ByteOrder";
-import { ByteBuffer } from "java.nio.ByteBuffer";
-const ByteArray = Java.type("byte[]");
 
 export class NbtCompound {
 	constructor (obj) {
@@ -82,7 +80,7 @@ export class NbtCompound {
 	}
 	/**
 	 * 将 NBT 标签对象 序列化为二进制 NBT
-	 * @returns {ByteBuffer}
+	 * @returns {Int8Array}
 	 */
 	toBinaryNBT() {
 		return new Int8Array(NBTIO.write(this._nbt, ByteOrder.LITTLE_ENDIAN, false));
