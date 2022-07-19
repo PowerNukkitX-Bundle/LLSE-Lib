@@ -1,0 +1,23 @@
+name: Create Archive
+on: [workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout source
+      uses: actions/checkout@master
+    - name: rename
+      run: |
+        mv $GITHUB_WORKSPACE/src @LiteLoaderLibs
+    - name: Archive Release
+      uses: thedoctor0/zip-release@main
+      with:
+        type: 'zip'
+        filename: 'LiteLoaderLibs.zip'
+        path: '@LiteLoaderLibs'
+        exclusions: 'jsconfig.json'
+    - name: upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-artifact
+        path: LiteLoaderLibs.zip
