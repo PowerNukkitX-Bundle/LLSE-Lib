@@ -8,11 +8,11 @@ jobs:
       uses: actions/checkout@master
     - name: rename
       run: |
-        mv $GITHUB_WORKSPACE/src @LiteLoaderLibs
+        mv $GITHUB_WORKSPACE/src src/@LiteLoaderLibs
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: LiteLoaderLibs
         path: |
-          ./@LiteLoaderLibs
-          !/@LiteLoaderLibs/jsconfig.json
+          src
+          !src/@LiteLoaderLibs/jsconfig.json
