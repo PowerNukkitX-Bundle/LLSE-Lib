@@ -122,30 +122,30 @@ function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
 function regPlayerCmd(cmd, description, callback, level = 0) {
 	if (server.getCommandMap().getCommand(cmd)) {// 存在于系统命令
 		if (ConsoleCommandMap.has(cmd)) {// 控制台命令中存在
-			PlayerCommandMap.set(cmd, (sender, args) => {
+			PlayerCommandMap.set(cmd, function(sender, args) {
 				if (sender.isPlayer() && level > 0 && !sender.isOp()) {// 权限不足时
 					return;
 				}
-				callback(Player.getPlayer(sender), args);
+				callback.bind(Player.getPlayer(sender))(Player.getPlayer(sender), args);// ! Handle绑定this给LLSE-Player
 			});
 			return true;
 		}
 		return false;
 	}
-	PlayerCommandMap.set(cmd, (sender, args) => {
+	PlayerCommandMap.set(cmd, function(sender, args) {
 		if (sender.isPlayer() && level > 0 && !sender.isOp()) {// 权限不足时
 			return;
 		}
-		callback(Player.getPlayer(sender), args);
+		callback.bind(Player.getPlayer(sender))(Player.getPlayer(sender), args);// ! Handle绑定this给LLSE-Player
 	});
 	const commandBuilder = pnx.commandBuilder();
 	commandBuilder.setCommandName(cmd);
 	commandBuilder.setDescription(description);
 	commandBuilder.setCallback((sender, args) => {
 		if (ConsoleCommandMap.has(cmd)) {
-			ConsoleCommandMap.get(cmd).call(this, sender, args);
+			ConsoleCommandMap.get(cmd).call(sender, sender, args);// ! Map绑定this给sender
 		}
-		PlayerCommandMap.get(cmd).call(this, sender, args);
+		PlayerCommandMap.get(cmd).call(sender, sender, args);
 	});
 	commandBuilder.register();
 	return true;
@@ -153,30 +153,30 @@ function regPlayerCmd(cmd, description, callback, level = 0) {
 function regConsoleCmd(cmd, description, callback) {
 	if (server.getCommandMap().getCommand(cmd)) {// 存在于系统命令
 		if (PlayerCommandMap.has(cmd)) {// 控制台命令中存在
-			ConsoleCommandMap.set(cmd, (sender, args) => {
+			ConsoleCommandMap.set(cmd, function(sender, args) {
 				if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
 					return;
 				}
-				callback(args);
+				callback.bind(sender)(args);
 			});
 			return true;
 		}
 		return false;
 	}
-	ConsoleCommandMap.set(cmd, (sender, args) => {
+	ConsoleCommandMap.set(cmd, function(sender, args) {
 		if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
 			return;
 		}
-		callback(args);
+		callback.bind(sender)(args);
 	});
 	const commandBuilder = pnx.commandBuilder();
 	commandBuilder.setCommandName(cmd);
 	commandBuilder.setDescription(description);
 	commandBuilder.setCallback((sender, args) => {
 		if (PlayerCommandMap.has(cmd)) {
-			PlayerCommandMap.get(cmd).call(this, sender, args);
+			PlayerCommandMap.get(cmd).call(sender, sender, args);
 		}
-		ConsoleCommandMap.get(cmd).call(this, sender, args);
+		ConsoleCommandMap.get(cmd).call(sender, sender, args);
 	});
 	commandBuilder.register();
 }
