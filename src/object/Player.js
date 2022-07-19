@@ -1,13 +1,13 @@
 import { DirectionAngle } from './DirectionAngle.js';
 import { IntPos } from './IntPos.js';
 import { FloatPos } from './FloatPos.js';
-import { Device } from '../libs/Device.js';
+import { Device } from './Device.js';
 import { Item } from './Item.js';
 import { Container } from './Container.js';
 import { ScoreObjectives } from './ScoreObjectives.js';
-import { ModalForm } from '../window/ModalForm.js';
-import { SimpleForm } from '../window/SimpleForm.js';
-import { CustomForm } from '../window/CustomForm.js';
+import { ModalForm } from '../gui/ModalForm.js';
+import { SimpleForm } from '../gui/SimpleForm.js';
+import { CustomForm } from '../gui/CustomForm.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
 import { Server } from 'cn.nukkit.Server';

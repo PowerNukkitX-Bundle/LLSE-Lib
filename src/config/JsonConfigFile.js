@@ -1,4 +1,4 @@
-import { File } from './File.js'
+import { File } from '../file/File.js'
 import { File as JFile } from 'java.io.File'
 
 

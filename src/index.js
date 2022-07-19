@@ -1,4 +1,4 @@
-import { JsonConfigFile } from './libs/JsonConfigFile.js';
+import { JsonConfigFile } from './config/JsonConfigFile.js';
 
 export function main() {
 	console.log("LiteLoader-Libs start");
@@ -30,11 +30,11 @@ export var data = {
 /**
  * @deprecated since version LLSE-v0.0.7
  */
-export var log = function() {
+export const log = function() {
 	console.log.apply(this, arguments);
 }
 
-export var colorLog = function(color, ...args) {
+export const colorLog = function(color, ...args) {
 	var front = '';
 	switch (color) {
 		case 'sky_blue':
@@ -86,9 +86,9 @@ export { Format } from './utils/Format.js';
 export { PermType } from './utils/PermType.js';
 export { system } from './utils/system.js';
 export { logger } from './utils/logger.js';
-export { ll } from './libs/ll.js';
-export { mc } from './libs/mc.js';
-export { File } from './libs/File.js';
-export { WSClient } from './libs/WebSocket.js';
+export { ll } from './core/ll.js';
+export { mc } from './core/mc.js';
+export { File } from './file/File.js';
+export { WSClient } from './network/WebSocket.js';
 export { NBT } from './nbt/NBT.js';
 export { JsonConfigFile };

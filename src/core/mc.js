@@ -1,11 +1,11 @@
 import { PowerNukkitX as pnx } from ':powernukkitx';
 import { PermType } from '../utils/PermType.js';
 import { Player, sendText } from '../object/Player.js';
-import { Event } from './Event.js';
+import { Event } from '../event/Event.js';
 import { Item } from '../object/Item.js';
 import { Block } from '../object/Block.js';
-import { SimpleForm } from '../window/SimpleForm.js';
-import { CustomForm } from '../window/CustomForm.js';
+import { SimpleForm } from '../gui/SimpleForm.js';
+import { CustomForm } from '../gui/CustomForm.js';
 import { Server } from 'cn.nukkit.Server';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';

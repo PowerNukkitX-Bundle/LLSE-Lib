@@ -1,4 +1,4 @@
-import * as IO from "../utils/IO.js";
+import * as IO from "./IO.js";
 import { Job } from ":concurrent";
 import { Paths } from "java.nio.file.Paths";
 import { Files } from "java.nio.file.Files";
