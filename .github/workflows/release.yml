@@ -1,4 +1,4 @@
-name: Create Archive
+name: release
 on: [workflow_dispatch]
 jobs:
   build:
