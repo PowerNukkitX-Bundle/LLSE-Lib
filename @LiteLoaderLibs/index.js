@@ -1,4 +1,5 @@
 import { JsonConfigFile } from './libs/JsonConfigFile.js';
+import { IniConfigFile } from './libs/IniConfigFile.js';
 
 export function main() {
 	console.log("LiteLoader-Libs start");
@@ -20,7 +21,7 @@ export var data = {
 		if (type === 'json') {
 			return new JsonConfigFile(path, defaultContext);
 		} else if (type === 'ini') {
-			return false;
+			return new IniConfigFile(path, defaultContext);
 		} else {
 			return false;
 		}
@@ -92,3 +93,4 @@ export { File } from './libs/File.js';
 export { WSClient } from './libs/WebSocket.js';
 export { NBT } from './nbt/NBT.js';
 export { JsonConfigFile };
+export { IniConfigFile };
