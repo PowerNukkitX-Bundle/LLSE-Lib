@@ -1,12 +1,15 @@
-
 import { DirectionAngle } from './DirectionAngle.js';
 import { IntPos } from './IntPos.js';
 import { FloatPos } from './FloatPos.js';
 import { Player } from 'cn.nukkit.Player';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
+import { Position } from 'cn.nukkit.level.Position'
+import { Server } from 'cn.nukkit.Server';
+
+const server = Server.getInstance();
 
 export class Entity {
-    constructor (PNXEntity) {
+	constructor(PNXEntity) {
 		this._PNXEntity = PNXEntity;
 		this.DirectionAngle = new DirectionAngle(PNXEntity);
 	}
@@ -24,11 +27,11 @@ export class Entity {
 	}
 
 	get pos() {// 实体所在坐标  FloatPos
-		return new FloatPos(this._PNXEntity.getPosition());;
+		return new FloatPos(this._PNXEntity.getPosition());
 	}
 
 	get blockPos() {// 实体所在的方块坐标	IntPos
-		return new IntPos(this._PNXEntity.getPosition());;
+		return new IntPos(this._PNXEntity.getPosition());
 	}
 
 	get maxHealth() {// 实体最大生命值	Integer
@@ -54,7 +57,7 @@ export class Entity {
 	get direction() {// 实体当前朝向	Boolean
 		return this.DirectionAngle;
 	}
-	
+
 	get uniqueId() {// 实体唯一标识符	String
 		return this._PNXEntity.getUniqueId().toString();
 	}
@@ -63,23 +66,24 @@ export class Entity {
 	 * 传送实体至指定位置
 	 * @param x {IntPos|FloatPos} 目标位置坐标(或者使用 x, y, z, dimid 来确定实体位置)
 	 * @returns {boolean} 是否成功传送
-	 */		
+	 */
 	teleport(x, y, z, dimid) {
 		if (arguments.length === 1) {
 			return this._PNXEntity.teleport(x.position);
 		} else {
-			const level = server.getLevelByName(isNaN(dimid) ? dimid: this.levels[dimid]);
+			const level = server.getLevelByName(isNaN(dimid) ? dimid : this.levels[dimid]);
 			if (level == null) {
-				console.log('\nUnknow worlds: '+dimid+'\n  at Entity.js -> teleport()');
+				console.log('\nUnknow worlds: ' + dimid + '\n  at Entity.js -> teleport()');
 				return false;
 			}
 			return this._PNXEntity.teleport(Position.fromObject(new Vector3(x, y, z), level));
 		}
 	}
+
 	/**
 	 * 杀死实体
 	 * @returns {boolean} 是否成功执行
-	 */	
+	 */
 	kill() {
 		this._PNXEntity.kill();
 		return !this._PNXEntity.isAlive();
@@ -89,43 +93,43 @@ export class Entity {
 	 * 对实体造成伤害
 	 * @param damage {Integer} 对实体造成的伤害数值
 	 * @returns {boolean} 是否造成伤害
-	 */	
+	 */
 	hurt(damage) {
-		return this._PNXEntity.attack(new EntityDamageByEntityEvent(this._PNXEntity, EntityDamageEvent.DamageCause.NONE, damage));
+		return this._PNXEntity.attack(damage);
 	}
 
 	/**
 	 * 使指定实体着火
 	 * @param time {Integer} 着火时长，单位秒
 	 * @returns {boolean} 是否成功着火
-	 */	
+	 */
 	setOnFire(time) {
 		this._PNXEntity.setOnFire(time);
 		return this._PNXEntity.isOnFire();
 	}
-	
+
 	/**
 	 * 判断一个实体对象是不是玩家
 	 * @returns {boolean} 当前实体对象是不是玩家
-	 */	
-	isPlayer(){
+	 */
+	isPlayer() {
 		return this._PNXEntity instanceof Player;
 	}
 
 	/**
 	 * 将实体对象转换玩家对象
 	 * @returns {Player} 转换成的玩家对象,如果此实体对象指向的不是某个玩家,或者转换失败，则返回Null
-	 */	
-	toPlayer(){
-		if(this.isPlayer()) return Player.getPlayer(this._PNXEntity);
+	 */
+	toPlayer() {
+		if (this.isPlayer()) return Player.getPlayer(this._PNXEntity);
 		else return null;
 	}
 
 	/**
 	 * 判断一个实体对象是不是掉落物实体
 	 * @returns {boolean} 当前实体对象是不是掉落物实体
-	 */	
-	isItemEntity(){
+	 */
+	isItemEntity() {
 		return this._PNXEntity instanceof EntityItem;
 	}
 
@@ -134,13 +138,14 @@ export class Entity {
 	 * @todo 待实现
 	 * @returns {Item} 获取到的物品对象,如果此实体对象不是掉落物实体，或者获取失败，则返回 Null
 	 */
-	toItem(){}
+	toItem() {
+	}
 
 	/**
 	 * 获取实体当前站立所在的方块
 	 * @todo 改为LLSE类型
 	 * @returns {Block} 当前站立在的方块对象
-	 */	
+	 */
 	getBlockStandingOn() {
 		return this._PNXEntity.getPosition().add(0, -0.1).getLevelBlock();
 	}
@@ -150,28 +155,32 @@ export class Entity {
 	 * @todo 待实现
 	 * @returns {Container} Container对象
 	 */
-	getArmor() {}	
+	getArmor() {
+	}
 
 	/**
 	 * 判断生物是否拥有容器（盔甲栏除外）
 	 * @todo 待实现
 	 * @returns {Container} 这个生物实体是否拥有容器
 	 */
-	hasContainer() {}
+	hasContainer() {
+	}
 
 	/**
 	 * 获取生物所拥有的容器对象（盔甲栏除外）
 	 * @todo 待实现
 	 * @returns {Container} 这个生物实体所拥有的容器对象
 	 */
-	getContainer(){}
+	getContainer() {
+	}
 
 	/**
 	 * 刷新生物物品栏、盔甲栏
 	 * @todo 待实现
 	 * @returns {boolean} 是否成功刷新
 	 */
-	refreshItems(){}
+	refreshItems() {
+	}
 
 	/**
 	 * 为实体增加一个 Tag
@@ -213,7 +222,9 @@ export class Entity {
 	 * @returns {String[]} 玩家所有的 tag 字符串列表
 	 */
 	getAllTags() {
-		return this._PNXEntity.getAllTags().stream().map(item => {return item.parseValue()}).distinct().collect(Collectors.toList());
+		return this._PNXEntity.getAllTags().stream().map(item => {
+			return item.parseValue()
+		}).distinct().collect(Collectors.toList());
 	}
 
 	/**

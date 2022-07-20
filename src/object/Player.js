@@ -37,6 +37,12 @@ const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHand
 });
 
 export class Player {
+	static PlayerMap = new Map();
+
+	static ExtraDataMap = new Map();// '玩家名': {}
+
+	static FormCallbackMap = new Map();// 'formId': function(){}
+
 	/**
 	 * @param PNXPlayer {JPlayer}
 	 */
@@ -46,13 +52,7 @@ export class Player {
 		this.levels = getLevels();
 		this.BossBarId = -1;
 	}
-
-	static PlayerMap = new Map();
-
-	static ExtraDataMap = new Map();// '玩家名': {}
-
-	static FormCallbackMap = new Map();// 'formId': function(){}
-
+	
 	static getPlayer(PNXPlayer) {
 		if (!Player.PlayerMap.has(PNXPlayer.name)) {
 			Player.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
