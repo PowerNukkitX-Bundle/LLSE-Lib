@@ -1,5 +1,3 @@
-import { JsonConfigFile } from './config/JsonConfigFile.js';
-
 export function main() {
 	console.log("LiteLoader-Libs start");
 }
@@ -73,4 +71,5 @@ export { mc } from './core/mc.js';
 export { File } from './file/File.js';
 export { WSClient } from './network/WebSocket.js';
 export { NBT } from './nbt/NBT.js';
-export { JsonConfigFile };
+export { JsonConfigFile } from './config/JsonConfigFile.js';
+export { IniConfigFile } from './config/IniConfigFile.js';
