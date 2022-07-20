@@ -224,7 +224,7 @@ export function writeText(path, str) {
  * @param str {string}
  * @returns {Int8Array}
  */
-function strToUtf8Bytes(str) {
+export function strToUtf8Bytes(str) {
     const utf8 = [];
     for (let i = 0; i < str.length; i++) {
         let charCode = str.charCodeAt(i);
