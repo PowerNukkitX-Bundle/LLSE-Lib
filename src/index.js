@@ -1,30 +1,9 @@
-import { JsonConfigFile } from './config/JsonConfigFile.js';
-
 export function main() {
 	console.log("LiteLoader-Libs start");
 }
 
 export function close() {
 	print("LiteLoader-Libs close");
-}
-
-/**
- * @deprecated since version LLSE-v0.0.7
- */
-export var data = {
-	/**
-	 * @see JsonConfigFile
-	 * @todo 实现ini配置文件
-	 */
-	openConfig: function (path, type, defaultContext){
-		if (type === 'json') {
-			return new JsonConfigFile(path, defaultContext);
-		} else if (type === 'ini') {
-			return false;
-		} else {
-			return false;
-		}
-	}
 }
 
 /**
@@ -82,6 +61,7 @@ export const colorLog = function(color, ...args) {
 	console.log.apply(this, arr);
 }
 
+export { data } from './utils/data.js';
 export { Format } from './utils/Format.js';
 export { PermType } from './utils/PermType.js';
 export { system } from './utils/system.js';
@@ -91,4 +71,5 @@ export { mc } from './core/mc.js';
 export { File } from './file/File.js';
 export { WSClient } from './network/WebSocket.js';
 export { NBT } from './nbt/NBT.js';
-export { JsonConfigFile };
+export { JsonConfigFile } from './config/JsonConfigFile.js';
+export { IniConfigFile } from './config/IniConfigFile.js';

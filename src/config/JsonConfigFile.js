@@ -1,10 +1,6 @@
 import { File } from '../file/File.js'
 import { File as JFile } from 'java.io.File'
 
-
-/**
- * @todo 应当改为缓存数据至内存，而非每次都从磁盘读取
- */
 export class JsonConfigFile {
 	/**
 	 * @param path {string} 配置文件所在路径，以 PNX 根目录为基准
@@ -15,22 +11,26 @@ export class JsonConfigFile {
 			File.writeTo(path, defaultContext);
 		}
 		this._path = path;
+		this._content = File.readFrom(this._path);// 缓存文件内容
 	}
 	/**
 	 * 获取数据
 	 * @returns {object}
 	 */
 	get _data() {
-		const data = File.readFrom(this._path);
-		if (typeof(data) != 'string') {
+		if (!this._path) {
+			return null;
+		}
+		if (typeof(this._content) != 'string') {
 			return {};
 		}
-		return JSON.parse(data);
+		return JSON.parse(this._content);
 	}
 	/**
 	 * 设置数据
 	 */
 	set _data(obj) {
+		this._content = JSON.stringify(obj);
 		File.writeTo(this._path, JSON.stringify(obj));
 	}
 	/**
@@ -83,18 +83,25 @@ export class JsonConfigFile {
 	/**
 	 * 重新加载文件中的配置项
 	 * 当你确定文件被其它方法修改时，使用本方法更新缓存在内存的数据
-	 * @todo 待实现
 	 * @returns {boolean} 是否成功
 	 */
 	reload() {
+		if (!this._path) {
+			return false;
+		}
+		this._content = File.readFrom(this._path);
 		return true;
 	}
 	/**
 	 * 关闭配置文件，关闭后请勿继续使用
-	 * @todo 待实现
 	 * @returns {boolean} 是否成功
 	 */
 	close() {
+		if (!this._path) {
+			return false;
+		}
+		this._path = null;
+		this._content = null;
 		return true;
 	}
 	/**
