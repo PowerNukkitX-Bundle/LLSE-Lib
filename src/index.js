@@ -11,25 +11,6 @@ export function close() {
 /**
  * @deprecated since version LLSE-v0.0.7
  */
-export var data = {
-	/**
-	 * @see JsonConfigFile
-	 * @todo 实现ini配置文件
-	 */
-	openConfig: function (path, type, defaultContext){
-		if (type === 'json') {
-			return new JsonConfigFile(path, defaultContext);
-		} else if (type === 'ini') {
-			return false;
-		} else {
-			return false;
-		}
-	}
-}
-
-/**
- * @deprecated since version LLSE-v0.0.7
- */
 export const log = function() {
 	console.log.apply(this, arguments);
 }
@@ -82,6 +63,7 @@ export const colorLog = function(color, ...args) {
 	console.log.apply(this, arr);
 }
 
+export { data } from './utils/data.js';
 export { Format } from './utils/Format.js';
 export { PermType } from './utils/PermType.js';
 export { system } from './utils/system.js';
