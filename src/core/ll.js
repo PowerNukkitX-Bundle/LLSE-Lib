@@ -1,3 +1,7 @@
+import { Server } from 'cn.nukkit.Server';
+
+const server = Server.getInstance();
+
 /**
  * 向加载器提供一些插件相关的信息
  * @todo 待实现
@@ -39,8 +43,22 @@ function funcImport(namespace, name) {
 	return contain(namespace);
 }
 
+/**
+ * 获取插件列表
+ * @returns {Array<string,...>} 返回数组，包含插件名
+ */
+function listPlugins() {
+	var list = [];
+	var plugins = server.getPluginManager().getPlugins();
+	for (let plugin of plugins.values()) {// plugin.isEnabled()
+		list.push(plugin.getDescription().getFullName());
+	}
+	return list;
+}
+
 export const ll = {
-	registerPlugin: registerPlugin,
+	registerPlugin,
 	export: funcExport,
-	import: funcImport
+	import: funcImport,
+	listPlugins
 }
