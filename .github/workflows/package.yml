@@ -2,6 +2,7 @@ name: package
 on: [push,workflow_dispatch]
 jobs:
   build:
+    if: github.ref_name=='master'
     runs-on: ubuntu-latest
     steps:
     - name: checkout source
