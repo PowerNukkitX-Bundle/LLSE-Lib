@@ -199,6 +199,9 @@ function listen(event,callback){
 function getPlayer(info) {
 	var found = null;
 	if (isNaN(info)) {// 玩家名
+		if (info === 'CONSOLE') {// 判断是控制台
+			return Player.getPlayer(server.getConsoleSender());
+		}
 		var delta = 0x7FFFFFFF;
 		for (const player of server.getOnlinePlayers().values()) {
 			if (player.getName().toLowerCase().startsWith(info.toLowerCase())) {
