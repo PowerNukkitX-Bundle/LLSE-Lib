@@ -87,12 +87,11 @@ const cb_utob = (c) => {
         var cc = c.charCodeAt(0);
         return cc < 0x80 ? c
             : cc < 0x800 ? (_fromCC(0xc0 | (cc >>> 6))
-                + _fromCC(0x80 | (cc & 0x3f)))
+                    + _fromCC(0x80 | (cc & 0x3f)))
                 : (_fromCC(0xe0 | ((cc >>> 12) & 0x0f))
                     + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
                     + _fromCC(0x80 | (cc & 0x3f)));
-    }
-    else {
+    } else {
         var cc = 0x10000
             + (c.charCodeAt(0) - 0xD800) * 0x400
             + (c.charCodeAt(1) - 0xDC00);
@@ -209,7 +208,7 @@ const decode = (src) => _decode(_unURI(src));
 /**
  * check if a value is a valid Base64 string
  * @param {String} src a value to check
-  */
+ */
 const isValid = (src) => {
     if (typeof src !== 'string')
         return false;
@@ -227,20 +226,36 @@ const _noEnum = (v) => {
  */
 const extendString = function () {
     const _add = (name, body) => Object.defineProperty(String.prototype, name, _noEnum(body));
-    _add('fromBase64', function () { return decode(this); });
-    _add('toBase64', function (urlsafe) { return encode(this, urlsafe); });
-    _add('toBase64URI', function () { return encode(this, true); });
-    _add('toBase64URL', function () { return encode(this, true); });
-    _add('toUint8Array', function () { return toUint8Array(this); });
+    _add('fromBase64', function () {
+        return decode(this);
+    });
+    _add('toBase64', function (urlsafe) {
+        return encode(this, urlsafe);
+    });
+    _add('toBase64URI', function () {
+        return encode(this, true);
+    });
+    _add('toBase64URL', function () {
+        return encode(this, true);
+    });
+    _add('toUint8Array', function () {
+        return toUint8Array(this);
+    });
 };
 /**
  * extend Uint8Array.prototype with relevant methods
  */
 const extendUint8Array = function () {
     const _add = (name, body) => Object.defineProperty(Uint8Array.prototype, name, _noEnum(body));
-    _add('toBase64', function (urlsafe) { return fromUint8Array(this, urlsafe); });
-    _add('toBase64URI', function () { return fromUint8Array(this, true); });
-    _add('toBase64URL', function () { return fromUint8Array(this, true); });
+    _add('toBase64', function (urlsafe) {
+        return fromUint8Array(this, urlsafe);
+    });
+    _add('toBase64URI', function () {
+        return fromUint8Array(this, true);
+    });
+    _add('toBase64URL', function () {
+        return fromUint8Array(this, true);
+    });
 };
 /**
  * extend Builtin prototypes with relevant methods
@@ -272,25 +287,25 @@ const gBase64 = {
     extendBuiltins: extendBuiltins,
 };
 // makecjs:CUT //
-export { version };
-export { VERSION };
-export { _atob as atob };
-export { atobPolyfill };
-export { _btoa as btoa };
-export { btoaPolyfill };
-export { decode as fromBase64 };
-export { encode as toBase64 };
-export { utob };
-export { encode };
-export { encodeURI };
-export { encodeURI as encodeURL };
-export { btou };
-export { decode };
-export { isValid };
-export { fromUint8Array };
-export { toUint8Array };
-export { extendString };
-export { extendUint8Array };
-export { extendBuiltins };
+export {version};
+export {VERSION};
+export {_atob as atob};
+export {atobPolyfill};
+export {_btoa as btoa};
+export {btoaPolyfill};
+export {decode as fromBase64};
+export {encode as toBase64};
+export {utob};
+export {encode};
+export {encodeURI};
+export {encodeURI as encodeURL};
+export {btou};
+export {decode};
+export {isValid};
+export {fromUint8Array};
+export {toUint8Array};
+export {extendString};
+export {extendUint8Array};
+export {extendBuiltins};
 // and finally,
-export { gBase64 as Base64 };
+export {gBase64 as Base64};

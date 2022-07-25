@@ -1,20 +1,20 @@
-import { PowerNukkitX as pnx } from ':powernukkitx';
-import { PermType } from '../utils/PermType.js';
-import { Player, sendText } from '../object/Player.js';
-import { Event } from '../event/Event.js';
-import { Item } from '../object/Item.js';
-import { Block } from '../object/Block.js';
-import { SimpleForm } from '../gui/SimpleForm.js';
-import { CustomForm } from '../gui/CustomForm.js';
-import { Server } from 'cn.nukkit.Server';
-import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
-import { Explosion } from 'cn.nukkit.level.Explosion';
-import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
-import { Position } from 'cn.nukkit.level.Position';
-import { Block as JBlock } from 'cn.nukkit.block.Block';
-import { BlockState } from 'cn.nukkit.blockstate.BlockState';
-import { BlockStateRegistry } from 'cn.nukkit.blockstate.BlockStateRegistry';
-import { Vector3 } from 'cn.nukkit.math.Vector3';
+import {PowerNukkitX as pnx} from ':powernukkitx';
+import {PermType} from '../utils/PermType.js';
+import {Player, sendText} from '../object/Player.js';
+import {Event} from '../event/Event.js';
+import {Item} from '../object/Item.js';
+import {Block} from '../object/Block.js';
+import {SimpleForm} from '../gui/SimpleForm.js';
+import {CustomForm} from '../gui/CustomForm.js';
+import {Server} from 'cn.nukkit.Server';
+import {ProtocolInfo} from 'cn.nukkit.network.protocol.ProtocolInfo';
+import {Explosion} from 'cn.nukkit.level.Explosion';
+import {EnumLevel} from 'cn.nukkit.level.EnumLevel';
+import {Position} from 'cn.nukkit.level.Position';
+import {Block as JBlock} from 'cn.nukkit.block.Block';
+import {BlockState} from 'cn.nukkit.blockstate.BlockState';
+import {BlockStateRegistry} from 'cn.nukkit.blockstate.BlockStateRegistry';
+import {Vector3} from 'cn.nukkit.math.Vector3';
 
 const server = Server.getInstance();
 const PlayerCommandMap = new Map();
@@ -25,11 +25,11 @@ const ConsoleCommandMap = new Map();
  * @param dim {string|number} 世界名或维度id
  * @returns {cn.nukkit.level}
  */
-function dimToLevel(dim){
-	if(isNaN(dim)) return server.getLevelByName(dim);
-	else if(dim===0) return EnumLevel.OVERWORLD.getLevel();
-	else if(dim===1) return EnumLevel.NETHER.getLevel();
-	else if(dim===2) return EnumLevel.THE_END.getLevel();
+function dimToLevel(dim) {
+	if (isNaN(dim)) return server.getLevelByName(dim);
+	else if (dim === 0) return EnumLevel.OVERWORLD.getLevel();
+	else if (dim === 1) return EnumLevel.NETHER.getLevel();
+	else if (dim === 2) return EnumLevel.THE_END.getLevel();
 }
 
 /**
@@ -111,6 +111,7 @@ function runcmdEx(cmd) {
 function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
 	return {};
 }
+
 /**
  * 注册一个新的玩家命令（假命令）
  * @param cmd {string} 待注册的命令
@@ -122,7 +123,7 @@ function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
 function regPlayerCmd(cmd, description, callback, level = 0) {
 	if (server.getCommandMap().getCommand(cmd)) {// 存在于系统命令
 		if (ConsoleCommandMap.has(cmd)) {// 控制台命令中存在
-			PlayerCommandMap.set(cmd, function(sender, args) {
+			PlayerCommandMap.set(cmd, function (sender, args) {
 				if (sender.isPlayer() && level > 0 && !sender.isOp()) {// 权限不足时
 					return;
 				}
@@ -132,7 +133,7 @@ function regPlayerCmd(cmd, description, callback, level = 0) {
 		}
 		return false;
 	}
-	PlayerCommandMap.set(cmd, function(sender, args) {
+	PlayerCommandMap.set(cmd, function (sender, args) {
 		if (sender.isPlayer() && level > 0 && !sender.isOp()) {// 权限不足时
 			return;
 		}
@@ -150,10 +151,11 @@ function regPlayerCmd(cmd, description, callback, level = 0) {
 	commandBuilder.register();
 	return true;
 }
+
 function regConsoleCmd(cmd, description, callback) {
 	if (server.getCommandMap().getCommand(cmd)) {// 存在于系统命令
 		if (PlayerCommandMap.has(cmd)) {// 控制台命令中存在
-			ConsoleCommandMap.set(cmd, function(sender, args) {
+			ConsoleCommandMap.set(cmd, function (sender, args) {
 				if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
 					return;
 				}
@@ -163,7 +165,7 @@ function regConsoleCmd(cmd, description, callback) {
 		}
 		return false;
 	}
-	ConsoleCommandMap.set(cmd, function(sender, args) {
+	ConsoleCommandMap.set(cmd, function (sender, args) {
 		if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
 			return;
 		}
@@ -187,7 +189,7 @@ function regConsoleCmd(cmd, description, callback) {
  * @param callback {Function} 注册的监听函数
  * @returns {boolean} 是否成功监听事件
  */
-function listen(event,callback){
+function listen(event, callback) {
 	return Event[event].run(callback);
 }
 
@@ -199,9 +201,6 @@ function listen(event,callback){
 function getPlayer(info) {
 	var found = null;
 	if (isNaN(info)) {// 玩家名
-		if (info === 'CONSOLE') {// 判断是控制台
-			return Player.getPlayer(server.getConsoleSender());
-		}
 		var delta = 0x7FFFFFFF;
 		for (const player of server.getOnlinePlayers().values()) {
 			if (player.getName().toLowerCase().startsWith(info.toLowerCase())) {
@@ -229,6 +228,7 @@ function getPlayer(info) {
 	}
 	return Player.getPlayer(found);
 }
+
 /**
  * 获取在线玩家列表
  * @returns {Player[]} 玩家对象数组
@@ -264,18 +264,18 @@ function broadcast(msg, type = 0) {
  * @param isFire {boolean} 爆炸结束后是否留下燃烧的火焰
  * @returns {boolean} 是否成功制造爆炸
  */
-function explode(x,y,z,dimid,source,power,range,isDestroy,isFire) {
+function explode(x, y, z, dimid, source, power, range, isDestroy, isFire) {
 	if (arguments.length === 6) {
-		var explode = new Explosion(x,range,source);
-		explode.doesDamage=isDestroy;
+		var explode = new Explosion(x, range, source);
+		explode.doesDamage = isDestroy;
 		explode.setIncendiary(isFire);
 		return explode.explode();
-	} else if(arguments.length === 9){
-		var explode = new Explosion(new Position(x,y,z,dimToLevel(dimid)),range,source);
-		explode.doesDamage=isDestroy;
+	} else if (arguments.length === 9) {
+		var explode = new Explosion(new Position(x, y, z, dimToLevel(dimid)), range, source);
+		explode.doesDamage = isDestroy;
 		explode.setIncendiary(isFire);
 		return explode.explode();
-	}else throw new Error("mc.js explode()参数错误");
+	} else throw new Error("mc.js explode()参数错误");
 }
 
 // 物品对象
@@ -283,13 +283,13 @@ function explode(x,y,z,dimid,source,power,range,isDestroy,isFire) {
  * 生成新的物品对象
  * @param name {string} 物品的标准类型名，如 minecraft:bread
  * @param count {number} 物品堆叠数量
- * @returns {Item|null} 
+ * @returns {Item|null}
  */
 function newItem(name, count) {
 	/*
-	args1: name, count
-	args2: NbtCompound
-	*/
+    args1: name, count
+    args2: NbtCompound
+    */
 	return Item.newItem(name, count);
 }
 
@@ -301,6 +301,7 @@ function newItem(name, count) {
 function newSimpleForm() {
 	return new SimpleForm();
 }
+
 /**
  * 构建一个空的自定义表单对象
  * @returns {CustomForm} 空的自定义表单对象
@@ -323,6 +324,7 @@ function removeScoreObjective(name) {
 	}
 	return false;
 }
+
 /**
  * 使计分项停止显示
  * @param slot {string} 显示槽位名称字符串，可以为 sidebar/belowname/list
@@ -350,6 +352,7 @@ function clearDisplayObjective(slot) {
 	manager.removeDisplay(slot);
 	return true;
 }
+
 //📦 方块对象 API
 /**
  * 通过坐标获取方块
@@ -359,12 +362,12 @@ function clearDisplayObjective(slot) {
  * @param dimid {number} 维度ID
  * @returns {Block|null} 方块对象
  */
-function getBlock(x, y, z, dimid){
+function getBlock(x, y, z, dimid) {
 	/*
-	args1: x, y, z, dim
-	args1: x, y, z, dimid
-	args2: pos
-	*/
+    args1: x, y, z, dim
+    args1: x, y, z, dimid
+    args2: pos
+    */
 	if (arguments.length === 4) {
 		const level = dimToLevel(dimid);
 		if (level === null) {
@@ -374,9 +377,10 @@ function getBlock(x, y, z, dimid){
 	} else if (arguments.length === 1) {
 		return Block.get(x.position.getLevelBlock());// Java Position
 	} else {
-		throw 'error arguments: '+JSON.stringify([...arguments]);
+		throw 'error arguments: ' + JSON.stringify([...arguments]);
 	}
 }
+
 /**
  * 设置指定位置的方块
  * @param x {number} x
@@ -387,12 +391,12 @@ function getBlock(x, y, z, dimid){
  * @param [tiledata=0] {number} 方块状态值（默认0）
  * @returns {boolean} 是否成功设置
  */
-function setBlock(x, y, z, dimid, block, tiledata = 0){
+function setBlock(x, y, z, dimid, block, tiledata = 0) {
 	/*
-	args2: pos, block, tiledata = 0
-	args1: x, y, z, dim, block, tiledata = 0
-	args1: x, y, z, dimid, block, tiledata = 0
-	*/
+    args2: pos, block, tiledata = 0
+    args1: x, y, z, dim, block, tiledata = 0
+    args1: x, y, z, dimid, block, tiledata = 0
+    */
 	var _pos, _block;
 	if (block) {// 5 个参数
 		const level = dimToLevel(dimid);
@@ -410,13 +414,13 @@ function setBlock(x, y, z, dimid, block, tiledata = 0){
 			tiledata = z;
 		}
 	} else {
-		throw 'error arguments: '+JSON.stringify([...arguments]);
+		throw 'error arguments: ' + JSON.stringify([...arguments]);
 	}
 	switch (_block.constructor.name) {
 		case 'String':
 			var blockid = BlockStateRegistry.getBlockId(_block);
 			if (!blockid) {
-				console.error('Unknow block: '+_block);
+				console.error('Unknow block: ' + _block);
 				return false;
 			}
 			_block = JBlock.get(blockid, tiledata)
@@ -430,23 +434,24 @@ function setBlock(x, y, z, dimid, block, tiledata = 0){
 			for (let key of statesMap.keySet()) {
 				var value = statesMap.get(key).parseValue();
 				var res = isNaN(value) ? value : Number(value);
-				state += ';'+key+'='+String(res);
+				state += ';' + key + '=' + String(res);
 			}
 			try {
 				_block = BlockState.of(state).getBlock();
-			} catch(err) {
-				console.error('Unknow states: '+state);
+			} catch (err) {
+				console.error('Unknow states: ' + state);
 				return false;
 			}
 			break;
 		default:
-			throw 'Error type: '+_block.constructor.name+' Error block: '+_block;
+			throw 'Error type: ' + _block.constructor.name + ' Error block: ' + _block;
 	}
 	if (!_block) {
-		throw 'block parsing of failed: '+JSON.stringify([...arguments]);
+		throw 'block parsing of failed: ' + JSON.stringify([...arguments]);
 	}
 	return _pos.getLevel().setBlock(_pos, _block);
 }
+
 /**
  * 在指定位置生成粒子效果
  * @param x {number} x
@@ -458,10 +463,10 @@ function setBlock(x, y, z, dimid, block, tiledata = 0){
  */
 function spawnParticle(x, y, z, dimid, type) {
 	/*
-	args2: pos, type
-	args1: x, y, z, dim, type
-	args1: x, y, z, dimid, type
-	*/
+    args2: pos, type
+    args1: x, y, z, dim, type
+    args1: x, y, z, dimid, type
+    */
 	if (arguments.length === 5) {
 		const level = dimToLevel(dimid);
 		if (level === null) {
@@ -471,9 +476,10 @@ function spawnParticle(x, y, z, dimid, type) {
 	} else if (arguments.length === 2) {
 		return x.position;// Java Position
 	} else {
-		throw 'error arguments: '+JSON.stringify([...arguments]);
+		throw 'error arguments: ' + JSON.stringify([...arguments]);
 	}
 }
+
 export const mc = {
 	//PNX 的API
 	close: close,

@@ -1,4 +1,4 @@
-import { Server } from 'cn.nukkit.Server';
+import {Server} from 'cn.nukkit.Server';
 
 const server = Server.getInstance();
 
@@ -10,8 +10,8 @@ const server = Server.getInstance();
  * @param version {Array<number,number,number>} 插件的版本信息
  * @param other {Object} 其他你愿意提供的的附加信息（如许可证、开源地址等）传入键值对
  */
- function registerPlugin(name, introduction, version, other) {
-	// 用于更新 plugin.yml 信息
+function registerPlugin(name, introduction, version, other) {
+    // 用于更新 plugin.yml 信息
 }
 
 /**
@@ -23,11 +23,11 @@ const server = Server.getInstance();
  * @returns {boolean} 是否成功导出
  */
 function funcExport(func, namespace, name) {
-	if (!name) {
-		name = namespace;
-	}
-	exposeFunction(namespace, func);
-	return Boolean(contain(namespace));
+    if (!name) {
+        name = namespace;
+    }
+    exposeFunction(namespace, func);
+    return Boolean(contain(namespace));
 }
 
 /**
@@ -37,10 +37,10 @@ function funcExport(func, namespace, name) {
  * @returns {function|null} 导入的函数
  */
 function funcImport(namespace, name) {
-	if (!name) {
-		name = namespace;
-	}
-	return contain(namespace);
+    if (!name) {
+        name = namespace;
+    }
+    return contain(namespace);
 }
 
 /**
@@ -48,17 +48,17 @@ function funcImport(namespace, name) {
  * @returns {Array<string,...>} 返回数组，包含插件名
  */
 function listPlugins() {
-	var list = [];
-	var plugins = server.getPluginManager().getPlugins();
-	for (let plugin of plugins.values()) {// plugin.isEnabled()
-		list.push(plugin.getDescription().getFullName());
-	}
-	return list;
+    var list = [];
+    var plugins = server.getPluginManager().getPlugins();
+    for (let plugin of plugins.values()) {// plugin.isEnabled()
+        list.push(plugin.getDescription().getFullName());
+    }
+    return list;
 }
 
 export const ll = {
-	registerPlugin,
-	export: funcExport,
-	import: funcImport,
-	listPlugins
+    registerPlugin,
+    export: funcExport,
+    import: funcImport,
+    listPlugins
 }

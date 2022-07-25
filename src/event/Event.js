@@ -1,38 +1,70 @@
-import { PowerNukkitX as pnx, EventPriority } from ':powernukkitx';
-import { Player } from '../object/Player.js';
-import { Item } from '../object/Item.js';
-import { Block } from '../object/Block.js';
-import { Server } from 'cn.nukkit.Server';
-import { Player as PnxPlayer } from 'cn.nukkit.Player';
-import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
-import { PlayerInteractEvent } from 'cn.nukkit.event.player.PlayerInteractEvent';
-import { ItemID } from 'cn.nukkit.item.ItemID';
-import { ContainerInventory } from 'cn.nukkit.inventory.ContainerInventory';
-import { PlayerEnderChestInventory } from 'cn.nukkit.inventory.PlayerEnderChestInventory';
-import { PlayerInventory } from 'cn.nukkit.inventory.PlayerInventory';
-import { SlotChangeAction } from 'cn.nukkit.inventory.transaction.action.SlotChangeAction';
-import { DamageCause } from '../utils/DamageCause.js';
+import {PowerNukkitX as pnx, EventPriority} from ':powernukkitx';
+import {Player} from '../object/Player.js';
+import {Item} from '../object/Item.js';
+import {Block} from '../object/Block.js';
+import {Server} from 'cn.nukkit.Server';
+import {Player as PnxPlayer} from 'cn.nukkit.Player';
+import {EntityDamageEvent} from 'cn.nukkit.event.entity.EntityDamageEvent';
+import {PlayerInteractEvent} from 'cn.nukkit.event.player.PlayerInteractEvent';
+import {ItemID} from 'cn.nukkit.item.ItemID';
+import {ContainerInventory} from 'cn.nukkit.inventory.ContainerInventory';
+import {PlayerEnderChestInventory} from 'cn.nukkit.inventory.PlayerEnderChestInventory';
+import {PlayerInventory} from 'cn.nukkit.inventory.PlayerInventory';
+import {SlotChangeAction} from 'cn.nukkit.inventory.transaction.action.SlotChangeAction';
+import {DamageCause} from '../utils/DamageCause.js';
 
 const server = Server.getInstance();
 const PNXDamageCause = EntityDamageEvent.DamageCause;
 const EventNameMap = {  /* Entity Events */
-	"onMobDie": 33, "onEntityExplode": 35, "onProjectileHitEntity": 36, "onWitherBossDestroy": 37, "onRide": 38,
-	"onStepOnPressurePlate": 39, "onSpawnProjectile": 40, "onProjectileCreated": 41, "onNpcCmd": 42, "onChangeArmorStand": 43,
+	"onMobDie": 33,
+	"onEntityExplode": 35,
+	"onProjectileHitEntity": 36,
+	"onWitherBossDestroy": 37,
+	"onRide": 38,
+	"onStepOnPressurePlate": 39,
+	"onSpawnProjectile": 40,
+	"onProjectileCreated": 41,
+	"onNpcCmd": 42,
+	"onChangeArmorStand": 43,
 	"onEntityTransformation": 44,
 	/* Block Events */
-	"onBlockInteracted": 10, "onBlockChanged": 10, "onBlockExplode": 10, "onRespawnAnchorExplode": 10, "onBlockExploded": 10,
-	"onFireSpread": 10, "onCmdBlockExecute": 10, "onContainerChange": 10, "onProjectileHitBlock": 10, "onRedStoneUpdate": 10,
-	"onHopperSearchItem": 10, "onHopperPushOut": 10, "onPistonTryPush": 10, "onPistonPush": 10, "onFarmLandDecay": 10,
-	"onUseFrameBlock": 10, "onLiquidFlow": 10,
+	"onBlockInteracted": 10,
+	"onBlockChanged": 10,
+	"onBlockExplode": 10,
+	"onRespawnAnchorExplode": 10,
+	"onBlockExploded": 10,
+	"onFireSpread": 10,
+	"onCmdBlockExecute": 10,
+	"onContainerChange": 10,
+	"onProjectileHitBlock": 10,
+	"onRedStoneUpdate": 10,
+	"onHopperSearchItem": 10,
+	"onHopperPushOut": 10,
+	"onPistonTryPush": 10,
+	"onPistonPush": 10,
+	"onFarmLandDecay": 10,
+	"onUseFrameBlock": 10,
+	"onLiquidFlow": 10,
 	/* Other Events */
-	"onTick": 10, "onConsoleCmd": 10, "onConsoleOutput": 10,
+	"onTick": 10,
+	"onConsoleCmd": 10,
+	"onConsoleOutput": 10,
 	/* Economic Events */
-	"onMoneyAdd": 10, "onMoneyReduce": 10, "onMoneyTrans": 10, 'onMoneySet': 10,
-	"beforeMoneyAdd": 10, "beforeMoneyReduce": 10, "beforeMoneyTrans": 10, "beforeMoneySet": 10,
+	"onMoneyAdd": 10,
+	"onMoneyReduce": 10,
+	"onMoneyTrans": 10,
+	'onMoneySet': 10,
+	"beforeMoneyAdd": 10,
+	"beforeMoneyReduce": 10,
+	"beforeMoneyTrans": 10,
+	"beforeMoneySet": 10,
 	/* Outdated Events */
-	"onAttack": 10, "onExplode": 10, "onBedExplode": 10,
+	"onAttack": 10,
+	"onExplode": 10,
+	"onBedExplode": 10,
 	/* Internal */
-	"onFormSelected": 10, "EVENT_COUNT": 0
+	"onFormSelected": 10,
+	"EVENT_COUNT": 0
 };
 /* 玩家事件 */
 const onPreJoin = {
@@ -46,7 +78,7 @@ const onPreJoin = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onJoin = {
 	run: (callback) => {
@@ -58,7 +90,7 @@ const onJoin = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onLeft = {
 	run: (callback) => {
@@ -70,7 +102,7 @@ const onLeft = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onRespawn = {
 	run: (callback) => {
@@ -118,7 +150,7 @@ const onPlayerCmd = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onChat = {
 	run: (callback) => {
@@ -132,7 +164,7 @@ const onChat = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onChangeDim = {
 	run: (callback) => {
@@ -156,7 +188,7 @@ const onJump = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onSneak = {
 	run: (callback) => {
@@ -169,7 +201,7 @@ const onSneak = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onAttackEntity = {
 	run: (callback) => {
@@ -183,7 +215,7 @@ const onAttackEntity = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onAttackBlock = {
 	run: (callback) => {
@@ -200,7 +232,7 @@ const onAttackBlock = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onUseItem = {
 	run: (callback) => {
@@ -216,7 +248,7 @@ const onUseItem = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onUseItemOn = {
 	run: (callback) => {
@@ -235,7 +267,7 @@ const onUseItemOn = {
 
 /**
  * @todo itemEntity 需改为LLSE类型
- * @see 未验证
+ * @todo 测试
  */
 const onTakeItem = {
 	run: (callback) => {
@@ -327,7 +359,7 @@ const onEffectUpdated = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onStartDestroyBlock = {
 	run: (callback) => {
@@ -342,7 +374,7 @@ const onStartDestroyBlock = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onDestroyBlock = {
 	run: (callback) => {
@@ -356,7 +388,7 @@ const onDestroyBlock = {
 }
 
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onPlaceBlock = {
 	run: (callback) => {
@@ -493,7 +525,7 @@ const onMobHurt = {
 		});
 		let e2 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageByEntityEvent", EventPriority.NORMAL, event => {
 			let entity = event.getEntity();
-			let isCancel = callback(entity, event.getDamager(), event.getDamage(),DamageCause.getCause(PNXDamageCause.ENTITY_ATTACK));
+			let isCancel = callback(entity, event.getDamager(), event.getDamage(), DamageCause.getCause(PNXDamageCause.ENTITY_ATTACK));
 			if (isCancel) event.setCancelled(!isCancel);
 		});
 		return e1 && e2;
@@ -502,7 +534,7 @@ const onMobHurt = {
 
 /* 其他事件 */
 /**
- * @see 未验证
+ * @todo 测试
  */
 const onScoreChanged = {
 	run: (callback) => {

@@ -1,5 +1,7 @@
-import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
+import {EntityDamageEvent} from 'cn.nukkit.event.entity.EntityDamageEvent';
+
 const JDamageCause = EntityDamageEvent.DamageCause;
+
 /**
  * 伤害原因枚举
  */
@@ -36,34 +38,61 @@ export class DamageCause {
     static Stalactite = 0x1C;//没实现
     static Stalagmite = 0x1D;//没实现
     static All = 0x1F;
+
     static getCause(Cause) {
         switch (Cause) {
-            case JDamageCause.NONE: return DamageCause.None;
-            case JDamageCause.CONTACT: return DamageCause.Contact;
-            case JDamageCause.ENTITY_ATTACK: return DamageCause.EntityAttack;
-            case JDamageCause.PROJECTILE: return DamageCause.Projectile;
-            case JDamageCause.SUFFOCATION: return DamageCause.Suffocation;
-            case JDamageCause.FALL: return DamageCause.Fall;
-            case JDamageCause.FIRE: return DamageCause.Fire;
-            case JDamageCause.FIRE_TICK: return DamageCause.FireTick;
-            case JDamageCause.LAVA: return DamageCause.Lava;
-            case JDamageCause.DROWNING: return DamageCause.Drowning;
-            case JDamageCause.BLOCK_EXPLOSION: return DamageCause.BlockExplosion;
-            case JDamageCause.ENTITY_EXPLOSION: return DamageCause.EntityExplosion;
-            case JDamageCause.VOID: return DamageCause.Void;
-            case JDamageCause.SUICIDE: return DamageCause.Suicide;
-            case JDamageCause.MAGIC: return DamageCause.Magic;
-            case JDamageCause.CUSTOM: return DamageCause.Override;
-            case JDamageCause.LIGHTNING: return DamageCause.Lightning;
-            case JDamageCause.HUNGER: return DamageCause.Starve;
-            case JDamageCause.WITHER: return DamageCause.Wither;
-            case JDamageCause.THORNS: return DamageCause.Thorns;
-            case JDamageCause.FALLING_BLOCK: return DamageCause.FallingBlock;
-            case JDamageCause.FLYING_INTO_WALL: return DamageCause.FlyIntoWall;
-            case JDamageCause.HOT_FLOOR: return DamageCause.Magma;
-            case JDamageCause.FIREWORKS: return DamageCause.Fireworks;
-            case JDamageCause.FREEZING: return DamageCause.Freezing;
-            default: return DamageCause.All;
+            case JDamageCause.NONE:
+                return DamageCause.None;
+            case JDamageCause.CONTACT:
+                return DamageCause.Contact;
+            case JDamageCause.ENTITY_ATTACK:
+                return DamageCause.EntityAttack;
+            case JDamageCause.PROJECTILE:
+                return DamageCause.Projectile;
+            case JDamageCause.SUFFOCATION:
+                return DamageCause.Suffocation;
+            case JDamageCause.FALL:
+                return DamageCause.Fall;
+            case JDamageCause.FIRE:
+                return DamageCause.Fire;
+            case JDamageCause.FIRE_TICK:
+                return DamageCause.FireTick;
+            case JDamageCause.LAVA:
+                return DamageCause.Lava;
+            case JDamageCause.DROWNING:
+                return DamageCause.Drowning;
+            case JDamageCause.BLOCK_EXPLOSION:
+                return DamageCause.BlockExplosion;
+            case JDamageCause.ENTITY_EXPLOSION:
+                return DamageCause.EntityExplosion;
+            case JDamageCause.VOID:
+                return DamageCause.Void;
+            case JDamageCause.SUICIDE:
+                return DamageCause.Suicide;
+            case JDamageCause.MAGIC:
+                return DamageCause.Magic;
+            case JDamageCause.CUSTOM:
+                return DamageCause.Override;
+            case JDamageCause.LIGHTNING:
+                return DamageCause.Lightning;
+            case JDamageCause.HUNGER:
+                return DamageCause.Starve;
+            case JDamageCause.WITHER:
+                return DamageCause.Wither;
+            case JDamageCause.THORNS:
+                return DamageCause.Thorns;
+            case JDamageCause.FALLING_BLOCK:
+                return DamageCause.FallingBlock;
+            case JDamageCause.FLYING_INTO_WALL:
+                return DamageCause.FlyIntoWall;
+            case JDamageCause.HOT_FLOOR:
+                return DamageCause.Magma;
+            case JDamageCause.FIREWORKS:
+                return DamageCause.Fireworks;
+            case JDamageCause.FREEZING:
+                return DamageCause.Freezing;
+            default:
+                return DamageCause.All;
         }
     }
 }

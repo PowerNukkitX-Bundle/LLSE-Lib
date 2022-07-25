@@ -66,7 +66,7 @@ export function createRAF(path, mode = 'rw') {
         rafCache.set(path.toString(), raf);
         return true;
     } catch (e) {
-        if (debugMode) console.error('createRAF: '+e);
+        if (debugMode) console.error('createRAF: ' + e);
         return false;
     }
 }
@@ -131,7 +131,7 @@ export function readText(path, cnt) {
         }
         return new JString(chars);
     } catch (e) {
-        if (debugMode) console.error('readText: '+e);
+        if (debugMode) console.error('readText: ' + e);
         errCache.set(path.toString(), e);
         return null;
     }
@@ -150,7 +150,7 @@ export function readBuffer(path, cnt) {
         raf.read(bytes);
         return new SharedArrayBuffer(ByteBuffer.wrap(bytes));
     } catch (e) {
-        if (debugMode) console.error('readBuffer: '+e);
+        if (debugMode) console.error('readBuffer: ' + e);
         errCache.set(path.toString(), e);
         return null;
     }
@@ -165,7 +165,7 @@ export function readLine(path) {
     try {
         return getRAF(path).readLine();
     } catch (e) {
-        if (debugMode) console.error('readLine: '+e);
+        if (debugMode) console.error('readLine: ' + e);
         errCache.set(path.toString(), e);
         return null;
     }
@@ -180,7 +180,7 @@ export function readAllText(path) {
     try {
         return Files.readString(path, StandardCharsets.UTF_8);
     } catch (e) {
-        if (debugMode) console.error('readAllText: '+e);
+        if (debugMode) console.error('readAllText: ' + e);
         errCache.set(path.toString(), e);
         return null;
     }
@@ -195,7 +195,7 @@ export function readAllBuffer(path) {
     try {
         return new SharedArrayBuffer(ByteBuffer.wrap(Files.readAllBytes(path)));
     } catch (e) {
-        if (debugMode) console.error('readAllBuffer: '+e);
+        if (debugMode) console.error('readAllBuffer: ' + e);
         errCache.set(path.toString(), e);
         return null;
     }
@@ -213,7 +213,7 @@ export function writeText(path, str) {
         getRAF(path).write(Java.to(strToUtf8Bytes(str), "byte[]"));
         return true;
     } catch (e) {
-        if (debugMode) console.error('writeText: '+e);
+        if (debugMode) console.error('writeText: ' + e);
         errCache.set(path.toString(), e);
         return false;
     }
@@ -241,10 +241,10 @@ export function strToUtf8Bytes(str) {
             // splitting the 20 bits of 0x0-0xFFFFF into two halves
             charCode = 0x10000 + (((charCode & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff));
             utf8.push(
-            0xf0 | (charCode >> 18),
-            0x80 | ((charCode >> 12) & 0x3f),
-            0x80 | ((charCode >> 6) & 0x3f),
-            0x80 | (charCode & 0x3f),
+                0xf0 | (charCode >> 18),
+                0x80 | ((charCode >> 12) & 0x3f),
+                0x80 | ((charCode >> 6) & 0x3f),
+                0x80 | (charCode & 0x3f),
             );
         }
     }
@@ -257,6 +257,7 @@ export function strToUtf8Bytes(str) {
     }
     return new Int8Array(utf8);
 }
+
 /**
  * 将数据写入文件
  * @param path {java.nio.file.Path}
@@ -270,7 +271,7 @@ export function writeBuffer(path, buffer) {
         getRAF(path).write(Java.to(new Int8Array(buffer), "byte[]"));
         return true;
     } catch (e) {
-        if (debugMode) console.error('writeBuffer: '+e);
+        if (debugMode) console.error('writeBuffer: ' + e);
         errCache.set(path.toString(), e);
         return false;
     }
@@ -306,7 +307,7 @@ export function seekTo(path, newPos, isRelative) {
             return false;
         }
     } catch (e) {
-        if (debugMode) console.error('seekTo: '+e);
+        if (debugMode) console.error('seekTo: ' + e);
         return false;
     }
 }
@@ -323,7 +324,7 @@ export function resize(path, newSize) {
         try {
             raf.setLength(newSize);
         } catch (e) {
-            if (debugMode) console.error('resize: '+e);
+            if (debugMode) console.error('resize: ' + e);
             errCache.set(path.toString(), e);
             return false;
         }
@@ -343,7 +344,7 @@ export function getPointerPos(path) {
         try {
             return raf.getFilePointer();
         } catch (e) {
-            if (debugMode) console.error('getPointerPos: '+e);
+            if (debugMode) console.error('getPointerPos: ' + e);
             errCache.set(path.toString(), e);
             return null;
         }
@@ -363,7 +364,7 @@ export function getSize(path) {
         try {
             return raf.length();
         } catch (e) {
-            if (debugMode) console.error('getSize: '+e);
+            if (debugMode) console.error('getSize: ' + e);
             errCache.set(path.toString(), e);
             return null;
         }
@@ -385,7 +386,7 @@ export function close(path) {
             errCache.delete(path.toString());
             raf.close();
         } catch (e) {
-            if (debugMode) console.error('close: '+e);
+            if (debugMode) console.error('close: ' + e);
             errCache.set(path.toString(), e);
             return false;
         }
