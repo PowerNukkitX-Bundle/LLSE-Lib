@@ -72,7 +72,7 @@ const onPreJoin = {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerPreLoginEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
             let isCancel = callback(Player.getPlayer(player));
-            if (isCancel) event.setCancelled(!isCancel);
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -144,7 +144,7 @@ const onPlayerCmd = {
             let player = event.getPlayer();
             let cmd = event.getMessage();
             let isCancel = callback(Player.getPlayer(player), cmd);
-            if (isCancel) event.setCancelled(!isCancel);
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -158,7 +158,7 @@ const onChat = {
             let player = event.getPlayer();
             let cmd = event.getMessage();
             let isCancel = callback(Player.getPlayer(player), cmd);
-            if (isCancel) event.setCancelled(!isCancel);
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -209,7 +209,7 @@ const onAttackEntity = {
             let player = event.getPlayer();
             let entity = event.getEntity();
             let isCancel = callback(Player.getPlayer(player), entity);
-            if (isCancel) event.setCancelled(!isCancel);
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -224,8 +224,8 @@ const onAttackBlock = {
             if (event.getAction() === PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
                 let item = event.getItem();
                 let block = event.getBlock();
-                let isCancel = callback(Player.getPlayer(player), Block.get(block), Item.newItem(item));
-                if (isCancel) event.setCancelled(!isCancel);
+                let isCancel = callback(Player.getPlayer(player), Block.get(block), Item.newItem(item, null));
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -240,8 +240,8 @@ const onUseItem = {
             let player = event.getPlayer();
             if (event.getAction() === PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.getAction() === PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
                 let item = event.getItem();
-                let isCancel = callback(Player.getPlayer(player), Item.newItem(item));
-                if (isCancel) event.setCancelled(!isCancel);
+                let isCancel = callback(Player.getPlayer(player), Item.newItem(item, null));
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -258,8 +258,8 @@ const onUseItemOn = {
                 let item = event.getItem();
                 let block = event.getBlock();
                 let face = event.getFace().getIndex();
-                let isCancel = callback(Player.getPlayer(player), Item.newItem(item), Block.get(block), face);
-                if (isCancel) event.setCancelled(!isCancel);
+                let isCancel = callback(Player.getPlayer(player), Item.newItem(item, null), Block.get(block), face);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -275,8 +275,8 @@ const onTakeItem = {
             let player = event.getViewers()[0];
             let itemEntity = event.getItem();
             let item = event.getItem().getItem();
-            let isCancel = callback(Player.getPlayer(player), itemEntity, Item.newItem(item));
-            if (isCancel) event.setCancelled(!isCancel);
+            let isCancel = callback(Player.getPlayer(player), itemEntity, Item.newItem(item, null));
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -286,8 +286,8 @@ const onEat = {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerItemConsumeEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
             let item = event.getItem();
-            let isCancel = callback(Player.getPlayer(player), Item.newItem(item));
-            if (isCancel) event.setCancelled(!isCancel);
+            let isCancel = callback(Player.getPlayer(player), Item.newItem(item, null));
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -297,8 +297,8 @@ const onDropItem = {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerDropItemEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
             let item = event.getItem();
-            let isCancel = callback(Player.getPlayer(player), Item.newItem(item));
-            if (isCancel) event.setCancelled(!isCancel);
+            let isCancel = callback(Player.getPlayer(player), Item.newItem(item, null));
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -311,7 +311,7 @@ const onConsumeTotem = {
                 if (player.getInventory().getItemInHand().getId() === ItemID.TOTEM) {
                     if (player.getHealth() - event.getDamage() <= 0.2) {
                         let isCancel = callback(Player.getPlayer(player));
-                        if (isCancel) event.setCancelled(!isCancel);
+                        if (!isCancel) event.setCancelled(!isCancel);
                     }
                 }
             }
@@ -326,7 +326,7 @@ const onEffectAdded = {
             if (player instanceof PnxPlayer) {
                 let effect = event.getApplyEffect().getName();
                 let isCancel = callback(Player.getPlayer(player), effect);
-                if (isCancel) event.setCancelled(!isCancel);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -339,7 +339,7 @@ const onEffectRemoved = {
             if (player instanceof PnxPlayer) {
                 let effect = event.getRemoveEffect().getName();
                 let isCancel = callback(Player.getPlayer(player), effect);
-                if (isCancel) event.setCancelled(!isCancel);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -352,7 +352,7 @@ const onEffectUpdated = {
             if (player instanceof PnxPlayer) {
                 let effect = event.getUpdateEffect().getName();
                 let isCancel = callback(Player.getPlayer(player), effect);
-                if (isCancel) event.setCancelled(!isCancel);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -382,7 +382,7 @@ const onDestroyBlock = {
             let player = event.getPlayer();
             let block = event.getBlock();
             let isCancel = callback(Player.getPlayer(player), Block.get(block));
-            if (isCancel) event.setCancelled(!isCancel);
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -396,7 +396,7 @@ const onPlaceBlock = {
             let player = event.getPlayer();
             let block = event.getBlock();
             let isCancel = callback(Player.getPlayer(player), Block.get(block));
-            if (isCancel) event.setCancelled(!isCancel);
+            if (!isCancel) event.setCancelled(!isCancel);
         });
     }
 }
@@ -408,7 +408,7 @@ const onOpenContainer = {
                 let player = event.getPlayer();
                 let block = player.getTargetBlock(player.getViewDistance());
                 let isCancel = callback(Player.getPlayer(player), Block.get(block));
-                if (isCancel) event.setCancelled(!isCancel);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -427,7 +427,7 @@ const onCloseContainer = {
             if (event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory) {
                 let player = event.getPlayer();
                 let isCancel = callback(Player.getPlayer(player), map.get(player));
-                if (isCancel) event.setCancelled(!isCancel);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
         return e1 && e2;
@@ -479,7 +479,7 @@ const onSetArmor = {
             if (player instanceof PnxPlayer) {
                 let slotNum = event.getSlot();
                 let item = event.getOldItem();
-                callback(Player.getPlayer(player), slotNum, Item.newItem(item));
+                callback(Player.getPlayer(player), slotNum, Item.newItem(item, null));
             }
         });
     }
@@ -508,7 +508,7 @@ const onOpenContainerScreen = {
             if (event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory) {
                 let player = event.getPlayer();
                 let isCancel = callback(Player.getPlayer(player));
-                if (isCancel) event.setCancelled(!isCancel);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
     }
@@ -520,13 +520,13 @@ const onMobHurt = {
             if (event.getCause() !== EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 let entity = event.getEntity();
                 let isCancel = callback(entity, null, event.getDamage(), DamageCause.getCause(event.getCause()));
-                if (isCancel) event.setCancelled(!isCancel);
+                if (!isCancel) event.setCancelled(!isCancel);
             }
         });
         let e2 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageByEntityEvent", EventPriority.NORMAL, event => {
             let entity = event.getEntity();
             let isCancel = callback(entity, event.getDamager(), event.getDamage(), DamageCause.getCause(PNXDamageCause.ENTITY_ATTACK));
-            if (isCancel) event.setCancelled(!isCancel);
+            if (!isCancel) event.setCancelled(!isCancel);
         });
         return e1 && e2;
     }
@@ -542,7 +542,7 @@ const onScoreChanged = {
             if (event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory) {
                 const scorer = event.getScorer();
                 const score = event.getScoreboard();
-                if (scorer.getScorerType() != 1) {
+                if (scorer.getScorerType() !== 1) {
                     return;
                 }
                 callback(Player.getPlayer(server.getPlayer(scorer.getName())), event.getNewValue(), score.getObjectiveName(), score.getDisplayName());

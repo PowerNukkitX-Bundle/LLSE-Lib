@@ -1,16 +1,18 @@
 import {DirectionAngle} from './DirectionAngle.js';
 import {IntPos} from './IntPos.js';
 import {FloatPos} from './FloatPos.js';
-import {Player} from 'cn.nukkit.Player';
+import {Player as PNXPlayer} from 'cn.nukkit.Player';
 import {EntityItem} from 'cn.nukkit.entity.item.EntityItem';
 import {Position} from 'cn.nukkit.level.Position'
 import {Server} from 'cn.nukkit.Server';
 import {Vector3} from 'cn.nukkit.math.Vector3';
 import {Collectors} from "java.util.stream.Collectors";
 import {Entity as PNXEntity} from 'cn.nukkit.entity.Entity'
-import {Item} from "./Item";
-import {Block} from "./Block";
+import {Item} from "./Item.js";
+import {Block} from "./Block.js";
 import {EntityMob} from "cn.nukkit.entity.mob.EntityMob";
+import {EntityArmorStand} from "cn.nukkit.entity.item.EntityArmorStand";
+import {Player} from "./Player.js";
 
 const server = Server.getInstance();
 
@@ -20,7 +22,7 @@ export class Entity {
      */
     constructor(Entity) {
         this._PNXEntity = Entity;
-        this.DirectionAngle = new DirectionAngle(Entity);
+        this.DirectionAngle = new DirectionAngle(this._PNXEntity);
     }
 
     get name() {// 实体名称	String
@@ -73,14 +75,17 @@ export class Entity {
 
     /**
      * 传送实体至指定位置
-     * @param x {IntPos|FloatPos} 目标位置坐标(或者使用 x, y, z, dimid 来确定实体位置)
+     * @param x {IntPos|FloatPos|Number} 目标位置坐标
+     * @param y {Number}
+     * @param z {Number}
+     * @param dimid {Number}
      * @returns {boolean} 是否成功传送
      */
     teleport(x, y, z, dimid) {
         if (arguments.length === 1) {
             return this._PNXEntity.teleport(x.position);
         } else {
-            const level = server.getLevelByName(isNaN(dimid) ? dimid : this.levels[dimid]);
+            const level = server.getLevel(dimid);
             if (level == null) {
                 console.log('\nUnknow worlds: ' + dimid + '\n  at Entity.js -> teleport()');
                 return false;
@@ -122,7 +127,7 @@ export class Entity {
      * @returns {boolean} 当前实体对象是不是玩家
      */
     isPlayer() {
-        return this._PNXEntity instanceof Player;
+        return this._PNXEntity instanceof PNXPlayer;
     }
 
     /**
@@ -148,7 +153,7 @@ export class Entity {
      * @returns {Item} 获取到的物品对象,如果此实体对象不是掉落物实体，或者获取失败，则返回 Null
      */
     toItem() {
-        if (this.isItemEntity()) return new Item(this.getItem());
+        if (this.isItemEntity()) return new Item(this.getItem(), null);
         else return null;
     }
 
@@ -169,8 +174,8 @@ export class Entity {
     getArmor() {
         if (this._PNXEntity instanceof EntityMob || this._PNXEntity instanceof EntityArmorStand) {
             return this._PNXEntity.getArmorInventory();
-        } else if (this._PNXEntity instanceof Player) {
-            return this._PNXPlayer.getInventory().getArmorContents();
+        } else if (this._PNXEntity instanceof PNXPlayer) {
+            return this._PNXEntity.getInventory().getArmorContents();
         }
     }
 
@@ -250,7 +255,7 @@ export class Entity {
      * @returns {NbtCompound} LLSE的NbtCompound对象
      */
     getNbt() {
-        return true;
+        return null;
     }
 
     /**
