@@ -89,14 +89,14 @@ export class Player {
     }
 
     /**
-     * @return {String} 返回玩家Uuid字符串
+     * @return {String} 返回玩家Xuid字符串
      */
     get xuid() {
         return this._PNXPlayer.getLoginChainData().getXUID();
     }
 
     /**
-     * @return {String} 返回玩家Xuid字符串
+     * @return {String} 返回玩家Uuid字符串
      */
     get uuid() {
         return this._PNXPlayer.getLoginChainData().getClientUUID();
@@ -346,7 +346,7 @@ export class Player {
      * @returns {Item} 玩家主手中的物品对象
      */
     getHand() {
-        const handitem = Item.newItem(this._PNXPlayer.getInventory().getItemInHand());
+        const handitem = Item.newItem(this._PNXPlayer.getInventory().getItemInHand(), null);
         if (handitem != null) {
             handitem._reference = [this._PNXPlayer, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()];
         }
@@ -358,7 +358,7 @@ export class Player {
      * @returns {Item} Item对象
      */
     getOffHand() {
-        const offhandItem = Item.newItem(this._PNXPlayer.getOffhandInventory().getItem(0));
+        const offhandItem = Item.newItem(this._PNXPlayer.getOffhandInventory().getItem(0), null);
         if (offhandItem != null) {
             offhandItem._reference = [this._PNXPlayer, 'offhand', 0];
         }

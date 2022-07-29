@@ -66,6 +66,7 @@ export {Format} from './utils/Format.js';
 export {PermType} from './utils/PermType.js';
 export {system} from './utils/system.js';
 export {logger} from './utils/logger.js';
+export {money} from './money/money.js';
 export {ll} from './core/ll.js';
 export {mc} from './core/mc.js';
 export {File} from './file/File.js';

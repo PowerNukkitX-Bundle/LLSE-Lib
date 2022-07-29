@@ -1,7 +1,14 @@
 import {Item as PNXItem} from 'cn.nukkit.item.Item';
-import {EnumLevel} from 'cn.nukkit.level.EnumLevel';
 import {Position} from 'cn.nukkit.level.Position';
 import {Vector3} from 'cn.nukkit.math.Vector3';
+import {EntityItem} from "cn.nukkit.entity.item.EntityItem";
+import {Entity as PNXEntity} from "cn.nukkit.entity.Entity";
+import {Random} from "java.util.Random";
+import {NBTIO} from "cn.nukkit.nbt.NBTIO";
+import {Entity} from "./Entity.js";
+import {Server} from "cn.nukkit.Server";
+
+const server = Server.getInstance();
 
 export class Item {
     /**
@@ -52,7 +59,7 @@ export class Item {
                 break;
             }
             case 'offhand': {
-                this._reference[0].getOffhandInventory().setItem(this._reference[2], this._PNXItem);
+                this._reference[0].getOffhandInventory().setItem(this._reference[2], this._PNXItem, true);
                 break;
             }
             default:
@@ -142,7 +149,7 @@ export class Item {
      * @returns {Item}
      */
     clone() {
-        return Item.newItem(this._PNXItem.clone());
+        return new Item(this._PNXItem.clone(), null);
     }
 
     /**
@@ -162,7 +169,7 @@ export class Item {
             succ = false;
         }
         if (succ) {
-            _changeItem();
+            this._changeItem();
         }
         return succ;
     }
@@ -201,36 +208,40 @@ export class Item {
         args1: item,pos
         args2: item,x,y,z,dimid
         */
-        var arg1, arg2;
+        let position, thisitem;
         if (arguments.length === 5) {
-            arg1 = Position.fromObject(new Vector3(arguments[1], arguments[2], arguments[3]), Number(getLevels()[arguments[4]]));
+            const level = server.getLevel(arguments[4]);
+            position = Position.fromObject(new Vector3(arguments[1], arguments[2], arguments[3]), level);
         } else if (arguments.length === 2) {
             if (pos instanceof Position) {
-                arg1 = pos;
+                position = pos;
             } else {
-                arg1 = pos._PNXPos;
+                position = pos.position;
             }
         } else {
             throw 'Wrong number of parameters.';
         }
         if (item instanceof PNXItem) {
-            arg2 = item;
+            thisitem = item;
         } else if (item instanceof Item) {
-            arg2 = item._PNXItem;
+            thisitem = item._PNXItem;
         }
-        arg1.getLevel().dropItem(arg1, arg2, new Vector3(0, 0, 0));
-        return true;
+        if (thisitem.getId() !== 0 && thisitem.getCount() > 0) {
+            let itemEntity = new EntityItem(
+                position.getLevel().getChunk(position.getX() >> 4, position.getZ() >> 4, true),
+                PNXEntity.getDefaultNBT(position, new Vector3(0, 0, 0), new Random().nextFloat() * 360, 0)
+                    .putShort("Health", 5)
+                    .putCompound("Item", NBTIO.putItemHelper(thisitem))
+                    .putShort("PickupDelay", 10));
+            if (itemEntity != null) {
+                itemEntity.spawnToAll();
+                return new Entity(itemEntity);
+            } else return null;
+        }
+        return null;
     }
 
     toString() {
         return JSON.stringify({name: this.name, id: this.id, count: this.count, aux: this.aux, type: this.type});
     }
-}
-
-export function getLevels() {
-    return [
-        EnumLevel.OVERWORLD.getLevel().getName(),
-        EnumLevel.NETHER.getLevel().getName(),
-        EnumLevel.THE_END.getLevel().getName()
-    ];
 }

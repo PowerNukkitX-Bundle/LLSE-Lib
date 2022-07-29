@@ -1,10 +1,11 @@
+import {Entity as PNXEntity} from 'cn.nukkit.entity.Entity'
 export class DirectionAngle {
     /**
      * 创建一个DirectionAngle对象
-     * @param entity {Entity} 实体对象
+     * @param PNXEntity {PNXEntity}
      */
-    constructor(entity) {
-        this.entity = entity;
+    constructor(PNXEntity) {
+        this.entity = PNXEntity;
     }
 
     /**
