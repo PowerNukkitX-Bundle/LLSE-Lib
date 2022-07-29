@@ -1,6 +1,12 @@
+import {Item} from "./Item.js";
+import {Block} from "./Block.js";
 import {DirectionAngle} from './DirectionAngle.js';
 import {IntPos} from './IntPos.js';
 import {FloatPos} from './FloatPos.js';
+import {Player} from "./Player.js";
+import {PlayerArmorContainer} from "../container/PlayerArmorContainer.js";
+import {EntityArmorContainer} from "../container/EntityArmorContainer.js";
+
 import {Player as PNXPlayer} from 'cn.nukkit.Player';
 import {EntityItem} from 'cn.nukkit.entity.item.EntityItem';
 import {Position} from 'cn.nukkit.level.Position'
@@ -8,11 +14,11 @@ import {Server} from 'cn.nukkit.Server';
 import {Vector3} from 'cn.nukkit.math.Vector3';
 import {Collectors} from "java.util.stream.Collectors";
 import {Entity as PNXEntity} from 'cn.nukkit.entity.Entity'
-import {Item} from "./Item.js";
-import {Block} from "./Block.js";
 import {EntityMob} from "cn.nukkit.entity.mob.EntityMob";
 import {EntityArmorStand} from "cn.nukkit.entity.item.EntityArmorStand";
-import {Player} from "./Player.js";
+import {Container} from "../container/Container";
+import {EntityHumanType} from "cn.nukkit.entity.EntityHumanType";
+
 
 const server = Server.getInstance();
 
@@ -168,24 +174,26 @@ export class Entity {
 
     /**
      * 获取实体盔甲栏对象
-     * @todo 容器需要修改
+     * @todo 测试
      * @returns {Container} Container对象
      */
     getArmor() {
         if (this._PNXEntity instanceof EntityMob || this._PNXEntity instanceof EntityArmorStand) {
-            return this._PNXEntity.getArmorInventory();
+            return new EntityArmorContainer(this._PNXEntity.getArmorInventory());
         } else if (this._PNXEntity instanceof PNXPlayer) {
-            return this._PNXEntity.getInventory().getArmorContents();
+            return new PlayerArmorContainer(this._PNXEntity.getInventory().getArmorContents());
         }
     }
 
     /**
      * 判断生物是否拥有容器（盔甲栏除外）
-     * @todo 待实现
-     * @returns {Container} 这个生物实体是否拥有容器
+     * @todo 由于Pnx目前没有实现带容器实体(驴 羊驼 马),只检测玩家
+     * @returns {Boolean} 这个生物实体是否拥有容器
      */
     hasContainer() {
-
+        if (this instanceof EntityHumanType) {
+            return true;
+        } else return false;
     }
 
     /**
@@ -194,6 +202,12 @@ export class Entity {
      * @returns {Container} 这个生物实体所拥有的容器对象
      */
     getContainer() {
+        if (this.hasContainer()) {
+            if (this.isPlayer()) {
+                return new Container(this.getInventory());
+            }
+        }
+        return null
     }
 
     /**
@@ -202,6 +216,19 @@ export class Entity {
      * @returns {boolean} 是否成功刷新
      */
     refreshItems() {
+        if (this._PNXEntity instanceof EntityHumanType) {
+            this._PNXEntity.getInventory().sendContents(this._PNXEntity);
+            this._PNXEntity.getInventory().sendArmorContents(this._PNXEntity);
+            return ture;
+        } else if (this._PNXEntity instanceof EntityMob || this._PNXEntity instanceof EntityArmorStand) {
+            let iter = this._PNXEntity.getViewers().iterator();
+            while (iter.hasNext()) {
+                let pl = iter.next();
+                this._PNXEntity.getInventory().sendArmorContents(pl);
+            }
+            return true;
+        }
+        return false
     }
 
     /**

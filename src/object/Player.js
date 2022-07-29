@@ -459,6 +459,8 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     refreshItems() {
+        this._PNXPlayer.getInventory().sendContents(this._PNXPlayer);
+        this._PNXPlayer.getInventory().sendArmorContents(this._PNXPlayer);
         return true;
     }
 

@@ -4,13 +4,13 @@ import {Item} from "../object/Item.js";
 /**
  * @todo 测试
  */
-export class PlayerArmorContainer extends Container {
-    constructor(PlayerInventory) {
-        super(PlayerInventory);
+export class EntityArmorContainer extends Container {
+    constructor(EntityInventory) {
+        super(EntityInventory);
     }
 
     get size() {
-        return this._PNXInv.getSize();
+        return 4;
     }
 
     _setArmor(item) {
@@ -31,7 +31,10 @@ export class PlayerArmorContainer extends Container {
     }
 
     addItemToFirstEmptySlot(item) {
-        return this._setArmor(item);
+        if (this.hasRoomFor(item)) {
+            return this._setArmor(item);
+        }
+        return false;
     }
 
     hasRoomFor(item) {
@@ -53,25 +56,25 @@ export class PlayerArmorContainer extends Container {
         let pnxInv = this._PNXInv;
         if (item._PNXItem.isHelmet()) {
             if (item._PNXItem.equals(pnxInv.getHelmet(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize());
+                pnxInv.clear(0);
                 return true;
             }
             return false;
         } else if (item._PNXItem.isChestplate()) {
             if (item._PNXItem.equals(pnxInv.getChestplate(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize() + 1);
+                pnxInv.clear(1);
                 return true;
             }
             return false;
         } else if (item._PNXItem.isLeggings()) {
             if (item._PNXItem.equals(pnxInv.getLeggings(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize() + 2);
+                pnxInv.clear(2);
                 return true;
             }
             return false;
         } else if (item._PNXItem.isBoots()) {
             if (item._PNXItem.equals(pnxInv.getBoots(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize() + 3);
+                pnxInv.clear(3);
                 return true;
             }
             return false;
@@ -80,7 +83,7 @@ export class PlayerArmorContainer extends Container {
     }
 
     getItem(index) {
-        if (index < 0 || index > 3) throw '玩家盔甲栏的索引超出范围(0-3)';
+        if (index < 0 || index > 3) throw '实体盔甲栏的索引超出范围(0-3)';
         switch (index) {
             case 0:
                 return new Item(this._PNXInv.getHelmet(), null);
@@ -95,31 +98,16 @@ export class PlayerArmorContainer extends Container {
     }
 
     setItem(index, item) {
-        if (index < 0 || index > 3) throw '玩家盔甲栏的索引超出范围(0-3)';
-        return this._PNXInv.setItem(this._PNXInv.getSize() + index, item._PNXItem);
+        if (index < 0 || index > 3) throw '实体盔甲栏的索引超出范围(0-3)';
+        return this._PNXInv.setItem(index, item._PNXItem);
     }
 
     getAllItems() {
         let allItems = [];
-        for (let item of this._PNXInv.getArmorContents()) {
-            allItems.push(new Item(item, null));
-        }
+        allItems.push(new Item(this._PNXInv.getHelmet(), null));
+        allItems.push(new Item(this._PNXInv.getChestplate(), null));
+        allItems.push(new Item(this._PNXInv.getLeggings(), null));
+        allItems.push(new Item(this._PNXInv.getBoots(), null));
         return allItems;
-    }
-
-    removeAllItems() {
-        let c1 = this._PNXInv.clear(this._PNXInv.getSize());
-        let c2 = this._PNXInv.clear(this._PNXInv.getSize() + 1);
-        let c3 = this._PNXInv.clear(this._PNXInv.getSize() + 2);
-        let c4 = this._PNXInv.clear(this._PNXInv.getSize() + 3);
-        return c1 && c2 && c3 && c4;
-    }
-
-    isEmpty() {
-        let c1 = this._PNXInv.getHelmet().isNull();
-        let c2 = this._PNXInv.getChestplate().isNull();
-        let c3 = this._PNXInv.getLeggings().isNull();
-        let c4 = this._PNXInv.getBoots().isNull();
-        return c1 && c2 && c3 && c4;
     }
 }
