@@ -453,12 +453,13 @@ export class Player {
      */
     clearItem(type) {
         if (type == null) return 0
+        let num = 0;
         let inv = this._PNXPlayer.getInventory()
         let limit = inv.getSize() + 4
         for (let i = 0; i < limit; i++) {
-            if (inv.getItem(i).getNamespaceId() == type) inv.clear(i);
+            if (inv.getItem(i).getNamespaceId() == type) { inv.clear(i); num++ };
         }
-        return 1;
+        return num;
     }
 
     /**
