@@ -8,6 +8,7 @@ load: STARTUP # 插件加载顺序，只能填写 STARTUP 或 POSTWORLD
 authors: # 此项可以不存在
   - Mcayear
   - CoolLoong
+  - heng-nian
 description: LiteLoader 的实现库
 website: https://mc.xz.cn/list/Minecraft
 features:
