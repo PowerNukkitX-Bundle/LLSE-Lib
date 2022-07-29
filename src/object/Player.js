@@ -89,14 +89,14 @@ export class Player {
     }
 
     /**
-     * @return {String} 返回玩家Uuid字符串
+     * @return {String} 返回玩家Xuid字符串
      */
     get xuid() {
         return this._PNXPlayer.getLoginChainData().getXUID();
     }
 
     /**
-     * @return {String} 返回玩家Xuid字符串
+     * @return {String} 返回玩家Uuid字符串
      */
     get uuid() {
         return this._PNXPlayer.getLoginChainData().getClientUUID();
