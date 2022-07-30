@@ -61,6 +61,14 @@ export const colorLog = function (color, ...args) {
     console.log.apply(this, arr);
 }
 
+/**
+ * 异步输出（无返回值）
+ * @param ...args {any} 待输出的变量或者函数，可以多个参数。
+ */
+export const fastLog = async function (...args) {
+    console.log(...args);
+}
+
 export { data } from './utils/data.js';
 export { Format } from './utils/Format.js';
 export { PermType } from './utils/PermType.js';
