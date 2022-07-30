@@ -1,4 +1,4 @@
-import {Player} from './Player.js';
+import { Player } from './Player.js';
 
 /**
  * 玩家设备信息对象

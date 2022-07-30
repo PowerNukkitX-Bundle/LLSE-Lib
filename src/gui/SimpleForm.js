@@ -1,6 +1,6 @@
-import {FormWindowSimple} from 'cn.nukkit.form.window.FormWindowSimple';
-import {ElementButton} from 'cn.nukkit.form.element.ElementButton';
-import {ElementButtonImageData} from 'cn.nukkit.form.element.ElementButtonImageData';
+import { FormWindowSimple } from 'cn.nukkit.form.window.FormWindowSimple';
+import { ElementButton } from 'cn.nukkit.form.element.ElementButton';
+import { ElementButtonImageData } from 'cn.nukkit.form.element.ElementButtonImageData';
 
 export class SimpleForm {
     constructor(title, content) {

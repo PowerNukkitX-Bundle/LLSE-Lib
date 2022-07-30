@@ -1,5 +1,5 @@
-import {Integer} from "java.lang.Integer";
-import {IntTag} from "cn.nukkit.nbt.tag.IntTag";
+import { Integer } from "java.lang.Integer";
+import { IntTag } from "cn.nukkit.nbt.tag.IntTag";
 
 export class NbtInt extends CommonNbt {
     constructor(data) {
@@ -12,7 +12,9 @@ export class NbtInt extends CommonNbt {
     set(data) {
         if (this._evaluate(data)) {
             this._pnxNbt.setData(data);
+            return true;
         }
+        return false;
     }
 
     _evaluate(data) {

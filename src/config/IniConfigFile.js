@@ -1,6 +1,6 @@
-import {File} from '../file/File.js'
-import {INIUtil} from './INIUtil.js'
-import {File as JFile} from 'java.io.File'
+import { File } from '../file/File.js'
+import { INIUtil } from './INIUtil.js'
+import { File as JFile } from 'java.io.File'
 
 export class IniConfigFile {
     /**

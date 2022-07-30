@@ -1,10 +1,10 @@
 // noinspection NpmUsedModulesInstalled,JSUnresolvedFunction,JSValidateJSDoc,JSUnresolvedVariable,JSUnusedGlobalSymbols
 
-import {Files} from "java.nio.file.Files";
-import {StandardCharsets} from "java.nio.charset.StandardCharsets";
-import {String as JString} from "java.lang.String";
-import {ByteBuffer} from "java.nio.ByteBuffer";
-import {RandomAccessFile} from "java.io.RandomAccessFile";
+import { Files } from "java.nio.file.Files";
+import { StandardCharsets } from "java.nio.charset.StandardCharsets";
+import { String as JString } from "java.lang.String";
+import { ByteBuffer } from "java.nio.ByteBuffer";
+import { RandomAccessFile } from "java.io.RandomAccessFile";
 
 const CharArray = Java.type("char[]");
 const ByteArray = Java.type("byte[]");

@@ -1,6 +1,4 @@
-import {ShortTag} from "cn.nukkit.nbt.tag.ShortTag";
-import {Short} from "java.lang.Short";
-import {StringTag} from "cn.nukkit.nbt.tag.StringTag";
+import { StringTag } from "cn.nukkit.nbt.tag.StringTag";
 
 export class NbtString extends CommonNbt {
     constructor(data) {
@@ -13,7 +11,9 @@ export class NbtString extends CommonNbt {
     set(data) {
         if (this._evaluate(data)) {
             this._pnxNbt.data = data;
+            return true;
         }
+        return false;
     }
 
     get() {

@@ -1,5 +1,5 @@
-import {Container} from "./Container.js";
-import {Item} from "../object/Item.js";
+import { Container } from "./Container.js";
+import { Item } from "../object/Item.js";
 
 /**
  * @todo 测试

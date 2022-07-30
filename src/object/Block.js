@@ -1,8 +1,8 @@
-import {Block as JBlock} from 'cn.nukkit.block.Block';
-import {NBT} from '../nbt/NBT.js';
-import {EnumLevel} from 'cn.nukkit.level.EnumLevel';
-import {Position} from 'cn.nukkit.level.Position';
-import {Vector3} from 'cn.nukkit.math.Vector3';
+import { Block as JBlock } from 'cn.nukkit.block.Block';
+import { NBT } from '../nbt/NBT.js';
+import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
+import { Position } from 'cn.nukkit.level.Position';
+import { Vector3 } from 'cn.nukkit.math.Vector3';
 
 export class Block {
     /**
@@ -74,7 +74,7 @@ export class Block {
      */
     getNbt() {
         var property = this._PNXBlock.getStateId().split(';');
-        var data = {name: property[0], states: {}};
+        var data = { name: property[0], states: {} };
         if (property.length === 1) {
             return data;
         }
@@ -100,7 +100,7 @@ export class Block {
     }
 
     toString() {
-        return JSON.stringify({name: this.name, type: this.type, pos: this.pos, tileData: this.tileData});
+        return JSON.stringify({ name: this.name, type: this.type, pos: this.pos, tileData: this.tileData });
     }
 }
 

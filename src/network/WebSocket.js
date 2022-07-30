@@ -1,5 +1,5 @@
-import {WsClientBuilder} from 'WsClient';
-import {ByteBuffer} from "java.nio.ByteBuffer";
+import { WsClientBuilder } from 'WsClient';
+import { ByteBuffer } from "java.nio.ByteBuffer";
 
 export class WebSocket {
     constructor() {

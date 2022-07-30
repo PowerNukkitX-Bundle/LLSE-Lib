@@ -1,5 +1,5 @@
-import {ShortTag} from "cn.nukkit.nbt.tag.ShortTag";
-import {Short} from "java.lang.Short";
+import { ShortTag } from "cn.nukkit.nbt.tag.ShortTag";
+import { Short } from "java.lang.Short";
 
 export class NbtShort extends CommonNbt {
     constructor(data) {
@@ -12,7 +12,9 @@ export class NbtShort extends CommonNbt {
     set(data) {
         if (this._evaluate(data)) {
             this._pnxNbt.setData(data);
+            return true;
         }
+        return false;
     }
 
     _evaluate(data) {

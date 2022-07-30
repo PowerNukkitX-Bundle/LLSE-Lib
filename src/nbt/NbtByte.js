@@ -1,5 +1,5 @@
-import {Byte} from "java.lang.Byte";
-import {ByteTag} from "cn.nukkit.nbt.tag.ByteTag";
+import { Byte } from "java.lang.Byte";
+import { ByteTag } from "cn.nukkit.nbt.tag.ByteTag";
 
 export class NbtByte extends CommonNbt {
     constructor(data) {
@@ -12,7 +12,9 @@ export class NbtByte extends CommonNbt {
     set(data) {
         if (this._evaluate(data)) {
             this._pnxNbt.setData(data);
+            return true;
         }
+        return false;
     }
 
     _evaluate(data) {

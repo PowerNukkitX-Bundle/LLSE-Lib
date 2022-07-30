@@ -1,8 +1,5 @@
-import {CommonNbt} from "./CommonNbt";
-import {Double} from "java.lang.Double";
-import {DoubleTag} from "cn.nukkit.nbt.tag.DoubleTag";
-import {FloatTag} from "cn.nukkit.nbt.tag.FloatTag";
-import {Float} from "java.lang.Float";
+import { Double } from "java.lang.Double";
+import { DoubleTag } from "cn.nukkit.nbt.tag.DoubleTag";
 
 export class NbtDouble extends CommonNbt {
     constructor(data) {
@@ -15,7 +12,9 @@ export class NbtDouble extends CommonNbt {
     set(data) {
         if (this._evaluate(data)) {
             this._pnxNbt.setData(data);
+            return true;
         }
+        return false;
     }
 
     _evaluate(data) {

@@ -1,6 +1,6 @@
-import {CompoundTag} from "cn.nukkit.nbt.tag.CompoundTag";
-import {NBTIO} from "cn.nukkit.nbt.NBTIO";
-import {ByteOrder} from "java.nio.ByteOrder";
+import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
+import { NBTIO } from "cn.nukkit.nbt.NBTIO";
+import { ByteOrder } from "java.nio.ByteOrder";
 
 export class NbtCompound {
     constructor(obj) {

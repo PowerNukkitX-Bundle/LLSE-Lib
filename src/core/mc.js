@@ -1,23 +1,23 @@
-import {PowerNukkitX as pnx} from ':powernukkitx';
-import {PermType} from '../utils/PermType.js';
-import {Player, sendText} from '../object/Player.js';
-import {Event} from '../event/Event.js';
-import {Item} from '../object/Item.js';
-import {Block} from '../object/Block.js';
-import {Command} from '../command/Command.js';
-import {SimpleForm} from '../gui/SimpleForm.js';
-import {CustomForm} from '../gui/CustomForm.js';
-import {Server} from 'cn.nukkit.Server';
-import {ProtocolInfo} from 'cn.nukkit.network.protocol.ProtocolInfo';
-import {Explosion} from 'cn.nukkit.level.Explosion';
-import {EnumLevel} from 'cn.nukkit.level.EnumLevel';
-import {Position} from 'cn.nukkit.level.Position';
-import {Block as JBlock} from 'cn.nukkit.block.Block';
-import {BlockState} from 'cn.nukkit.blockstate.BlockState';
-import {BlockStateRegistry} from 'cn.nukkit.blockstate.BlockStateRegistry';
-import {Vector3} from 'cn.nukkit.math.Vector3';
-import {Permission} from 'cn.nukkit.permission.Permission';
-import {RemoteConsoleCommandSender} from 'cn.nukkit.command.RemoteConsoleCommandSender';
+import { PowerNukkitX as pnx } from ':powernukkitx';
+import { PermType } from '../utils/PermType.js';
+import { Player, sendText } from '../object/Player.js';
+import { Event } from '../event/Event.js';
+import { Item } from '../object/Item.js';
+import { Block } from '../object/Block.js';
+import { Command } from '../command/Command.js';
+import { SimpleForm } from '../gui/SimpleForm.js';
+import { CustomForm } from '../gui/CustomForm.js';
+import { Server } from 'cn.nukkit.Server';
+import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
+import { Explosion } from 'cn.nukkit.level.Explosion';
+import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
+import { Position } from 'cn.nukkit.level.Position';
+import { Block as JBlock } from 'cn.nukkit.block.Block';
+import { BlockState } from 'cn.nukkit.blockstate.BlockState';
+import { BlockStateRegistry } from 'cn.nukkit.blockstate.BlockStateRegistry';
+import { Vector3 } from 'cn.nukkit.math.Vector3';
+import { Permission } from 'cn.nukkit.permission.Permission';
+import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
 
 const server = Server.getInstance();
 const PlayerCommandMap = new Map();
@@ -103,7 +103,7 @@ function runcmd(cmd) {
 function runcmdEx(cmd) {
     let rconSender = new RemoteConsoleCommandSender();
     let succ = server.dispatchCommand(rconSender, cmd);
-    return {success: succ, output: rconSender.getMessages()};
+    return { success: succ, output: rconSender.getMessages() };
 }
 
 /**

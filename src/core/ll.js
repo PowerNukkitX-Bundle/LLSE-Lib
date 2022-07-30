@@ -1,4 +1,4 @@
-import {Server} from 'cn.nukkit.Server';
+import { Server } from 'cn.nukkit.Server';
 
 const server = Server.getInstance();
 

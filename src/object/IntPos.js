@@ -43,6 +43,6 @@ export class IntPos {
     }
 
     toString() {
-        return JSON.stringify({x: this.x, y: this.y, z: this.z, dim: this.dim, dimid: this.dimid});
+        return JSON.stringify({ x: this.x, y: this.y, z: this.z, dim: this.dim, dimid: this.dimid });
     }
 }

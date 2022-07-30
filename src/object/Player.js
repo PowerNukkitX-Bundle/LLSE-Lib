@@ -1,27 +1,27 @@
-import {DirectionAngle} from './DirectionAngle.js';
-import {IntPos} from './IntPos.js';
-import {FloatPos} from './FloatPos.js';
-import {Device} from './Device.js';
-import {Item} from './Item.js';
-import {Container} from '../container/Container.js';
-import {ScoreObjectives} from './ScoreObjectives.js';
-import {ModalForm} from '../gui/ModalForm.js';
-import {SimpleForm} from '../gui/SimpleForm.js';
-import {CustomForm} from '../gui/CustomForm.js';
-import {InetSocketAddress} from 'java.net.InetSocketAddress';
-import {Collectors} from 'java.util.stream.Collectors';
-import {Server} from 'cn.nukkit.Server';
-import {PlayerChatEvent} from 'cn.nukkit.event.player.PlayerChatEvent';
-import {Position} from 'cn.nukkit.level.Position';
-import {Vector3} from 'cn.nukkit.math.Vector3';
-import {EntityDamageByEntityEvent} from 'cn.nukkit.event.entity.EntityDamageByEntityEvent';
-import {EntityDamageEvent} from 'cn.nukkit.event.entity.EntityDamageEvent';
-import {EnumLevel} from 'cn.nukkit.level.EnumLevel';
-import {Player as PNXPlayer} from 'cn.nukkit.Player';
-import {Item as JItem} from 'cn.nukkit.item.Item';
-import {Attribute} from 'cn.nukkit.entity.Attribute';
-import {BossBarColor} from 'cn.nukkit.utils.BossBarColor';
-import {AdventureSettings} from 'cn.nukkit.AdventureSettings';
+import { DirectionAngle } from './DirectionAngle.js';
+import { IntPos } from './IntPos.js';
+import { FloatPos } from './FloatPos.js';
+import { Device } from './Device.js';
+import { Item } from './Item.js';
+import { Container } from '../container/Container.js';
+import { ScoreObjectives } from './ScoreObjectives.js';
+import { ModalForm } from '../gui/ModalForm.js';
+import { SimpleForm } from '../gui/SimpleForm.js';
+import { CustomForm } from '../gui/CustomForm.js';
+import { InetSocketAddress } from 'java.net.InetSocketAddress';
+import { Collectors } from 'java.util.stream.Collectors';
+import { Server } from 'cn.nukkit.Server';
+import { PlayerChatEvent } from 'cn.nukkit.event.player.PlayerChatEvent';
+import { Position } from 'cn.nukkit.level.Position';
+import { Vector3 } from 'cn.nukkit.math.Vector3';
+import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageByEntityEvent';
+import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
+import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
+import { Player as PNXPlayer } from 'cn.nukkit.Player';
+import { Item as JItem } from 'cn.nukkit.item.Item';
+import { Attribute } from 'cn.nukkit.entity.Attribute';
+import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
+import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
 
 const server = Server.getInstance();
 const ASType = AdventureSettings.Type;
@@ -934,7 +934,7 @@ export class Player {
     }
 
     toString() {
-        return JSON.stringify({realName: this.realName});
+        return JSON.stringify({ realName: this.realName });
     }
 }
 

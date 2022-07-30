@@ -1,5 +1,5 @@
-import {LongTag} from "cn.nukkit.nbt.tag.LongTag";
-import {Long} from "java.lang.Long";
+import { LongTag } from "cn.nukkit.nbt.tag.LongTag";
+import { Long } from "java.lang.Long";
 
 export class NbtLong extends CommonNbt {
     constructor(data) {
@@ -12,7 +12,9 @@ export class NbtLong extends CommonNbt {
     set(data) {
         if (this._evaluate(data)) {
             this._pnxNbt.setData(data);
+            return true;
         }
+        return false;
     }
 
     _evaluate(data) {

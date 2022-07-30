@@ -1,5 +1,5 @@
-import {Byte} from "java.lang.Byte";
-import {ByteTag} from "cn.nukkit.nbt.tag.ByteTag";
+import { Byte } from "java.lang.Byte";
+import { ByteTag } from "cn.nukkit.nbt.tag.ByteTag";
 
 const ByteArray = Java.type("byte[]");
 
@@ -30,7 +30,9 @@ export class NbtByte extends CommonNbt {
                 byteArray[j] = data[j];
             }
             this._pnxNbt.data = byteArray;
+            return true;
         }
+        return false;
     }
 
     _evaluate(data) {

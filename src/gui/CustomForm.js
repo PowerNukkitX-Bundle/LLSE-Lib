@@ -1,11 +1,11 @@
-import {FormWindowCustom} from 'cn.nukkit.form.window.FormWindowCustom';
-import {ElementLabel} from 'cn.nukkit.form.element.ElementLabel';
-import {ElementInput} from 'cn.nukkit.form.element.ElementInput';
-import {ElementToggle} from 'cn.nukkit.form.element.ElementToggle';
-import {ElementDropdown} from 'cn.nukkit.form.element.ElementDropdown';
-import {ElementSlider} from 'cn.nukkit.form.element.ElementSlider';
-import {ElementStepSlider} from 'cn.nukkit.form.element.ElementStepSlider';
-import {ArrayList as JList} from 'java.util.ArrayList';
+import { FormWindowCustom } from 'cn.nukkit.form.window.FormWindowCustom';
+import { ElementLabel } from 'cn.nukkit.form.element.ElementLabel';
+import { ElementInput } from 'cn.nukkit.form.element.ElementInput';
+import { ElementToggle } from 'cn.nukkit.form.element.ElementToggle';
+import { ElementDropdown } from 'cn.nukkit.form.element.ElementDropdown';
+import { ElementSlider } from 'cn.nukkit.form.element.ElementSlider';
+import { ElementStepSlider } from 'cn.nukkit.form.element.ElementStepSlider';
+import { ArrayList as JList } from 'java.util.ArrayList';
 
 export class CustomForm {
     constructor(title) {

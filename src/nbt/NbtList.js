@@ -1,4 +1,4 @@
-import {ListTag} from "cn.nukkit.nbt.tag.ListTag";
+import { ListTag } from "cn.nukkit.nbt.tag.ListTag";
 
 export class NbtList {
     constructor(obj) {

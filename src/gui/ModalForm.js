@@ -1,4 +1,4 @@
-import {FormWindowModal} from 'cn.nukkit.form.window.FormWindowModal';
+import { FormWindowModal } from 'cn.nukkit.form.window.FormWindowModal';
 
 export class ModalForm {
     constructor(title, content, button1, button2) {

@@ -1,6 +1,5 @@
-import {CommonNbt} from "./CommonNbt";
-import {FloatTag} from "cn.nukkit.nbt.tag.FloatTag";
-import {Float} from "java.lang.Float";
+import { FloatTag } from "cn.nukkit.nbt.tag.FloatTag";
+import { Float } from "java.lang.Float";
 
 export class NbtFloat extends CommonNbt {
     constructor(data) {
@@ -13,7 +12,9 @@ export class NbtFloat extends CommonNbt {
     set(data) {
         if (this._evaluate(data)) {
             this._pnxNbt.setData(data);
+            return true;
         }
+        return false;
     }
 
     _evaluate(data) {

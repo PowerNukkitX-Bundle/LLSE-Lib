@@ -1,23 +1,23 @@
-import {Item} from "./Item.js";
-import {Block} from "./Block.js";
-import {DirectionAngle} from './DirectionAngle.js';
-import {IntPos} from './IntPos.js';
-import {FloatPos} from './FloatPos.js';
-import {Player} from "./Player.js";
-import {PlayerArmorContainer} from "../container/PlayerArmorContainer.js";
-import {EntityArmorContainer} from "../container/EntityArmorContainer.js";
+import { Item } from "./Item.js";
+import { Block } from "./Block.js";
+import { DirectionAngle } from './DirectionAngle.js';
+import { IntPos } from './IntPos.js';
+import { FloatPos } from './FloatPos.js';
+import { Player } from "./Player.js";
+import { PlayerArmorContainer } from "../container/PlayerArmorContainer.js";
+import { EntityArmorContainer } from "../container/EntityArmorContainer.js";
 
-import {Player as PNXPlayer} from 'cn.nukkit.Player';
-import {EntityItem} from 'cn.nukkit.entity.item.EntityItem';
-import {Position} from 'cn.nukkit.level.Position'
-import {Server} from 'cn.nukkit.Server';
-import {Vector3} from 'cn.nukkit.math.Vector3';
-import {Collectors} from "java.util.stream.Collectors";
-import {Entity as PNXEntity} from 'cn.nukkit.entity.Entity'
-import {EntityMob} from "cn.nukkit.entity.mob.EntityMob";
-import {EntityArmorStand} from "cn.nukkit.entity.item.EntityArmorStand";
-import {Container} from "../container/Container";
-import {EntityHumanType} from "cn.nukkit.entity.EntityHumanType";
+import { Player as PNXPlayer } from 'cn.nukkit.Player';
+import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
+import { Position } from 'cn.nukkit.level.Position'
+import { Server } from 'cn.nukkit.Server';
+import { Vector3 } from 'cn.nukkit.math.Vector3';
+import { Collectors } from "java.util.stream.Collectors";
+import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
+import { EntityMob } from "cn.nukkit.entity.mob.EntityMob";
+import { EntityArmorStand } from "cn.nukkit.entity.item.EntityArmorStand";
+import { Container } from "../container/Container.js";
+import { EntityHumanType } from "cn.nukkit.entity.EntityHumanType";
 
 
 const server = Server.getInstance();
