@@ -1,8 +1,8 @@
 import * as IO from "./IO.js";
-import {Job} from ":concurrent";
-import {Paths} from "java.nio.file.Paths";
-import {Files} from "java.nio.file.Files";
-import {Nukkit} from "cn.nukkit.Nukkit";
+import { Job } from ":concurrent";
+import { Paths } from "java.nio.file.Paths";
+import { Files } from "java.nio.file.Files";
+import { Nukkit } from "cn.nukkit.Nukkit";
 
 export class File {
     /**
@@ -169,7 +169,7 @@ export class File {
      */
     static getFilesList(path) {
         let arr = [];
-        const paths = Files.walk(Paths.get(dirName));
+        const paths = Files.walk(Paths.get(path));
         paths.forEach((v, i) => {
             arr.push(v.toString())
         });

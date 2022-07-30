@@ -1,6 +1,6 @@
-import {File} from '../file/File.js';
-import {system} from './system.js';
-import {File as JFile} from 'java.io.File';
+import { File } from '../file/File.js';
+import { system } from './system.js';
+import { File as JFile } from 'java.io.File';
 
 /**
  * 日志logger对象

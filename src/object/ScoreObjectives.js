@@ -1,13 +1,13 @@
-import {Entity} from './Entity.js';
-import {Player} from './Player.js';
-import {ArrayList as JList} from 'java.util.ArrayList';
-import {EntityScorer} from 'cn.nukkit.scoreboard.scorer.EntityScorer';
-import {FakeScorer} from 'cn.nukkit.scoreboard.scorer.FakeScorer';
-import {PlayerScorer} from 'cn.nukkit.scoreboard.scorer.PlayerScorer';
-import {DisplaySlot} from 'cn.nukkit.scoreboard.data.DisplaySlot';
-import {SortOrder} from 'cn.nukkit.scoreboard.data.SortOrder';
-import {Player as JPlayer} from 'cn.nukkit.Player';
-import {Server} from 'cn.nukkit.Server';
+import { Entity } from './Entity.js';
+import { Player } from './Player.js';
+import { ArrayList as JList } from 'java.util.ArrayList';
+import { EntityScorer } from 'cn.nukkit.scoreboard.scorer.EntityScorer';
+import { FakeScorer } from 'cn.nukkit.scoreboard.scorer.FakeScorer';
+import { PlayerScorer } from 'cn.nukkit.scoreboard.scorer.PlayerScorer';
+import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
+import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
+import { Player as JPlayer } from 'cn.nukkit.Player';
+import { Server } from 'cn.nukkit.Server';
 
 const server = Server.getInstance();
 

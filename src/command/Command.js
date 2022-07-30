@@ -1,9 +1,9 @@
-import {PowerNukkitX as pnx} from ':powernukkitx';
-import {ParamType} from './ParamType.js';
-import {IntPos} from '../object/IntPos.js';
-import {FloatPos} from '../object/FloatPos.js';
-import {Player} from '../object/Player.js';
-import {Entity} from '../object/Entity.js';
+import { PowerNukkitX as pnx } from ':powernukkitx';
+import { ParamType } from './ParamType.js';
+import { IntPos } from '../object/IntPos.js';
+import { FloatPos } from '../object/FloatPos.js';
+import { Player } from '../object/Player.js';
+import { Entity } from '../object/Entity.js';
 
 /**
  * 注册一条顶层命令

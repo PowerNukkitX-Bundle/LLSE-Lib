@@ -54,7 +54,7 @@ export class Player {
     }
 
     static getPlayer(PNXPlayer) {
-        if (!Player.PlayerMap.has(PNXPlayer.name)) {
+        if (!Player.PlayerMap.has(PNXPlayer.name) || !Player.PlayerMap.get(PNXPlayer.name)._PNXPlayer.isOnline()) {
             Player.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
         }
         return Player.PlayerMap.get(PNXPlayer.name);
@@ -467,6 +467,8 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     refreshItems() {
+        this._PNXPlayer.getInventory().sendContents(this._PNXPlayer);
+        this._PNXPlayer.getInventory().sendArmorContents(this._PNXPlayer);
         return true;
     }
 

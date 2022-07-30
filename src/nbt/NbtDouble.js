@@ -1,12 +1,12 @@
 import { CommonNbt } from "./CommonNbt.js";
-import { Integer } from "java.lang.Integer";
-import { IntTag } from "cn.nukkit.nbt.tag.IntTag";
+import { Double } from "java.lang.Double";
+import { DoubleTag } from "cn.nukkit.nbt.tag.DoubleTag";
 import { NbtTypeEnum } from "./NbtTypeEnum.js"
-export class NbtInt extends CommonNbt {
+export class NbtDouble extends CommonNbt {
     constructor(data) {
         super();
         if (this._evaluate(data)) {
-            this._pnxNbt = new IntTag("", data);
+            this._pnxNbt = new DoubleTag("", data);
         }
     }
 
@@ -19,14 +19,14 @@ export class NbtInt extends CommonNbt {
     }
 
     getType() {
-        return NbtTypeEnum.Int;
+        return NbtTypeEnum.Double;
     }
 
     _evaluate(data) {
-        if (this._isInteger(data)) {
-            if (Integer.MIN_VALUE <= data.toString().length <= Integer.MAX_VALUE) {
+        if (this._isFloating(data)) {
+            if (Double.MIN_VALUE <= data.toString().length <= Double.MAX_VALUE) {
                 return true;
-            } else throw RangeError("参数数值范围超出int范围!")
+            } else throw RangeError("参数数值范围超出double范围!")
         } else throw new SyntaxError("参数类型错误!");
     }
 }

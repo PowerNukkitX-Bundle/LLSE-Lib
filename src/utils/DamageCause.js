@@ -1,4 +1,4 @@
-import {EntityDamageEvent} from 'cn.nukkit.event.entity.EntityDamageEvent';
+import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 
 const JDamageCause = EntityDamageEvent.DamageCause;
 

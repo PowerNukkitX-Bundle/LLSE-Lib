@@ -1,12 +1,12 @@
-import {Item as PNXItem} from 'cn.nukkit.item.Item';
-import {Position} from 'cn.nukkit.level.Position';
-import {Vector3} from 'cn.nukkit.math.Vector3';
-import {EntityItem} from "cn.nukkit.entity.item.EntityItem";
-import {Entity as PNXEntity} from "cn.nukkit.entity.Entity";
-import {Random} from "java.util.Random";
-import {NBTIO} from "cn.nukkit.nbt.NBTIO";
-import {Entity} from "./Entity.js";
-import {Server} from "cn.nukkit.Server";
+import { Item as PNXItem } from 'cn.nukkit.item.Item';
+import { Position } from 'cn.nukkit.level.Position';
+import { Vector3 } from 'cn.nukkit.math.Vector3';
+import { EntityItem } from "cn.nukkit.entity.item.EntityItem";
+import { Entity as PNXEntity } from "cn.nukkit.entity.Entity";
+import { Random } from "java.util.Random";
+import { NBTIO } from "cn.nukkit.nbt.NBTIO";
+import { Entity } from "./Entity.js";
+import { Server } from "cn.nukkit.Server";
 
 const server = Server.getInstance();
 
@@ -242,6 +242,6 @@ export class Item {
     }
 
     toString() {
-        return JSON.stringify({name: this.name, id: this.id, count: this.count, aux: this.aux, type: this.type});
+        return JSON.stringify({ name: this.name, id: this.id, count: this.count, aux: this.aux, type: this.type });
     }
 }

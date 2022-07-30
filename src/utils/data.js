@@ -1,8 +1,8 @@
-import {MessageDigest} from 'java.security.MessageDigest';
-import {BigInteger} from 'java.math.BigInteger';
-import {String as JString} from "java.lang.String";
-import {strToUtf8Bytes} from '../file/IO.js';
-import {Base64} from './Base64.js';
+import { MessageDigest } from 'java.security.MessageDigest';
+import { BigInteger } from 'java.math.BigInteger';
+import { String as JString } from "java.lang.String";
+import { strToUtf8Bytes } from '../file/IO.js';
+import { Base64 } from './Base64.js';
 
 const CharArray = Java.type("char[]");
 

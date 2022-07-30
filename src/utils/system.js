@@ -1,4 +1,4 @@
-import {UUID} from 'java.util.UUID';
+import { UUID } from 'java.util.UUID';
 
 /**
  * 系统API对象
