@@ -169,7 +169,7 @@ export class File {
      */
     static getFilesList(path) {
         let arr = [];
-        const paths = Files.walk(Paths.get(dirName));
+        const paths = Files.walk(Paths.get(path));
         paths.forEach((v, i) => {
             arr.push(v.toString())
         });
