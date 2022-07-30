@@ -1,6 +1,7 @@
+import { CommonNbt } from "./CommonNbt.js";
 import { Integer } from "java.lang.Integer";
 import { IntTag } from "cn.nukkit.nbt.tag.IntTag";
-
+import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtInt extends CommonNbt {
     constructor(data) {
         super();
@@ -15,6 +16,10 @@ export class NbtInt extends CommonNbt {
             return true;
         }
         return false;
+    }
+
+    getType() {
+        return NbtTypeEnum.Int;
     }
 
     _evaluate(data) {

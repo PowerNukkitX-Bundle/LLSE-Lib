@@ -1,5 +1,7 @@
+import { CommonNbt } from "./CommonNbt.js";
 import { Byte } from "java.lang.Byte";
 import { ByteTag } from "cn.nukkit.nbt.tag.ByteTag";
+import { NbtTypeEnum } from "./NbtTypeEnum.js"
 
 export class NbtByte extends CommonNbt {
     constructor(data) {
@@ -15,6 +17,10 @@ export class NbtByte extends CommonNbt {
             return true;
         }
         return false;
+    }
+
+    getType() {
+        return NbtTypeEnum.Byte;
     }
 
     _evaluate(data) {

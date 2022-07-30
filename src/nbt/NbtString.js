@@ -1,4 +1,6 @@
+import { CommonNbt } from "./CommonNbt.js";
 import { StringTag } from "cn.nukkit.nbt.tag.StringTag";
+import { NbtTypeEnum } from "./NbtTypeEnum.js"
 
 export class NbtString extends CommonNbt {
     constructor(data) {
@@ -18,6 +20,10 @@ export class NbtString extends CommonNbt {
 
     get() {
         return this._pnxNbt.data;
+    }
+
+    getType() {
+        return NbtTypeEnum.String;
     }
 
     _evaluate(data) {

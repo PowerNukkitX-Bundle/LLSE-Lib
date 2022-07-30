@@ -1,6 +1,7 @@
+import { CommonNbt } from "./CommonNbt.js";
 import { Double } from "java.lang.Double";
 import { DoubleTag } from "cn.nukkit.nbt.tag.DoubleTag";
-
+import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtDouble extends CommonNbt {
     constructor(data) {
         super();

@@ -1,5 +1,7 @@
+import { CommonNbt } from "./CommonNbt.js";
 import { Byte } from "java.lang.Byte";
 import { ByteTag } from "cn.nukkit.nbt.tag.ByteTag";
+import { NbtTypeEnum } from "./NbtTypeEnum.js"
 
 const ByteArray = Java.type("byte[]");
 
@@ -21,6 +23,10 @@ export class NbtByte extends CommonNbt {
             result[j] = this._pnxNbt.data[j];
         }
         return result;
+    }
+
+    getType() {
+        return NbtTypeEnum.ByteArray;
     }
 
     set(data) {

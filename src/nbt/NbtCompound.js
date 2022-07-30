@@ -1,7 +1,7 @@
 import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
 import { NBTIO } from "cn.nukkit.nbt.NBTIO";
 import { ByteOrder } from "java.nio.ByteOrder";
-
+import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtCompound {
     constructor(obj) {
         if (obj instanceof CompoundTag) {
@@ -97,5 +97,9 @@ export class NbtCompound {
 
     toString() {
         return this.toSNBT().replaceAll('_bit":0b', '_bit":false').replaceAll('_bit":1b', '_bit":true');
+    }
+
+    getType() {
+        return NbtTypeEnum.Compound;
     }
 }

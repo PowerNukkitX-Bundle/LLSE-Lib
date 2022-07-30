@@ -1,5 +1,7 @@
+import { CommonNbt } from "./CommonNbt.js";
 import { FloatTag } from "cn.nukkit.nbt.tag.FloatTag";
 import { Float } from "java.lang.Float";
+import { NbtTypeEnum } from "./NbtTypeEnum.js"
 
 export class NbtFloat extends CommonNbt {
     constructor(data) {
@@ -15,6 +17,10 @@ export class NbtFloat extends CommonNbt {
             return true;
         }
         return false;
+    }
+
+    getType() {
+        return NbtTypeEnum.Float;
     }
 
     _evaluate(data) {
