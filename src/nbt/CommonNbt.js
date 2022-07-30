@@ -19,7 +19,7 @@ export class CommonNbt {
 
     /**
      * 获取NBT对象储存的数据类型
-     * @return {Enum} 此NBT对象储存的数据类型
+     * @return {Number} 此NBT对象储存的数据类型
      */
     getType() {
     }

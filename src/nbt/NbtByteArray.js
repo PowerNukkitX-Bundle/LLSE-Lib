@@ -5,7 +5,10 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 
 const ByteArray = Java.type("byte[]");
 
-export class NbtByte extends CommonNbt {
+export class NbtByteArray extends CommonNbt {
+    /**
+     * @param data {Array} 字节数组
+     */
     constructor(data) {
         super();
         if (this._evaluate(data)) {

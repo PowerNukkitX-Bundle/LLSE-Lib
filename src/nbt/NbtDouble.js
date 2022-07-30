@@ -18,6 +18,10 @@ export class NbtDouble extends CommonNbt {
         return false;
     }
 
+    getType() {
+        return NbtTypeEnum.Double;
+    }
+
     _evaluate(data) {
         if (this._isFloating(data)) {
             if (Double.MIN_VALUE <= data.toString().length <= Double.MAX_VALUE) {

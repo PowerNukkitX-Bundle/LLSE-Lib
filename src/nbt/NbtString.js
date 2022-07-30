@@ -27,7 +27,7 @@ export class NbtString extends CommonNbt {
     }
 
     _evaluate(data) {
-        if (typeof this === "string") {
+        if (typeof data === "string") {
             return true;
         } else throw new SyntaxError("参数类型错误!");
     }
