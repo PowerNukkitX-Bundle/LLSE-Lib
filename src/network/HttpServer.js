@@ -7,6 +7,12 @@ export class HttpServer {
     }
     // static 
 };
+/**
+ *  httpget 异步请求 （其实我更想让他同步
+ * @param {String} url 
+ * @param {object} header 
+ * @param {function} callback 
+ */
 function httpGet(url, header, callback) {
     if (!callback) { callback = header; header = {}; }
     let client = HttpClient.newHttpClient()
@@ -15,6 +21,15 @@ function httpGet(url, header, callback) {
     let res = client.sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
     res.thenApply((res) => callback(res.statusCode(), res.body()));
 }
+/**
+ *  httpPost 异步请求 （其实我更想让他同步
+ * @param {String} url 
+ * @param {array} arg 多参  [,header],data ,type,callback
+ * @param {object} header 
+ * @param  {String} data
+ * @param {String} type
+ * @param {function} callback 
+ */
 function httpPost(url, ...arg) {
     // header, data, type, callback
     if (arg.length == 3) { var [data, type, callback] = arg; var header = {} }
