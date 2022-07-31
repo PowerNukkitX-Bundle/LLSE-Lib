@@ -17,7 +17,7 @@ export class NbtList {
     constructor(array) {
         let type = array[0].getType();
         for (let j = 0, len = array.length; j < len; j++) {
-            if (array[j].getType() !== type) return throw new SyntaxError("参数类型错误!");
+            if (array[j].getType() !== type) throw new SyntaxError("参数类型错误!");
         }
         this._pnxNbt = new ListTag('');
         this._nbt = array;
@@ -76,7 +76,7 @@ export class NbtList {
      */
     getTag(index) {
         if (index < 0 || index > this.getSize()) {
-            return throw new SyntaxError("参数类型错误!");
+            throw new SyntaxError("参数类型错误!");
         }
         return this._nbt[index];
     }
@@ -99,7 +99,7 @@ export class NbtList {
      */
     removeTag(index) {
         if (index < 0 || index > this.getSize()) {
-            return throw new SyntaxError("参数类型错误!");
+            throw new SyntaxError("参数类型错误!");
         }
         this._pnxNbt.remove(index);
         this._nbt.splice(index, 1);
