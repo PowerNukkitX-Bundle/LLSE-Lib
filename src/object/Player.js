@@ -593,54 +593,54 @@ export class Player {
         return true;
     }
 
-	/**
-	 * 设置玩家看到的自定义 Boss 血条
-	 * @param uid {number} 唯一ID
-	 * @param title {string} 自定义血条标题
-	 * @param percent {number} 血条中的血量百分比（0~100）
-	 * @param [color=2] {number} 血条颜色 (默认值为 2 (RED))
-	 * @returns {boolean} 是否成功
-	 */
-	setBossBar(uid, title, percent, color = 2) {
-		if (arguments.length <= 3) {
-			color = percent || 2;
-			percent = title;
-			title = uid;
-			uid = 'default';
-		}
+    /**
+     * 设置玩家看到的自定义 Boss 血条
+     * @param uid {number} 唯一ID
+     * @param title {string} 自定义血条标题
+     * @param percent {number} 血条中的血量百分比（0~100）
+     * @param [color=2] {number} 血条颜色 (默认值为 2 (RED))
+     * @returns {boolean} 是否成功
+     */
+    setBossBar(uid, title, percent, color = 2) {
+        if (arguments.length <= 3) {
+            color = percent || 2;
+            percent = title;
+            title = uid;
+            uid = 'default';
+        }
         if (!Player.BossBarIdMap.has(this._PNXPlayer.name)) {
             return false;
         }
         let mapData = Player.BossBarIdMap.get(this._PNXPlayer.name);
-		if (mapData.has(uid)) {
-			this.updateBossBar(title, percent, mapData.get(uid));
-			this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
-		} else {
-			mapData.set(uid, this._PNXPlayer.createBossBar(title, percent);
-			if (color != 2) {
-				this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
-			}
-		}
-		return true;
-	}
+        if (mapData.has(uid)) {
+            this.updateBossBar(title, percent, mapData.get(uid));
+            this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
+        } else {
+            mapData.set(uid, this._PNXPlayer.createBossBar(title, percent));
+            if (color != 2) {
+                this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * 移除玩家看到的自定义 Boss 血条
-	 * @param uid {number} 唯一ID
-	 * @returns {boolean} 是否成功
-	 */
-	removeBossBar(uid = 'default') {
+    /**
+     * 移除玩家看到的自定义 Boss 血条
+     * @param uid {number} 唯一ID
+     * @returns {boolean} 是否成功
+     */
+    removeBossBar(uid = 'default') {
         if (!Player.BossBarIdMap.has(this._PNXPlayer.name)) {
             return false;
         }
         let mapData = Player.BossBarIdMap.get(this._PNXPlayer.name);
-		if (!mapData.has(uid)) {
-			return false;
-		}
-		this._PNXPlayer.removeBossBar(mapData.get(uid));
-		mapData.delete(uid);
-		return true;
-	}
+        if (!mapData.has(uid)) {
+            return false;
+        }
+        this._PNXPlayer.removeBossBar(mapData.get(uid));
+        mapData.delete(uid);
+        return true;
+    }
 
     /**
      * 获取玩家对应的 NBT 对象
