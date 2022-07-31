@@ -29,11 +29,11 @@ export class CommonNbt {
      * @param space （可选参数）如果要格式化输出的字符串，则传入此参数。代表每个缩进的空格数量，这样生成的字符串更适合人阅读。此参数默认为-1，即不对输出字符串进行格式化
      * @return {String} 对应的Json字符串
      */
-    toString(space) {
-    }
-
-    _isFloating(n) {
-        return ~~n !== n;
+    toString(space = -1) {
+        if (space === -1) {
+            return JSON.stringify(this.get());
+        }
+        return JSON.stringify(this.get(), null, space);
     }
 
     _isInteger(n) {

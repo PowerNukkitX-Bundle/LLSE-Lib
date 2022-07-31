@@ -7,15 +7,10 @@ jobs:
     steps:
     - name: checkout source
       uses: actions/checkout@master
-    - name: rename
-      run: |
-        mv $GITHUB_WORKSPACE/src $GITHUB_WORKSPACE/@LiteLoaderLibs
-        mkdir $GITHUB_WORKSPACE/src
-        mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: LiteLoaderLibs
         path: |
-          src
-          !src/@LiteLoaderLibs/jsconfig.json
+          @LiteLoaderLibs
+          !@LiteLoaderLibs/jsconfig.json

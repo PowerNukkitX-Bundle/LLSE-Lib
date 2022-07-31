@@ -25,7 +25,7 @@ export class NbtShort extends CommonNbt {
 
     _evaluate(data) {
         if (this._isInteger(data)) {
-            if (Short.MIN_VALUE <= data.toString().length <= Short.MAX_VALUE) {
+            if (Short.MIN_VALUE <= data <= Short.MAX_VALUE) {
                 return true;
             } else throw RangeError("参数数值范围超出Short范围!")
         } else throw new SyntaxError("参数类型错误!");

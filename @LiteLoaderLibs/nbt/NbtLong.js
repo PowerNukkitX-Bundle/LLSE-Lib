@@ -1,13 +1,13 @@
 import { CommonNbt } from "./CommonNbt.js";
-import { FloatTag } from "cn.nukkit.nbt.tag.FloatTag";
-import { Float } from "java.lang.Float";
+import { LongTag } from "cn.nukkit.nbt.tag.LongTag";
+import { Long } from "java.lang.Long";
 import { NbtTypeEnum } from "./NbtTypeEnum.js"
 
-export class NbtFloat extends CommonNbt {
+export class NbtLong extends CommonNbt {
     constructor(data) {
         super();
         if (this._evaluate(data)) {
-            this._pnxNbt = new FloatTag("", data);
+            this._pnxNbt = new LongTag("", data);
         }
     }
 
@@ -20,14 +20,14 @@ export class NbtFloat extends CommonNbt {
     }
 
     getType() {
-        return NbtTypeEnum.Float;
+        return NbtTypeEnum.Long;
     }
 
     _evaluate(data) {
-        if (this._isFloating(data)) {
-            if (Float.MIN_VALUE <= data.toString().length <= Float.MAX_VALUE) {
+        if (this._isInteger(data)) {
+            if (Long.MIN_VALUE <= data <= Long.MAX_VALUE) {
                 return true;
-            } else throw RangeError("参数数值范围超出float范围!")
+            } else throw RangeError("参数数值范围超出Short范围!")
         } else throw new SyntaxError("参数类型错误!");
     }
 }

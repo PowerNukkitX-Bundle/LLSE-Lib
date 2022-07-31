@@ -242,6 +242,6 @@ export class Item {
     }
 
     toString() {
-        return JSON.stringify({ name: this.name, id: this.id, count: this.count, aux: this.aux, type: this.type });
+        return JSON.stringify({name: this.name, id: this.id, count: this.count, aux: this.aux, type: this.type});
     }
 }

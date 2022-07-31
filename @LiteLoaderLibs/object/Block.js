@@ -74,7 +74,7 @@ export class Block {
      */
     getNbt() {
         var property = this._PNXBlock.getStateId().split(';');
-        var data = { name: property[0], states: {} };
+        var data = {name: property[0], states: {}};
         if (property.length === 1) {
             return data;
         }
@@ -100,7 +100,7 @@ export class Block {
     }
 
     toString() {
-        return JSON.stringify({ name: this.name, type: this.type, pos: this.pos, tileData: this.tileData });
+        return JSON.stringify({name: this.name, type: this.type, pos: this.pos, tileData: this.tileData});
     }
 }
 

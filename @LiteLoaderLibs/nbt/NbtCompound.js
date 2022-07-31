@@ -12,6 +12,9 @@ import { NbtList } from './NbtList.js'
 import { NbtString } from './NbtString.js'
 import { NbtShort } from './NbtShort.js'
 import { NbtLong } from './NbtLong.js'
+import { data } from '../utils/data.js'
+import { Double } from 'java.lang.Double'
+import { Float } from 'java.lang.Float'
 
 export class NbtCompound {
     constructor(obj) {
@@ -115,7 +118,17 @@ export class NbtCompound {
      * @returns {object} 对应的对象/表
      */
     toObject() {
-        return JSON.parse(this._pnxNbt.toSnbt().replaceAll('_bit":0b', '_bit":false').replaceAll('_bit":1b', '_bit":true'));
+        let obj = {};
+        for (let key of Object.keys(this._nbt)) {
+            if (this._nbt[key].getType() === 10) {
+                obj[key] = this._nbt[key].toObject();
+            } else if (this._nbt[key].getType() === 9) {
+                obj[key] = this._nbt[key].toArray();
+            } else {
+                obj[key] = this._nbt[key].get();
+            }
+        }
+        return obj;
     }
 
     /**
@@ -126,8 +139,32 @@ export class NbtCompound {
         return new Int8Array(NBTIO.write(this._pnxNbt, ByteOrder.LITTLE_ENDIAN, false));
     }
 
-    toString() {
-        return this.toSNBT().replaceAll('_bit":0b', '_bit":false').replaceAll('_bit":1b', '_bit":true');
+    toString(space = -1) {
+        if (space === -1) {
+            return JSON.stringify(this._preToObject());
+        } else {
+            return JSON.stringify(this._preToObject(), null, space);
+        }
+    }
+
+    _preToObject() {
+        let obj = {};
+        for (let key of Object.keys(this._nbt)) {
+            let tag = this._nbt[key];
+            if (tag.getType() === 10) {
+                obj[key] = tag._preToObject();
+            } else if (tag.getType() === 9) {
+                obj[key] = tag._preToObject();
+            } else if (tag.getType() === 7) {
+                let str = "";
+                let int2array = tag.get();
+                for (let j = 0, len = int2array.length; j < len; j++) {
+                    str += int2array[j];
+                }
+                obj[key] = data.toBase64(str);
+            } else obj[key] = tag.get();
+        }
+        return obj;
     }
 
     destroy() {

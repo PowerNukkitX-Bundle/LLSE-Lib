@@ -1,4 +1,5 @@
 import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
+
 export class DirectionAngle {
     /**
      * 创建一个DirectionAngle对象
@@ -39,6 +40,6 @@ export class DirectionAngle {
     }
 
     toString() {
-        return JSON.stringify({ pitch: this.pitch, yaw: this.yaw, facing: this.toFacing() });
+        return JSON.stringify({pitch: this.pitch, yaw: this.yaw, facing: this.toFacing()});
     }
 }

@@ -11,4 +11,11 @@ export class NbtEnd extends CommonNbt {
     getType() {
         return NbtTypeEnum.End;
     }
+
+    get() {
+        return null;
+    }
+
+    toString(space = -1) {
+    }
 }
