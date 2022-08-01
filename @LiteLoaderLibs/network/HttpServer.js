@@ -45,14 +45,13 @@ function httpGet(url, header, callback) {
  */
 function httpPost(url, ...arg) {
     // header, data, type, callback
-    if (arg.length == 3) {
+    if (arg.length === 3) {
         var [data, type, callback] = arg;
         var header = {}
     }
-    if (arg.length == 4) {
+    if (arg.length === 4) {
         var [header, data, type, callback] = arg;
     }
-    ;
     header["Content-Type"] = type;
     let client = HttpClient.newHttpClient()
     let request = HttpRequest.newBuilder().uri(URI.create(url)).POST(HttpRequest.BodyPublishers.ofString(data));
