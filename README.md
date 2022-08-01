@@ -1,21 +1,45 @@
 # LiteLoader-Libs
+
 实现LiteLoader所有方法的库
 
+## faq
+
+
+
+```git
+//clone此厂库请使用下命令
+git clone --recursive https://github.com/PowerNukkitX/LiteLoader-Libs
+//更新.header
+git submodule update --remote
+```
+
 ## demo
+
 ```javascript
 import {
-	ll, 
-	mc, 
-	Format, 
-	PermType,
-	system,
-	logger,
-	File, 
-	WSClient, 
-	NBT,
-	JsonConfigFile, 
-	colorLog,
-	log,
+    ll,
+    mc,
+    Format,
+    PermType,
+    system,
+    logger,
+    File,
+    WSClient,
+    JsonConfigFile,
+    colorLog,
+    log,
+    NbtEnd,
+    NbtShort,
+    NbtInt,
+    NbtFloat,
+    NbtDouble,
+    NbtCompound,
+    NbtList,
+    NbtLong,
+    NbtByte,
+    NbtByteArray,
+    NbtString,
+    NBT
 } from '@LiteLoaderLibs/index.js'
 
 export function main() {
@@ -24,6 +48,7 @@ export function main() {
 ```
 
 ## Docs
+
 [PowerNukkitX仓库](https://github.com/PowerNukkitX/PowerNukkitX/tree/master/src/main/java/)
 
 [PowerNukkitX JS开发文档](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)
