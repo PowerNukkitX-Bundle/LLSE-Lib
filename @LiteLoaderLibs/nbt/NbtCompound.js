@@ -53,9 +53,8 @@ export class NbtCompound {
                     this._nbt[key] = new NbtShort(tag);
                 } else if (tag instanceof StringTag) {
                     this._nbt[key] = new NbtString(tag);
-                } else throw throw new SyntaxError("参数类型错误!");
+                } else throw new SyntaxError("参数类型错误!");
             }
-            return this;
         } else if (this._evaluate(obj)) {
             this._pnxNbt = new CompoundTag("");//PNX的CompoundTag
             this._nbt = obj;//js的对象存储着llse版本的NbtTag
