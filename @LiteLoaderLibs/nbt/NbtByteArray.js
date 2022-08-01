@@ -12,7 +12,9 @@ export class NbtByteArray extends CommonNbt {
      */
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof ByteArrayTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             let byteArray = new ByteArray(data.length);
             for (let j = 0, len = data.length; j < len; j++) {
                 byteArray[j] = data[j];

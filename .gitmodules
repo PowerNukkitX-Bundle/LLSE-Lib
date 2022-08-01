@@ -1,0 +1,3 @@
+[submodule ".header"]
+	path = .header
+	url = https://github.com/PowerNukkitX/JavaScript-Header.git
