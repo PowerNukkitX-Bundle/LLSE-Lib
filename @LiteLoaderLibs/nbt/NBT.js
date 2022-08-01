@@ -1,7 +1,7 @@
 import { NbtCompound } from "./NbtCompound.js";
 import { ByteOrder } from "java.nio.ByteOrder";
 import { NBTIO } from "cn.nukkit.nbt.NBTIO";
-import { SNBTParser } from "cn.nukkit.nbt.tag.SNBTParser";
+import { SNBTParser } from "cn.nukkit.nbt.SNBTParser";
 
 const ByteArray = Java.type("byte[]");
 
