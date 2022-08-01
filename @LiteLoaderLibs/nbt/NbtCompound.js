@@ -13,13 +13,48 @@ import { NbtString } from './NbtString.js'
 import { NbtShort } from './NbtShort.js'
 import { NbtLong } from './NbtLong.js'
 import { data } from '../utils/data.js'
-import { Double } from 'java.lang.Double'
-import { Float } from 'java.lang.Float'
+import { ByteTag } from 'cn.nukkit.nbt.tag.ByteTag'
+import { ByteArrayTag } from 'cn.nukkit.nbt.tag.ByteArrayTag'
+import { DoubleTag } from 'cn.nukkit.nbt.tag.DoubleTag'
+import { FloatTag } from 'cn.nukkit.nbt.tag.FloatTag'
+import { EndTag } from 'cn.nukkit.nbt.tag.EndTag'
+import { IntTag } from 'cn.nukkit.nbt.tag.IntTag'
+import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
+import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
+import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
+import { ListTag } from 'cn.nukkit.nbt.tag.ListTag'
 
 export class NbtCompound {
     constructor(obj) {
         if (obj instanceof CompoundTag) {
             this._pnxNbt = obj;
+            this._nbt = {};
+            for (let key of obj.getTags().keySet().toArray()) {
+                let tag = obj.get(key);
+                if (tag instanceof ByteTag) {
+                    this._nbt[key] = new NbtByte(tag);
+                } else if (tag instanceof ByteArrayTag) {
+                    this._nbt[key] = new NbtByteArray(tag);
+                } else if (tag instanceof DoubleTag) {
+                    this._nbt[key] = new NbtDouble(tag);
+                } else if (tag instanceof FloatTag) {
+                    this._nbt[key] = new NbtFloat(tag);
+                } else if (tag instanceof CompoundTag) {
+                    this._nbt[key] = new NbtCompound(tag);
+                } else if (tag instanceof ListTag) {
+                    this._nbt[key] = new NbtList(tag);
+                } else if (tag instanceof EndTag) {
+                    this._nbt[key] = new NbtEnd(tag);
+                } else if (tag instanceof IntTag) {
+                    this._nbt[key] = new NbtInt(tag);
+                } else if (tag instanceof LongTag) {
+                    this._nbt[key] = new NbtLong(tag);
+                } else if (tag instanceof ShortTag) {
+                    this._nbt[key] = new NbtShort(tag);
+                } else if (tag instanceof StringTag) {
+                    this._nbt[key] = new NbtString(tag);
+                } else throw throw new SyntaxError("参数类型错误!");
+            }
             return this;
         } else if (this._evaluate(obj)) {
             this._pnxNbt = new CompoundTag("");//PNX的CompoundTag

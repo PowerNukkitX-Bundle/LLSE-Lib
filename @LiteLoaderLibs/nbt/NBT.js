@@ -1,14 +1,10 @@
 import { NbtCompound } from "./NbtCompound.js";
-import { DataInputStream } from 'java.io.DataInputStream';
 import { ByteOrder } from "java.nio.ByteOrder";
-import { Short } from 'java.lang.Short';
 import { Integer } from 'java.lang.Integer';
 import { Long } from 'java.lang.Long';
 import { Float } from 'java.lang.Float';
 import { Double } from 'java.lang.Double';
 import { NBTIO } from "cn.nukkit.nbt.NBTIO";
-import { Tag } from "cn.nukkit.nbt.tag.Tag";
-import { ByteArrayTag } from "cn.nukkit.nbt.tag.ByteArrayTag";
 import { ByteTag } from "cn.nukkit.nbt.tag.ByteTag";
 import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
 import { DoubleTag } from "cn.nukkit.nbt.tag.DoubleTag";

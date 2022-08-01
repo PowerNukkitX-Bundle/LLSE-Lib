@@ -12,22 +12,83 @@ import { NbtString } from './NbtString.js'
 import { data } from '../utils/data.js'
 import { ArrayList } from 'java.util.ArrayList'
 import { ListTag } from "cn.nukkit.nbt.tag.ListTag";
-import { Double } from 'java.lang.Double'
-import { Float } from 'java.lang.Float'
+import { ByteTag } from 'cn.nukkit.nbt.tag.ByteTag'
+import { ByteArrayTag } from 'cn.nukkit.nbt.tag.ByteArrayTag'
+import { DoubleTag } from 'cn.nukkit.nbt.tag.DoubleTag'
+import { FloatTag } from 'cn.nukkit.nbt.tag.FloatTag'
+import { CompoundTag } from 'cn.nukkit.nbt.tag.CompoundTag'
+import { EndTag } from 'cn.nukkit.nbt.tag.EndTag'
+import { IntTag } from 'cn.nukkit.nbt.tag.IntTag'
+import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
+import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
+import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
+import { NbtCompound } from './NbtCompound.js'
 
 
 export class NbtList {
     constructor(array) {
-        let type = array[0].getType();
-        for (let j = 0, len = array.length; j < len; j++) {
-            if (array[j].getType() !== type) throw new SyntaxError("参数类型错误!");
-        }
-        this._pnxNbt = new ListTag('');
-        this._nbt = array;
-        for (let tag of array) {
-            this._pnxNbt.add(tag._pnxNbt);
+        if (array instanceof ListTag) {
+            this._pnxNbt = array;
+            this._nbt = [];
+            let type = array.getAll()[0];
+            if (type instanceof ByteTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtByte(tag));
+                }
+            } else if (type instanceof ByteArrayTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtByteArray(tag));
+                }
+            } else if (type instanceof DoubleTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtDouble(tag));
+                }
+            } else if (type instanceof FloatTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtFloat(tag));
+                }
+            } else if (type instanceof CompoundTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtCompound(tag));
+                }
+            } else if (type instanceof ListTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtList(tag));
+                }
+            } else if (type instanceof EndTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtEnd());
+                }
+            } else if (type instanceof IntTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtInt(tag));
+                }
+            } else if (type instanceof LongTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtLong(tag));
+                }
+            } else if (type instanceof ShortTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtShort(tag));
+                }
+            } else if (type instanceof StringTag) {
+                for (let tag of array.getAll()) {
+                    this._nbt.push(new NbtString(tag));
+                }
+            } else throw throw new SyntaxError("参数类型错误!");
+        } else {
+            let type = array[0].getType();
+            for (let j = 1, len = array.length; j < len; j++) {
+                if (array[j].getType() !== type) throw new SyntaxError("参数类型错误!");
+            }
+            this._pnxNbt = new ListTag('');
+            this._nbt = array;
+            for (let tag of array) {
+                this._pnxNbt.add(tag._pnxNbt);
+            }
         }
     }
+
 
     /**
      * 获取列表长度
@@ -215,7 +276,7 @@ export class NbtList {
     }
 
     _evaluate(index, tag) {
-        if (tag.getType() !== this._nbt.getType()) {
+        if (tag.getType() !== this._nbt[0].getType()) {
             throw new SyntaxError("参数类型错误!");
         }
         if (index < 0 || index > this.getSize()) {
