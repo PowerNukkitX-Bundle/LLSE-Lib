@@ -352,6 +352,7 @@ export class Player {
         if (handitem != null) {
             handitem._reference = [this._PNXPlayer, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()];
         }
+
         return handitem;
     }
 
@@ -453,7 +454,14 @@ export class Player {
      * @returns {number} 清除的物品个数
      */
     clearItem(type) {
-        return 0;
+        if (type == null) return 0
+        let num = 0;
+        let inv = this._PNXPlayer.getInventory()
+        let limit = inv.getSize() + 4
+        for (let i = 0; i < limit; i++) {
+            if (inv.getItem(i).getNamespaceId() == type) { inv.clear(i); num++ };
+        }
+        return num;
     }
 
     /**

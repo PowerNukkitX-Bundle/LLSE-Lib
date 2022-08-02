@@ -79,6 +79,7 @@ export { ll } from './core/ll.js';
 export { mc } from './core/mc.js';
 export { File } from './file/File.js';
 export { WSClient } from './network/WebSocket.js';
+export { HttpServer, network } from './network/HttpServer.js';
 export { NBT } from './nbt/NBT.js';
 export { NbtByte } from './nbt/NbtByte.js';
 export { NbtByteArray } from './nbt/NbtByteArray.js';
