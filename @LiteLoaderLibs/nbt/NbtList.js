@@ -75,7 +75,7 @@ export class NbtList {
                 for (let tag of array.getAll()) {
                     this._nbt.push(new NbtString(tag));
                 }
-            } else throw throw new SyntaxError("参数类型错误!");
+            } else throw new SyntaxError("参数类型错误!");
         } else {
             let type = array[0].getType();
             for (let j = 1, len = array.length; j < len; j++) {
