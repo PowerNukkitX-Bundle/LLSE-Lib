@@ -652,21 +652,25 @@ export class Player {
 
     /**
      * 获取玩家对应的 NBT 对象
-     * @todo 待实现
+     * @todo 待测试
      * @returns {NbtCompound} LLSE的NbtCompound对象
      */
     getNbt() {
-        return true;
+        return new NbtCompound(this._PNXPlayer.namedTag);
     }
 
     /**
      * 写入玩家对应的 NBT 对象
-     * @todo 待实现
-     * @param nbt {NbtCompound} NBT 对象
+     * @todo 待测试
+     * @param NbtCompound {NbtCompound} NBT 对象
      * @returns {boolean} 是否成功
      */
-    setNbt(nbt) {
-        return true;
+    setNbt(NbtCompound) {
+        if (!NbtCompound._pnxNbt.isEmpty()) {
+            this._PNXPlayer.namedTag = NbtCompound._pnxNbt;
+            return true;
+        }
+        return false;
     }
 
     /**

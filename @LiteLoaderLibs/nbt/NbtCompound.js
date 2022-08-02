@@ -61,7 +61,10 @@ export class NbtCompound {
             for (let key in obj) {
                 this._pnxNbt.put(key, obj[key]._pnxNbt);
             }
-        } else return null;
+        } else {
+            this._pnxNbt = new CompoundTag("");
+            this._nbt = {};
+        }
     }
 
     getType() {
@@ -126,14 +129,16 @@ export class NbtCompound {
     /**
      * 读取键对应的 NBT 对象
      * @param key {string} 要操作的键名
-     * @returns {cn.nukkit.nbt.tag} 生成的 NBT 对象
-     * @todo 将返回修改为LLSE类型
+     * @returns {any} 生成的 NBT 对象
+     * @todo 待测试
      */
     getData(key) {
-        let tag = this.getData(key);
-        if (tag.getType() === 9 || tag.getType() === 10) {
-            return tag;
-        } else return tag.get();
+        if (key in this._nbt) {
+            let tag = this._nbt[key];
+            if (tag.getType() === 9 || tag.getType() === 10) {
+                return tag;
+            } else return tag.get();
+        } else return null;
     }
 
     /**

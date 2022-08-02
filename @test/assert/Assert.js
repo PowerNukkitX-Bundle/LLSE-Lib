@@ -4,7 +4,7 @@
  * Framework used to simplify JavaScript Unit testing.
  */
 import { NbtCompound } from "../../@LiteLoaderLibs/index.js";
-import { isEqual } from "../utils/underscore-esm-min.js";
+import { isEqual } from "../../@LiteLoaderLibs/utils/underscore-esm-min.js";
 
 var JSAssert = JSAssert || (function () {
     /**

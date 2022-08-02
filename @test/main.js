@@ -7,6 +7,7 @@ import { colorLog, log } from "../@LiteLoaderLibs/index.js"
  * 总测试入口
  * 测试由多个套件注册,每个套件由多个单元组成
  * 每个套件对应一个js文件,每个单元对应套件中的每个测试函数
+ * 只适用于静态测试
  */
 export function main() {
     JSAssert.execute({
