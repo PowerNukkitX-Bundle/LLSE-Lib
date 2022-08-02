@@ -30,7 +30,6 @@ export function main() {
         },
         onFinished: function ({passed, failed, duration}) {
             colorLog("blue", "全部套件测试完成");
-            colorLog("blue", "总结:");
             colorLog("blue", "总成功数:§a" + passed);
             colorLog("blue", "总失败数:§c" + failed);
             colorLog("blue", "总耗时:" + duration + "ms");

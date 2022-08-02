@@ -1,6 +1,3 @@
-import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
-import { NBTIO } from "cn.nukkit.nbt.NBTIO";
-import { ByteOrder } from "java.nio.ByteOrder";
 import { NbtTypeEnum } from "./NbtTypeEnum.js"
 import { NbtByte } from './NbtByte.js'
 import { NbtByteArray } from './NbtByteArray.js'
@@ -13,6 +10,7 @@ import { NbtString } from './NbtString.js'
 import { NbtShort } from './NbtShort.js'
 import { NbtLong } from './NbtLong.js'
 import { data } from '../utils/data.js'
+import { isEmpty } from "../utils/underscore-esm-min.js";
 import { ByteTag } from 'cn.nukkit.nbt.tag.ByteTag'
 import { ByteArrayTag } from 'cn.nukkit.nbt.tag.ByteArrayTag'
 import { DoubleTag } from 'cn.nukkit.nbt.tag.DoubleTag'
@@ -23,10 +21,16 @@ import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
 import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
 import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
 import { ListTag } from 'cn.nukkit.nbt.tag.ListTag'
+import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
+import { NBTIO } from "cn.nukkit.nbt.NBTIO";
+import { ByteOrder } from "java.nio.ByteOrder";
 
 export class NbtCompound {
     constructor(obj) {
-        if (obj instanceof CompoundTag) {
+        if (isEmpty(obj)) {
+            this._pnxNbt = new CompoundTag("");
+            this._nbt = {};
+        } else if (obj instanceof CompoundTag) {
             this._pnxNbt = obj;
             this._nbt = {};
             for (let key of obj.getTags().keySet().toArray()) {
@@ -61,9 +65,6 @@ export class NbtCompound {
             for (let key in obj) {
                 this._pnxNbt.put(key, obj[key]._pnxNbt);
             }
-        } else {
-            this._pnxNbt = new CompoundTag("");
-            this._nbt = {};
         }
     }
 
@@ -143,13 +144,19 @@ export class NbtCompound {
 
     /**
      * 将 NBT 标签对象 序列化为 SNBT
-     * @param space {number} 空格数量。如果要格式化输出的字符串，则传入此参数。
-     * @returns {string} 对应的 SNBT 字符串
+     * @param space {number} 空格数量。如果要格式化输出的字符串，则传入此参数(默认-1不格式化)。
+     * @returns {String} 对应的 SNBT 字符串
      */
     toSNBT(space = -1) {
+        var snbt;
         if (space === -1) {
-            return this._pnxNbt.toSnbt();
-        } else return this._pnxNbt.toSnbt(space);
+            snbt = this._pnxNbt.toSnbt();
+        } else snbt = this._pnxNbt.toSnbt(space);
+        //做这个处理是为了将格式与LLSE统一,pnx内部根Compound会显示 "":{xxx}
+        //而LLSE会显示 {xxx}
+        if (snbt.substring(0, 2) === `""`) {
+            return snbt.substring(snbt.indexOf("{"), snbt.length);
+        } else return snbt;
     }
 
     /**
@@ -251,7 +258,7 @@ export class NbtCompound {
         return this.setTag(key, new NbtDouble(data));
     }
 
-    setByteBuffer(key, data) {
+    setByteArray(key, data) {
         return this.setTag(key, new NbtByteArray(data));
     }
 

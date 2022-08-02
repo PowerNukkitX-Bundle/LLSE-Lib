@@ -264,17 +264,6 @@ export class NbtList {
         } else return this._nbt.map(k => k.get());
     }
 
-    /**
-     * 将 NBT 标签对象 序列化为 SNBT
-     * @param space {number} 空格数量。如果要格式化输出的字符串，则传入此参数。
-     * @returns {string} 对应的 SNBT 字符串
-     */
-    toSNBT(space = -1) {
-        if (space === -1) {
-            return this._pnxNbt.toSnbt();
-        } else return this._pnxNbt.toSnbt(space);
-    }
-
     _evaluate(index, tag) {
         if (tag.getType() !== this._nbt[0].getType()) {
             throw new SyntaxError("参数类型错误!");
