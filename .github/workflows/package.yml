@@ -12,9 +12,11 @@ jobs:
           mkdir $GITHUB_WORKSPACE/src
           mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
       - name: compress
-        uses: charlesworth/compress-action@1.0
+        uses: nizarmah/auto-minify@v2.1
         with:
-          target-directory: './src'
+          overwrite: true
+          directory: ./src/@LiteLoaderLibs
+          js_engine: uglify-js
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
