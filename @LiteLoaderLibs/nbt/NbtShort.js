@@ -6,7 +6,9 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtShort extends CommonNbt {
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof ShortTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             this._pnxNbt = new ShortTag("", data);
         }
     }

@@ -6,7 +6,9 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtFloat extends CommonNbt {
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof FloatTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             this._pnxNbt = new FloatTag("", data);
         }
     }

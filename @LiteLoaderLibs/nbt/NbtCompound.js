@@ -154,12 +154,26 @@ export class NbtCompound {
     toObject() {
         let obj = {};
         for (let key of Object.keys(this._nbt)) {
-            if (this._nbt[key].getType() === 10) {
+            if (this._nbt[key].getType() === 10) {//Compound
                 obj[key] = this._nbt[key].toObject();
-            } else if (this._nbt[key].getType() === 9) {
+            } else if (this._nbt[key].getType() === 9) {//List
                 obj[key] = this._nbt[key].toArray();
-            } else {
+            } else if (this._nbt[key].getType() === 8) {//String
+                obj[key] = String(this._nbt[key].get());
+            } else if (this._nbt[key].getType() === 7) {//ByteArray
                 obj[key] = this._nbt[key].get();
+            } else if (this._nbt[key].getType() === 1) {//Byte
+                let result = this._nbt[key].get();
+                if (result === 1) {
+                    result = true;
+                } else if (result === 0) {
+                    result = false;
+                }
+                obj[key] = result;
+            } else if (this._nbt[key].getType() === 0) {//End
+                obj[key] = null;
+            } else {
+                obj[key] = Number(this._nbt[key].get());
             }
         }
         return obj;

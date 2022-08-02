@@ -6,7 +6,9 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtInt extends CommonNbt {
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof IntTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             this._pnxNbt = new IntTag("", data);
         }
     }
