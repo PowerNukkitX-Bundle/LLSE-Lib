@@ -469,7 +469,6 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
     }
     return _pos.getLevel().setBlock(_pos, _block);
 }
-spawnParticle()
 /**
  * 在指定位置生成粒子效果
  * @param x {number} x
