@@ -17,4 +17,4 @@ jobs:
           name: LiteLoaderLibs
           path: |
             src
-            !@LiteLoaderLibs/jsconfig.json
+            !**/jsconfig.json
