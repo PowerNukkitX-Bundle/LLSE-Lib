@@ -108,11 +108,11 @@ export class Block {
      * @returns {boolean}
      */
     setNbt(nbt) {
-        let stateNBT = nbt.getData("states");
+        let stateNBT = nbt.getData("states");//还是NBTCompound
         if (!isNull(stateNBT)) {
             let keys = stateNBT.getKeys();
             for (let key of keys) {
-                this._PNXBlock.setPropertyValue(key, stateNBT[key].get());
+                this._PNXBlock.setPropertyValue(key, stateNBT.getData(key));
             }
             let blockState = this._PNXBlock.getCurrentState();
             this._PNXBlock.getLevel().setBlockStateAt(this.pos.x, this.pos.y, this.pos.z, blockState);
