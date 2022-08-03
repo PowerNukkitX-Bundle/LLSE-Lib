@@ -20,6 +20,7 @@ import { BlockStateRegistry } from 'cn.nukkit.blockstate.BlockStateRegistry';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Permission } from 'cn.nukkit.permission.Permission';
 import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
+import { NbtByte } from "../nbt/NbtByte.js";
 
 const server = Server.getInstance();
 const PlayerCommandMap = new Map();
@@ -447,15 +448,20 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
             _block = _block._PNXBlock;
             break;
         case 'NbtCompound':
-            var state = _block._nbt.getString('name');
-            var statesMap = _block._nbt.getCompound('states').getTags();
-            for (let key of statesMap.keySet()) {
-                var value = statesMap.get(key).parseValue();
-                var res = isNaN(value) ? value : Number(value);
-                state += ';' + key + '=' + String(res);
+            let state = nbt.getData('name');
+            let states = nbt.getData('states');//还是NBTCompound
+            for (let key of states.getKeys()) {
+                let tag = states.getTag(key);
+                if (tag instanceof NbtByte) {
+                    state += ';' + key + '=' + tag.get() + "b";
+                } else {
+                    let value = tag.get();
+                    let res = isNaN(value) ? value : Number(value);
+                    state += ';' + key + '=' + String(res);
+                }
             }
             try {
-                _block = BlockState.of(state).getBlock();
+                var _block = BlockState.of(state).getBlock();
             } catch (err) {
                 console.error('Unknow states: ' + state);
                 return false;

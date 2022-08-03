@@ -1,6 +1,7 @@
 import { JSAssert } from './assert/Assert.js'
 //激活测试套件(不要优化这个import)
 import { TestNbt } from "./nbt/TestNbt.js";
+import { TestBlock } from "./object/TestBlock.js";
 import { colorLog, log } from "../@LiteLoaderLibs/index.js"
 
 /***
@@ -12,12 +13,15 @@ import { colorLog, log } from "../@LiteLoaderLibs/index.js"
 export function main() {
     JSAssert.execute({
         onSuiteStarted: function ({name, id}) {
-            colorLog("blue", `${id}号套件${name}测试开始\n`);
+            colorLog("yellow", "━".repeat(24));
+            colorLog("blue", `${id + 1}号套件${name}测试开始`);
+            log('');
         },
         onSuiteEnded: function ({id, name, passed, failed, duration}) {
-            colorLog("blue", `${id}号套件${name}测试结束`);
+            log('');
+            colorLog("blue", `${id + 1}号套件${name}测试结束`);
             log(`§b成功测试单元:§a${passed}个§b,失败测试单元:§c${failed}个`);
-            colorLog("blue", "该套件测试用时" + duration + "ms\n");
+            colorLog("blue", "该套件测试用时" + duration + "ms");
         },
         onTestEnded: function ({id, name, success, error, duration}) {
             colorLog("blue", `${id}号单元${name}测试完成`);
@@ -26,13 +30,23 @@ export function main() {
             } else {
                 log("§c测试失败,失败信息:" + error);
             }
-            colorLog("blue", "该单元测试用时" + duration + "ms\n");
+            colorLog("blue", "该单元测试用时" + duration + "ms");
         },
         onFinished: function ({passed, failed, duration}) {
-            colorLog("blue", "全部套件测试完成");
-            colorLog("blue", "总成功数:§a" + passed);
-            colorLog("blue", "总失败数:§c" + failed);
-            colorLog("blue", "总耗时:" + duration + "ms");
+            colorLog("yellow", "━".repeat(24));
+            log('');
+            colorLog("blue", "━".repeat(24));
+            colorLog("blue", "┃    全部套件测试完成\t§b┃");
+            let success = "┃    总成功数:§a " + passed;//支持7位passed制表
+            success = success + " ".repeat(20 - success.length) + "\t§b┃";
+            let lose = "┃    总失败数:§c " + failed;//支持7位failed制表
+            lose = lose + " ".repeat(20 - lose.length) + "\t§b┃";
+            let time = "┃    总耗时: " + duration + "ms";//支持9位ms制表,超出异常RangeError: illegal repeat count
+            time = time + " ".repeat(20 - time.length) + "\t§b┃";
+            colorLog("blue", success);
+            colorLog("blue", lose);
+            colorLog("blue", time);
+            colorLog("blue", "━".repeat(24));
         }
     });
 }

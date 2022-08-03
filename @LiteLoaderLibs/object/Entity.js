@@ -13,7 +13,6 @@ import { Position } from 'cn.nukkit.level.Position'
 import { Server } from 'cn.nukkit.Server';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Collectors } from "java.util.stream.Collectors";
-import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
 import { EntityMob } from "cn.nukkit.entity.mob.EntityMob";
 import { EntityArmorStand } from "cn.nukkit.entity.item.EntityArmorStand";
 import { Container } from "../container/Container.js";

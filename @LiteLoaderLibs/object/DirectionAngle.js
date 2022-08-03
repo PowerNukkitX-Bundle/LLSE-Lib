@@ -1,5 +1,3 @@
-import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
-
 export class DirectionAngle {
     /**
      * 创建一个DirectionAngle对象

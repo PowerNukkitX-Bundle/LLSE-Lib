@@ -16,12 +16,12 @@ import { Position } from 'cn.nukkit.level.Position';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageByEntityEvent';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
-import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
-import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { Item as JItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
+import { isNumber } from '../utils/underscore-esm-min.js'
+import { getLevels } from './Block.js'
 
 const server = Server.getInstance();
 const ASType = AdventureSettings.Type;
@@ -277,15 +277,11 @@ export class Player {
         if (arguments.length === 1) {
             return this._PNXPlayer.teleport(x.position);
         } else if (arguments.length === 4) {
-            const level = server.getLevelByName(isNaN(dimid) ? dimid : this.levels[dimid]);
-            if (level == null) {
-                console.log('\nUnknow worlds: ' + dimid + '\n  at Player.js -> teleport()');
-                return false;
-            }
+            if (isNumber(dimid) && (0 <= dimid <= 2)) {
+                var level = this.levels[dimid];
+            } else return false;
             return this._PNXPlayer.teleport(Position.fromObject(new Vector3(x, y, z), level));
-        } else {
-            throw 'Wrong number of parameters.';
-        }
+        } else return false;
     }
 
     /**
@@ -413,21 +409,15 @@ export class Player {
         /*
         args1: pos
         args2: x,y,z,dimid
-        args2: x,y,z,dim
         */
         if (arguments.length === 1) {
             return this._PNXPlayer.setSpawn(x.position);
         } else if (arguments.length === 4) {
-            const level = server.getLevelByName(isNaN(dimid) ? dimid : this.levels[dimid]);
-            if (level == null) {
-                console.log('\nUnknow worlds: ' + dimid + '\n  at Player.js -> teleport()');
-                return false;
-            }
+            if (isNumber(dimid) && (0 <= dimid <= 2)) {
+                var level = this.levels[dimid];
+            } else return false;
             return this._PNXPlayer.setSpawn(Position.fromObject(new Vector3(x, y, z), level));
-        } else {
-            throw 'Wrong number of parameters.';
-        }
-        return true;
+        } else return false;
     }
 
     /**
@@ -987,12 +977,4 @@ export function sendText(sender = '', receiver, msg, type) {
             return false;
     }
     return true;
-}
-
-export function getLevels() {
-    return [
-        EnumLevel.OVERWORLD.getLevel().getName(),
-        EnumLevel.NETHER.getLevel().getName(),
-        EnumLevel.THE_END.getLevel().getName()
-    ];
 }

@@ -1,11 +1,11 @@
 import { Block as JBlock } from 'cn.nukkit.block.Block';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
-import { isEmpty, isNull, isNumber, isString } from '../utils/underscore-esm-min.js'
 import { NbtCompound } from '../nbt/NbtCompound.js'
 import { NbtString } from '../nbt/NbtString.js'
 import { NbtByte } from '../nbt/NbtByte.js'
 import { NbtInt } from '../nbt/NbtInt.js'
 import { IntPos } from './IntPos.js'
+import { BlockState } from 'cn.nukkit.blockstate.BlockState'
 
 export class Block {
     /**
@@ -17,7 +17,7 @@ export class Block {
     }
 
     /**
-     * 获取Block
+     * 获取LLSE版本Block
      * @pnxonly
      * @returns {Block} 物品对象 如返回值为 Null 则表示生成失败
      */
@@ -87,14 +87,12 @@ export class Block {
             let state = property[i].split('=');
             let key = state[0];
             let value = state[1];
-            if (isString(value)) {
+            if (key.indexOf("_bit") !== -1) {
+                states[key] = new NbtByte(Number(value));
+            } else if (!isNaN(value)) {
+                states[key] = new NbtInt(Number(value));
+            } else {
                 states[key] = new NbtString(value);
-            } else if (isNumber(value)) {
-                if (value == 1 || value == 0) {
-                    states[key] = new NbtByte(Number(value));
-                } else {
-                    states[key] = new NbtInt(Number(value));
-                }
             }
         }
         let result = {name: new NbtString(property[0]), states: new NbtCompound(states)};
@@ -108,17 +106,28 @@ export class Block {
      * @returns {boolean}
      */
     setNbt(nbt) {
-        let stateNBT = nbt.getData("states");//还是NBTCompound
-        if (!isNull(stateNBT)) {
-            let keys = stateNBT.getKeys();
-            for (let key of keys) {
-                this._PNXBlock.setPropertyValue(key, stateNBT.getData(key));
+        if (nbt.getData("name") !== this.type) return false;
+        let state = nbt.getData('name');
+        let states = nbt.getData('states');//还是NBTCompound
+        for (let key of states.getKeys()) {
+            let tag = states.getTag(key);
+            if (tag instanceof NbtByte) {
+                state += ';' + key + '=' + tag.get() + "b";
+            } else {
+                let value = tag.get();
+                let res = isNaN(value) ? value : Number(value);
+                state += ';' + key + '=' + String(res);
             }
-            let blockState = this._PNXBlock.getCurrentState();
-            this._PNXBlock.getLevel().setBlockStateAt(this.pos.x, this.pos.y, this.pos.z, blockState);
-            return true;
         }
-        return false;
+        try {
+            var _block = BlockState.of(state).getBlock();
+        } catch (err) {
+            console.error('Unknow states: ' + state);
+            return false;
+        }
+        this._PNXBlock.getLevel().setBlock(this.pos.position, _block);
+        this._PNXBlock = this._PNXBlock.getLevel().getBlock(this.pos.position);
+        return true;
     }
 
     toString() {
@@ -128,8 +137,8 @@ export class Block {
 
 export function getLevels() {
     return [
-        EnumLevel.OVERWORLD.getLevel().getName(),
-        EnumLevel.NETHER.getLevel().getName(),
-        EnumLevel.THE_END.getLevel().getName()
+        EnumLevel.OVERWORLD.getLevel(),
+        EnumLevel.NETHER.getLevel(),
+        EnumLevel.THE_END.getLevel()
     ];
 }

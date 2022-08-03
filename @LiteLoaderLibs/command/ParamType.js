@@ -1,5 +1,4 @@
 import { CommandParamType } from 'cn.nukkit.command.data.CommandParamType';
-import { CommandEnum } from 'cn.nukkit.command.data.CommandEnum';
 
 /**
  * 枚举 命令参数类型 和 数据值类型 的对应关系如下

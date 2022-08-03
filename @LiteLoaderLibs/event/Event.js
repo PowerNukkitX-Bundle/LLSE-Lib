@@ -1,4 +1,4 @@
-import { PowerNukkitX as pnx, EventPriority } from ':powernukkitx';
+import { EventPriority, PowerNukkitX as pnx } from ':powernukkitx';
 import { Player } from '../object/Player.js';
 import { Item } from '../object/Item.js';
 import { Block } from '../object/Block.js';

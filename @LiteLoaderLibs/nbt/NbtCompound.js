@@ -26,6 +26,9 @@ import { NBTIO } from "cn.nukkit.nbt.NBTIO";
 import { ByteOrder } from "java.nio.ByteOrder";
 
 export class NbtCompound {
+    /**
+     * @param obj {CompoundTag | Object | null}
+     */
     constructor(obj) {
         if (isEmpty(obj)) {
             this._pnxNbt = new CompoundTag("");
@@ -57,7 +60,7 @@ export class NbtCompound {
                     this._nbt[key] = new NbtShort(tag);
                 } else if (tag instanceof StringTag) {
                     this._nbt[key] = new NbtString(tag);
-                } else throw new SyntaxError("参数类型错误!");
+                } else throw new TypeError("解析PNX CompoundTag类型错误!");
             }
         } else if (this._evaluate(obj)) {
             this._pnxNbt = new CompoundTag("");//PNX的CompoundTag
@@ -65,7 +68,7 @@ export class NbtCompound {
             for (let key in obj) {
                 this._pnxNbt.put(key, obj[key]._pnxNbt);
             }
-        }
+        } else throw new TypeError("参数类型错误!");
     }
 
     getType() {
@@ -131,7 +134,6 @@ export class NbtCompound {
      * 读取键对应的 NBT 对象
      * @param key {string} 要操作的键名
      * @returns {any} 生成的 NBT 对象
-     * @todo 待测试
      */
     getData(key) {
         if (key in this._nbt) {
@@ -275,7 +277,6 @@ export class NbtCompound {
                 result = false
             }
         }
-        if (result === false) throw new SyntaxError("解析对象失败");
         return result;
     }
 }
