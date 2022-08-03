@@ -448,8 +448,8 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
             _block = _block._PNXBlock;
             break;
         case 'NbtCompound':
-            let state = nbt.getData('name');
-            let states = nbt.getData('states');//还是NBTCompound
+            let state = _block.getData('name');
+            let states = _block.getData('states');//还是NBTCompound
             for (let key of states.getKeys()) {
                 let tag = states.getTag(key);
                 if (tag instanceof NbtByte) {
@@ -461,7 +461,7 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
                 }
             }
             try {
-                var _block = BlockState.of(state).getBlock();
+                _block = BlockState.of(state).getBlock();
             } catch (err) {
                 console.error('Unknow states: ' + state);
                 return false;
