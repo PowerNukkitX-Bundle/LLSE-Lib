@@ -1,7 +1,7 @@
 import { JSAssert } from './assert/Assert.js'
-//激活测试套件(不要优化这个import)
 import { TestNbt } from "./nbt/TestNbt.js";
 import { TestBlock } from "./object/TestBlock.js";
+import { TestKVDatabase } from "./database/TestKVDatabase.js";
 import { colorLog, log } from "../@LiteLoaderLibs/index.js"
 
 /***
@@ -11,6 +11,11 @@ import { colorLog, log } from "../@LiteLoaderLibs/index.js"
  * 只适用于静态测试
  */
 export function main() {
+    //套件列表
+    TestNbt();
+    TestBlock();
+    TestKVDatabase();
+    //执行测试,传入配置参数
     JSAssert.execute({
         onSuiteStarted: function ({name, id}) {
             colorLog("yellow", "━".repeat(24));
@@ -52,5 +57,4 @@ export function main() {
 }
 
 export function close() {
-
 }

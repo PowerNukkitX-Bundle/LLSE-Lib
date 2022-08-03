@@ -134,11 +134,3 @@ export class Block {
         return JSON.stringify({name: this.name, type: this.type, pos: this.pos, tileData: this.tileData});
     }
 }
-
-export function getLevels() {
-    return [
-        EnumLevel.OVERWORLD.getLevel(),
-        EnumLevel.NETHER.getLevel(),
-        EnumLevel.THE_END.getLevel()
-    ];
-}

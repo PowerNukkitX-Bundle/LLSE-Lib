@@ -1,20 +1,22 @@
-import { assertThat, JSAssert } from '../assert/Assert.js'
-import { Block as PNXBlock } from 'cn.nukkit.block.Block'
-import { Block, getLevels } from '../../@LiteLoaderLibs/object/Block.js'
-import { log, NBT, NbtCompound } from '../../@LiteLoaderLibs/index.js'
+import { assertThat, JSAssert } from '../assert/Assert.js';
+import { Block } from '../../@LiteLoaderLibs/object/Block.js';
+import { getLevelNames } from "../../@LiteLoaderLibs/utils/Mixins.js";
+import { NBT } from '../../@LiteLoaderLibs/index.js';
+import { Block as PNXBlock } from 'cn.nukkit.block.Block';
 
 /**
  * Test suite for the object assertions of jsassert framework.
  */
-export const TestBlock = JSAssert.addTestSuite("Test Block", (function () {
+export const TestBlock = () => {
+    //测试环境配置
     var pnxBlock = PNXBlock.get(54);
     pnxBlock.setX(100);
     pnxBlock.setY(100);
     pnxBlock.setZ(100);
-    pnxBlock.setLevel(getLevels()[0]);
+    pnxBlock.setLevel(getLevelNames()[0]);
     var block = new Block(pnxBlock);
-    // Expose test cases
-    return {
+    //注册测试套件
+    JSAssert.addTestSuite("Test Block", {
         testProperty: function () {
             assertThat(block.name).equals("Chest", "name属性异常");
             assertThat(block.type).equals("minecraft:chest", "type属性异常");
@@ -29,5 +31,5 @@ export const TestBlock = JSAssert.addTestSuite("Test Block", (function () {
             block.setNbt(nbt);
             assertThat(block.tileData).equals(2, "setNbt异常");
         }
-    };
-}()));
+    });
+};

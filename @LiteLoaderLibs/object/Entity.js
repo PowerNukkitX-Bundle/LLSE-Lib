@@ -10,16 +10,13 @@ import { EntityArmorContainer } from "../container/EntityArmorContainer.js";
 import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Position } from 'cn.nukkit.level.Position'
-import { Server } from 'cn.nukkit.Server';
+import { server } from '../utils/Mixins.js'
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Collectors } from "java.util.stream.Collectors";
 import { EntityMob } from "cn.nukkit.entity.mob.EntityMob";
 import { EntityArmorStand } from "cn.nukkit.entity.item.EntityArmorStand";
 import { Container } from "../container/Container.js";
 import { EntityHumanType } from "cn.nukkit.entity.EntityHumanType";
-
-
-const server = Server.getInstance();
 
 export class Entity {
     /**

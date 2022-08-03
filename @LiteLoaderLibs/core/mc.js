@@ -9,7 +9,7 @@ import { Command } from '../command/Command.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
 import { NbtCompound } from '../nbt/NbtCompound.js';
-import { Server } from 'cn.nukkit.Server';
+import { server } from '../utils/Mixins.js';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
@@ -22,7 +22,6 @@ import { Permission } from 'cn.nukkit.permission.Permission';
 import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
 import { NbtByte } from "../nbt/NbtByte.js";
 
-const server = Server.getInstance();
 const PlayerCommandMap = new Map();
 const ConsoleCommandMap = new Map();
 server.getPluginManager().addPermission(new Permission("liteloaderlibs.command.any", "liteloader插件any权限", "true"));
@@ -106,7 +105,7 @@ function runcmd(cmd) {
 function runcmdEx(cmd) {
     let rconSender = new RemoteConsoleCommandSender();
     let succ = server.dispatchCommand(rconSender, cmd);
-    return { success: succ, output: rconSender.getMessages() };
+    return {success: succ, output: rconSender.getMessages()};
 }
 
 /**
@@ -475,6 +474,7 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
     }
     return _pos.getLevel().setBlock(_pos, _block);
 }
+
 /**
  * 在指定位置生成粒子效果
  * @param x {number} x
@@ -514,6 +514,7 @@ function spawnParticle(x, y, z, dimid, type) {
 function newScoreObjective(name, displayName) {
     return ScoreObjectives.newScoreObjective(...arguments);
 }
+
 /**
  * 获取某个已存在的计分项
  * @param name {string} 要获取的计分项名称
@@ -522,6 +523,7 @@ function newScoreObjective(name, displayName) {
 function getScoreObjective(name) {
     return ScoreObjectives.getObjectives(...arguments);
 }
+
 /**
  * 获取所有计分项
  * 此接口的作用类似命令 /scoreboard objectives list
@@ -530,6 +532,7 @@ function getScoreObjective(name) {
 function getAllScoreObjectives() {
     return ScoreObjectives.getAllScoreObjectives();
 }
+
 /**
  * 获取某个处于显示状态的计分项
  * @param slot {string} 待查询的显示槽位名称，可以为"sidebar"/"belowname"/"list"

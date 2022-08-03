@@ -3,7 +3,7 @@ export class IllegalArgumentError extends Error {
         super(message);
         this.name = 'IllegalArgumentError';
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CustomError);
+            Error.captureStackTrace(this, IllegalArgumentError);
         }
     }
 }

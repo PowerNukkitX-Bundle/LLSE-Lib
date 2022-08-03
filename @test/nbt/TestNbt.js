@@ -18,7 +18,8 @@ import { assertThat, JSAssert } from '../assert/Assert.js'
  * Test suite for the object assertions of jsassert framework.
  */
 
-export const TestNbt = JSAssert.addTestSuite("Test NBT", (function () {
+export const TestNbt = () => {
+    //测试环境配置
     var buffer = new ArrayBuffer(5);
     var array = new Int8Array(buffer);
     array.fill(5)
@@ -49,9 +50,8 @@ export const TestNbt = JSAssert.addTestSuite("Test NBT", (function () {
         name4: 66666,
         name5: {k3: 5, k4: 2, k5: array, k6: null, k7: 8, k8: {m1: 3, m2: 3}}
     };
-
-    // Expose test cases
-    return {
+    //注册测试套件
+    JSAssert.addTestSuite("Test NBT", {
         testNBTOutput: function () {
             assertThat(oldNBT.toSNBT()).equals(`{"name5":{"k3":5.0d,"k4":2b,"k5":[B;5,5,5,5,5],"k6":,"k7":8s,"k8":{"m1":3,"m2":3}},"name4":66666L,"name3":[4.0f,6.0f],"name2":"test","name1":3}`, "toSNBT异常");
             assertThat(oldNBT.toObject()).equals(object, "toObject异常");
@@ -82,5 +82,5 @@ export const TestNbt = JSAssert.addTestSuite("Test NBT", (function () {
                 }));
             assertThat(nbt.toSNBT()).equals(`{"name6":"test1","name5":128s,"name4":1b,"name3":2.32342d,"name9":,"name8":[B;5,5,5,5,5],"name7":99999L,"name2":1.0f,"name1":2,"s1":[1,2],"s2":{"p1":"hahaha","p2":"lalala"}}`, "创建Compound异常");
         }
-    };
-}()));
+    });
+};

@@ -8,9 +8,10 @@ import { ScoreObjectives } from './ScoreObjectives.js';
 import { ModalForm } from '../gui/ModalForm.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
+import { isNumber } from '../utils/underscore-esm-min.js';
+import { getLevelNames, server } from '../utils/Mixins.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
-import { Server } from 'cn.nukkit.Server';
 import { PlayerChatEvent } from 'cn.nukkit.event.player.PlayerChatEvent';
 import { Position } from 'cn.nukkit.level.Position';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
@@ -20,10 +21,8 @@ import { Item as JItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
-import { isNumber } from '../utils/underscore-esm-min.js'
-import { getLevels } from './Block.js'
 
-const server = Server.getInstance();
+
 const ASType = AdventureSettings.Type;
 const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHandler')))({
     handle: function (player, formID) {
@@ -51,7 +50,7 @@ export class Player {
     constructor(Player) {
         this._PNXPlayer = Player;
         this.DirectionAngle = new DirectionAngle(Player);
-        this.levels = getLevels();
+        this.levels = getLevelNames();
     }
 
     static getPlayer(PNXPlayer) {
@@ -449,7 +448,11 @@ export class Player {
         let inv = this._PNXPlayer.getInventory()
         let limit = inv.getSize() + 4
         for (let i = 0; i < limit; i++) {
-            if (inv.getItem(i).getNamespaceId() == type) { inv.clear(i); num++ };
+            if (inv.getItem(i).getNamespaceId() == type) {
+                inv.clear(i);
+                num++
+            }
+            ;
         }
         return num;
     }
