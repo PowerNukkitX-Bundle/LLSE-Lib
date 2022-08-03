@@ -453,7 +453,6 @@ export class Player {
                 inv.clear(i);
                 num++
             }
-            ;
         }
         return num;
     }
