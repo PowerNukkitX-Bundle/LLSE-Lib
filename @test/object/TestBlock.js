@@ -1,6 +1,6 @@
 import { assertThat, JSAssert } from '../assert/Assert.js';
 import { Block } from '../../@LiteLoaderLibs/object/Block.js';
-import { getLevelNames } from "../../@LiteLoaderLibs/utils/Mixins.js";
+import { getLevels } from "../../@LiteLoaderLibs/utils/Mixins.js";
 import { NBT } from '../../@LiteLoaderLibs/index.js';
 import { Block as PNXBlock } from 'cn.nukkit.block.Block';
 
@@ -13,7 +13,7 @@ export const TestBlock = () => {
     pnxBlock.setX(100);
     pnxBlock.setY(100);
     pnxBlock.setZ(100);
-    pnxBlock.setLevel(getLevelNames()[0]);
+    pnxBlock.setLevel(getLevels()[0]);
     var block = new Block(pnxBlock);
     //注册测试套件
     JSAssert.addTestSuite("Test Block", {
