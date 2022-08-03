@@ -9,7 +9,7 @@ import { ModalForm } from '../gui/ModalForm.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
 import { isNumber } from '../utils/underscore-esm-min.js';
-import { getLevelNames, server } from '../utils/Mixins.js';
+import { getLevels, server } from '../utils/Mixins.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
 import { PlayerChatEvent } from 'cn.nukkit.event.player.PlayerChatEvent';
@@ -21,6 +21,7 @@ import { Item as JItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
+import { NbtCompound } from '../nbt/NbtCompound.js'
 
 
 const ASType = AdventureSettings.Type;
@@ -50,7 +51,7 @@ export class Player {
     constructor(Player) {
         this._PNXPlayer = Player;
         this.DirectionAngle = new DirectionAngle(Player);
-        this.levels = getLevelNames();
+        this.levels = getLevels();
     }
 
     static getPlayer(PNXPlayer) {
@@ -452,7 +453,6 @@ export class Player {
                 inv.clear(i);
                 num++
             }
-            ;
         }
         return num;
     }

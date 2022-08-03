@@ -10,13 +10,14 @@ import { EntityArmorContainer } from "../container/EntityArmorContainer.js";
 import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Position } from 'cn.nukkit.level.Position'
-import { server } from '../utils/Mixins.js'
+import { server } from '../utils/Mixins.js';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Collectors } from "java.util.stream.Collectors";
 import { EntityMob } from "cn.nukkit.entity.mob.EntityMob";
 import { EntityArmorStand } from "cn.nukkit.entity.item.EntityArmorStand";
 import { Container } from "../container/Container.js";
 import { EntityHumanType } from "cn.nukkit.entity.EntityHumanType";
+import { NbtCompound } from '../nbt/NbtCompound.js'
 
 export class Entity {
     /**
@@ -274,20 +275,24 @@ export class Entity {
 
     /**
      * 获取实体对应的 NBT 对象
-     * @todo 待实现
+     * @todo 待测试
      * @returns {NbtCompound} LLSE的NbtCompound对象
      */
     getNbt() {
-        return null;
+        return new NbtCompound(this._PNXEntity.namedTag);
     }
 
     /**
      * 写入实体对应的 NBT 对象
-     * @todo 待实现
+     * @todo 待测试
      * @param nbt {NbtCompound} NBT 对象
      * @returns {boolean} 是否成功
      */
     setNbt(nbt) {
-        return true;
+        if (!nbt._pnxNbt.isEmpty()) {
+            this._PNXEntity.namedTag = nbt._pnxNbt;
+            return true;
+        }
+        return false;
     }
 }
