@@ -6,9 +6,7 @@ import { Entity as PNXEntity } from "cn.nukkit.entity.Entity";
 import { Random } from "java.util.Random";
 import { NBTIO } from "cn.nukkit.nbt.NBTIO";
 import { Entity } from "./Entity.js";
-import { Server } from "cn.nukkit.Server";
-
-const server = Server.getInstance();
+import { server } from '../utils/Mixins.js'
 
 export class Item {
     /**

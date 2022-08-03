@@ -6,10 +6,8 @@ import { FakeScorer } from 'cn.nukkit.scoreboard.scorer.FakeScorer';
 import { PlayerScorer } from 'cn.nukkit.scoreboard.scorer.PlayerScorer';
 import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
 import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
-import { Server } from 'cn.nukkit.Server';
+import { server } from '../utils/Mixins.js'
 import { Scoreboard } from 'cn.nukkit.scoreboard.Scoreboard';
-
-const server = Server.getInstance();
 
 export class ScoreObjectives {
     /**
