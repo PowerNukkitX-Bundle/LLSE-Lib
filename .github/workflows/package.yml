@@ -29,9 +29,8 @@ jobs:
           maven-version: 3.8.2
       - name: set up PNX environment
         run: |
-          cd powernukkitx/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true"
-          cd ../ && mkdir powernukkitx/target/plugins
-          mv target/powernukkitx-*-PNX.jar target/powernukkitx.jar
+          cd powernukkitx/ && mvn -B package -P dev -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true"
+          mkdir target/plugins && mv target/powernukkitx-*-PNX.jar target/powernukkitx.jar
           cd ../ && cp @LiteLoaderLibs @test -R powernukkitx/target/plugins
           cp env/server.properties env/test.sh powernukkitx/target
       - name: run Test
