@@ -6,7 +6,9 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtFloat extends CommonNbt {
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof FloatTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             this._pnxNbt = new FloatTag("", data);
         }
     }
@@ -24,8 +26,6 @@ export class NbtFloat extends CommonNbt {
     }
 
     _evaluate(data) {
-        if (Float.MIN_VALUE <= data <= Float.MAX_VALUE) {
-            return true;
-        } else throw RangeError("参数数值范围超出float范围!");
+        return Float.MIN_VALUE <= data <= Float.MAX_VALUE;
     }
 }

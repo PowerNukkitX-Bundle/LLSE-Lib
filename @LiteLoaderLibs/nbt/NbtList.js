@@ -23,11 +23,18 @@ import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
 import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
 import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
 import { NbtCompound } from './NbtCompound.js'
+import { isEmpty, isNull } from '../utils/underscore-esm-min.js'
 
 
 export class NbtList {
+    /**
+     * @param array {ListTag | Array | null}
+     */
     constructor(array) {
-        if (array instanceof ListTag) {
+        if (isEmpty(array)) {
+            this._pnxNbt = new ListTag("");
+            this._nbt = [];
+        } else if (array instanceof ListTag) {
             this._pnxNbt = array;
             this._nbt = [];
             let type = array.getAll()[0];
@@ -75,11 +82,11 @@ export class NbtList {
                 for (let tag of array.getAll()) {
                     this._nbt.push(new NbtString(tag));
                 }
-            } else throw throw new SyntaxError("参数类型错误!");
+            } else throw new TypeError("解析PNX NBT tag类型错误!");
         } else {
             let type = array[0].getType();
             for (let j = 1, len = array.length; j < len; j++) {
-                if (array[j].getType() !== type) throw new SyntaxError("参数类型错误!");
+                if (array[j].getType() !== type) throw new TypeError("数值中NBT元素类型不一致!");
             }
             this._pnxNbt = new ListTag('');
             this._nbt = array;
@@ -139,8 +146,8 @@ export class NbtList {
      * @returns {any} 下标位置的NBT对象
      */
     getTag(index) {
-        if (index < 0 || index > this.getSize()) {
-            throw new SyntaxError("参数类型错误!");
+        if (!this._evaluate(index)) {
+            throw new RangeError("索引溢出");
         }
         return this._nbt[index];
     }
@@ -162,8 +169,8 @@ export class NbtList {
      * @returns {NbtList} 处理完毕的NBT列表（便于连锁进行其他操作）
      */
     removeTag(index) {
-        if (index < 0 || index > this.getSize()) {
-            throw new SyntaxError("参数类型错误!");
+        if (!this._evaluate(index)) {
+            throw new RangeError("索引溢出");
         }
         this._pnxNbt.remove(index);
         this._nbt.splice(index, 1);
@@ -264,23 +271,16 @@ export class NbtList {
         } else return this._nbt.map(k => k.get());
     }
 
-    /**
-     * 将 NBT 标签对象 序列化为 SNBT
-     * @param space {number} 空格数量。如果要格式化输出的字符串，则传入此参数。
-     * @returns {string} 对应的 SNBT 字符串
-     */
-    toSNBT(space = -1) {
-        if (space === -1) {
-            return this._pnxNbt.toSnbt();
-        } else return this._pnxNbt.toSnbt(space);
-    }
-
     _evaluate(index, tag) {
-        if (tag.getType() !== this._nbt[0].getType()) {
-            throw new SyntaxError("参数类型错误!");
+        if (index) {
+            if (index < 0 || index > this.getSize()) {
+                return false;
+            }
         }
-        if (index < 0 || index > this.getSize()) {
-            throw new RangeError("索引长度溢出");
+        if (tag) {
+            if (tag.getType() !== this._nbt[0].getType()) {
+                return false;
+            }
         }
         return true;
     }

@@ -6,10 +6,8 @@ import { FakeScorer } from 'cn.nukkit.scoreboard.scorer.FakeScorer';
 import { PlayerScorer } from 'cn.nukkit.scoreboard.scorer.PlayerScorer';
 import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
 import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
-import { Player as JPlayer } from 'cn.nukkit.Player';
-import { Server } from 'cn.nukkit.Server';
-
-const server = Server.getInstance();
+import { server } from '../utils/Mixins.js'
+import { Scoreboard } from 'cn.nukkit.scoreboard.Scoreboard';
 
 export class ScoreObjectives {
     /**
@@ -24,13 +22,69 @@ export class ScoreObjectives {
 
     /**
      * 获取ScoreObjectives对象
-     * @returns {Objectives} 计分项对象
+     * @returns {Objectives|null} 计分项对象
      */
     static getObjectives(name) {
-        if (!ScoreMap.has(name)) {
-            ScoreMap.set(name, new ScoreObjectives(name));
+        const manager = server.getScoreboardManager();
+        if (!manager.hasScoreboard(name)) {
+            return null;
         }
-        return ScoreMap.get(name);
+        if (!ScoreObjectives.ScoreMap.has(name)) {
+            ScoreObjectives.ScoreMap.set(name, new ScoreObjectives(name));
+        }
+        return ScoreObjectives.ScoreMap.get(name);
+    }
+
+    /**
+     * 创建一个新的计分项
+     * 此接口的作用类似命令 /scoreboard objectives add <name> <displayName> dummy
+     * @param name {string} 计分项名称
+     * @param displayName  {string} 计分项显示名称
+     * @returns {Objective|null} 新增创建的计分项对象
+     */
+    static newScoreObjective(name, displayName) {
+        const manager = server.getScoreboardManager();
+        if (manager.hasScoreboard(name)) {
+            return null;
+        }
+        manager.addScoreboard(new Scoreboard(name, displayName, 'dummy', SortOrder.ASCENDING, manager));
+        return ScoreObjectives.getObjectives(name);
+    }
+    /**
+     * 获取所有计分项
+     * 此接口的作用类似命令 /scoreboard objectives list
+     * @returns {Array<ScoreObjectives,...>} 计分板系统记录的所有计分项对象
+     */
+    static getAllScoreObjectives() {
+        const manager = server.getScoreboardManager();
+        let allScoreObjectives = [];
+        for (let scoreboard of manager.getScoreboards().values()) {
+            allScoreObjectives.push(ScoreObjectives.getObjectives(scoreboard.getObjectiveName()));
+        }
+        return allScoreObjectives;
+    }
+    /**
+     * 获取某个处于显示状态的计分项
+     * @param slot {string} 待查询的显示槽位名称，可以为"sidebar"/"belowname"/"list"
+     * @returns {ScoreObjectives|null} 正在slot槽位显示的计分项
+     */
+    static getDisplayObjective(slot) {
+        const manager = server.getScoreboardManager();
+        var objectiveName = null;
+        switch (slot) {
+            case 'sidebar':
+                objectiveName = manager.getDisplay(DisplaySlot.SIDEBAR);
+                break;
+            case 'list':
+                objectiveName = manager.getDisplay().get(DisplaySlot.LIST);
+                break;
+            case 'belowname':
+                objectiveName = manager.getDisplay().get(DisplaySlot.BELOW_NAME);
+                break;
+            default:
+                objectiveName = manager.getDisplay().get(DisplaySlot.SIDEBAR);
+        }
+        return ScoreObjectives.getObjectives(objectiveName);
     }
 
     get _PNXScore() {
@@ -144,7 +198,7 @@ export class ScoreObjectives {
     /**
      * 设置计分项的显示状态
      * @param slot {string} 显示槽位名称字符串，可以为 sidebar/belowname/list
-     * @param [sortOrder=0] {number} 排序方式，可以为 0(升序) 或 1(降序)，默认为 0
+     * @param [sortOrder=0] {number} 排序方式，可以为 0(升序) 或 1(降序)（默认0）
      * @returns {boolean} 是否设置成功
      */
     setDisplay(slot, sortOrder = 0) {
@@ -169,8 +223,8 @@ export class ScoreObjectives {
                 return false;
             }
         }
-        manager.setDisplay(DisplaySlot.BELOW_NAME, this._ObjectivesName);
-        manager.setSortOrder(sortOrder ? SortOrder.DESCENDING : SortOrder.ASCENGING, this._ObjectivesName);
+        manager.setDisplay(slot, this._ObjectivesName);
+        this._PNXScore.setSortOrder(sortOrder ? SortOrder.DESCENDING : SortOrder.ASCENGING);
         return true;
     }
 }

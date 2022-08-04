@@ -11,10 +11,16 @@ jobs:
         run: |
           mkdir $GITHUB_WORKSPACE/src
           mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
+      - name: compress
+        uses: nizarmah/auto-minify@v2.1
+        with:
+          overwrite: true
+          directory: ./src/@LiteLoaderLibs
+          js_engine: uglify-js
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: LiteLoaderLibs
           path: |
             src
-            !@LiteLoaderLibs/jsconfig.json
+            !**/jsconfig.json

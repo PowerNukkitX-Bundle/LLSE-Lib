@@ -1,6 +1,5 @@
 import { Item } from '../object/Item.js';
 import { Item as PNXItem } from 'cn.nukkit.item.Item';
-import { BaseInventory as JBaseInventory } from 'cn.nukkit.inventory.BaseInventory';
 
 /**
  * @todo 测试

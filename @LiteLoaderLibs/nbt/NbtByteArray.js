@@ -61,15 +61,13 @@ export class NbtByteArray extends CommonNbt {
 
     _evaluate(data) {
         if (data instanceof Int8Array) {
-            let suc = true;
+            var suc = true;
             data.forEach(elem => {
                 if (Byte.MIN_VALUE > elem || elem > Byte.MAX_VALUE) {
                     suc = false;
                 }
             });
-            if (suc) {
-                return true;
-            } else throw RangeError("字节数组内数值范围溢出");
-        } else throw new SyntaxError("参数类型错误!");
+        }
+        return suc;
     }
 }

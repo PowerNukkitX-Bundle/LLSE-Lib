@@ -1,6 +1,4 @@
-import { Server } from 'cn.nukkit.Server';
-
-const server = Server.getInstance();
+import { server } from '../utils/Mixins.js'
 
 /**
  * 向加载器提供一些插件相关的信息

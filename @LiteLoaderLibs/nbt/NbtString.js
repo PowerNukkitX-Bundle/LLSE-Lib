@@ -5,7 +5,9 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtString extends CommonNbt {
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof StringTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             this._pnxNbt = new StringTag("", data);
         }
     }
@@ -27,8 +29,6 @@ export class NbtString extends CommonNbt {
     }
 
     _evaluate(data) {
-        if (typeof data === "string") {
-            return true;
-        } else throw new SyntaxError("参数类型错误!");
+        return typeof data === "string";
     }
 }

@@ -4,10 +4,12 @@ import { Player, sendText } from '../object/Player.js';
 import { Event } from '../event/Event.js';
 import { Item } from '../object/Item.js';
 import { Block } from '../object/Block.js';
+import { ScoreObjectives } from '../object/ScoreObjectives.js';
 import { Command } from '../command/Command.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
-import { Server } from 'cn.nukkit.Server';
+import { NbtCompound } from '../nbt/NbtCompound.js';
+import { server } from '../utils/Mixins.js';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
@@ -18,8 +20,8 @@ import { BlockStateRegistry } from 'cn.nukkit.blockstate.BlockStateRegistry';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Permission } from 'cn.nukkit.permission.Permission';
 import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
+import { NbtByte } from "../nbt/NbtByte.js";
 
-const server = Server.getInstance();
 const PlayerCommandMap = new Map();
 const ConsoleCommandMap = new Map();
 server.getPluginManager().addPermission(new Permission("liteloaderlibs.command.any", "liteloader插件any权限", "true"));
@@ -111,9 +113,9 @@ function runcmdEx(cmd) {
  * @todo 未实现
  * @param cmd {string} 命令
  * @param description {string} 描述文本
- * @param [permission=0] {number} 执行所需权限0~2
- * @param [flag=0x80] {number} 默认值
- * @param [alias] {string} 命令别名
+ * @param [permission=0] {number} 执行所需权限0~2（默认0）
+ * @param [flag=0x80] {number} 默认值（默认0x80）
+ * @param [alias] {string} 命令别名（默认空值）
  * @returns {Command} 指令对象
  */
 function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
@@ -136,7 +138,7 @@ function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
  * @param cmd {string} 待注册的命令
  * @param description {string} 描述文本
  * @param callback {Function} 注册的这个命令被执行时，接口自动调用的回调函数。
- * @param [level=0] {number} 默认值
+ * @param [level=0] {number} 默认值（默认0）
  * @returns {boolean} 是否成功
  */
 function regPlayerCmd(cmd, description, callback, level = 0) {
@@ -266,7 +268,7 @@ function getOnlinePlayers() {
 /**
  * 发给所有玩家一条消息
  * @param msg {string} 消息内容
- * @param [type=0] {number} 消息类型
+ * @param [type=0] {number} 消息类型（默认0）
  * @returns {boolean} 是否成功
  */
 function broadcast(msg, type = 0) {
@@ -305,13 +307,11 @@ function explode(x, y, z, dimid, source, power, range, isDestroy, isFire) {
  * 生成新的物品对象
  * @param name {string} 物品的标准类型名，如 minecraft:bread
  * @param count {number} 物品堆叠数量
+ * @args1 name, count
+ * @args2 NbtCompound
  * @returns {Item|null}
  */
 function newItem(name, count) {
-    /*
-    args1: name, count
-    args2: NbtCompound
-    */
     return Item.newItem(name, count);
 }
 
@@ -382,14 +382,12 @@ function clearDisplayObjective(slot) {
  * @param y {number} y
  * @param z {number} z
  * @param dimid {number} 维度ID
+ * @args1 pos
+ * @args2 x, y, z, dim
+ * @args3 x, y, z, dimid
  * @returns {Block|null} 方块对象
  */
 function getBlock(x, y, z, dimid) {
-    /*
-    args1: x, y, z, dim
-    args1: x, y, z, dimid
-    args2: pos
-    */
     if (arguments.length === 4) {
         const level = dimToLevel(dimid);
         if (level === null) {
@@ -409,25 +407,23 @@ function getBlock(x, y, z, dimid) {
  * @param y {number} y
  * @param z {number} z
  * @param dimid {number} 维度ID
- * @param block {string|Block|NBTCompound} 要设置成的方块标准类型名（如 minecraft:stone）、方块对象或方块 NBT 数据
+ * @param block {string|Block|NbtCompound} 要设置成的方块标准类型名（如 minecraft:stone）、方块对象或方块 NBT 数据
  * @param [tiledata=0] {number} 方块状态值（默认0）
+ * @args1 pos, block, tiledata = 0
+ * @args2 x, y, z, dim, block, tiledata = 0
+ * @args3 x, y, z, dimid, block, tiledata = 0
  * @returns {boolean} 是否成功设置
  */
 function setBlock(x, y, z, dimid, block, tiledata = 0) {
-    /*
-    args2: pos, block, tiledata = 0
-    args1: x, y, z, dim, block, tiledata = 0
-    args1: x, y, z, dimid, block, tiledata = 0
-    */
     var _pos, _block;
-    if (block) {// 5 个参数
+    if (arguments.length === 5) {// 5 个参数
         const level = dimToLevel(dimid);
         if (level === null) {
             return false;
         }
         _pos = Position.fromObject(new Vector3(x, y, z), level).getLevelBlock();
         _block = block;
-    } else if (y) {// 2 个参数
+    } else if (arguments.length === 2) {// 2 个参数
         _pos = x.position;
         _block = y;
         if (isNaN(z)) {// 设置默认值
@@ -451,12 +447,17 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
             _block = _block._PNXBlock;
             break;
         case 'NbtCompound':
-            var state = _block._nbt.getString('name');
-            var statesMap = _block._nbt.getCompound('states').getTags();
-            for (let key of statesMap.keySet()) {
-                var value = statesMap.get(key).parseValue();
-                var res = isNaN(value) ? value : Number(value);
-                state += ';' + key + '=' + String(res);
+            let state = _block.getData('name');
+            let states = _block.getData('states');//还是NBTCompound
+            for (let key of states.getKeys()) {
+                let tag = states.getTag(key);
+                if (tag instanceof NbtByte) {
+                    state += ';' + key + '=' + tag.get() + "b";
+                } else {
+                    let value = tag.get();
+                    let res = isNaN(value) ? value : Number(value);
+                    state += ';' + key + '=' + String(res);
+                }
             }
             try {
                 _block = BlockState.of(state).getBlock();
@@ -481,13 +482,13 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
  * @param z {number} z
  * @param dimid {number} 维度ID
  * @param type {string} 粒子效果名例如 minecraft:heart_particle
+ * @args1 pos, type
+ * @args2 x, y, z, dim, type
+ * @args3 x, y, z, dimid, type
  * @returns {boolean} 是否成功生成
  */
 function spawnParticle(x, y, z, dimid, type) {
     /*
-    args2: pos, type
-    args1: x, y, z, dim, type
-    args1: x, y, z, dimid, type
     */
     if (arguments.length === 5) {
         const level = dimToLevel(dimid);
@@ -502,35 +503,79 @@ function spawnParticle(x, y, z, dimid, type) {
     }
 }
 
+//📝 计分板 API
+/**
+ * 创建一个新的计分项
+ * 此接口的作用类似命令 /scoreboard objectives add <name> <displayName> dummy
+ * @param name {string} 计分项名称
+ * @param displayName  {string} 计分项显示名称
+ * @returns {ScoreObjectives|null} 新增创建的计分项对象
+ */
+function newScoreObjective(name, displayName) {
+    return ScoreObjectives.newScoreObjective(...arguments);
+}
+
+/**
+ * 获取某个已存在的计分项
+ * @param name {string} 要获取的计分项名称
+ * @returns {ScoreObjectives|null} 对应的计分项对象
+ */
+function getScoreObjective(name) {
+    return ScoreObjectives.getObjectives(...arguments);
+}
+
+/**
+ * 获取所有计分项
+ * 此接口的作用类似命令 /scoreboard objectives list
+ * @returns {Array<ScoreObjectives,...>} 计分板系统记录的所有计分项对象
+ */
+function getAllScoreObjectives() {
+    return ScoreObjectives.getAllScoreObjectives();
+}
+
+/**
+ * 获取某个处于显示状态的计分项
+ * @param slot {string} 待查询的显示槽位名称，可以为"sidebar"/"belowname"/"list"
+ * @returns {ScoreObjectives|null} 正在slot槽位显示的计分项
+ */
+function getDisplayObjective(slot) {
+    return ScoreObjectives.getDisplayObjective(...arguments);
+}
+
 export const mc = {
     //PNX 的API
-    close: close,
+    close,
     //💻 服务端设置 API
     getBDSVersion: getServerVersion,
-    getServerProtocolVersion: getServerProtocolVersion,
-    setMotd: setMotd,
-    setMaxPlayers: setMaxPlayers,
+    getServerProtocolVersion,
+    setMotd,
+    setMaxPlayers,
     //🎨 游戏元素接口文档
-    runcmd: runcmd,
-    runcmdEx: runcmdEx,
-    newCommand: newCommand,
-    regPlayerCmd: regPlayerCmd,
-    regConsoleCmd: regConsoleCmd,
-    listen: listen,
-    getPlayer: getPlayer,
-    getOnlinePlayers: getOnlinePlayers,
-    broadcast: broadcast,
-    explode: explode,
+    runcmd,
+    runcmdEx,
+    newCommand,
+    regPlayerCmd,
+    regConsoleCmd,
+    listen,
+    getPlayer,
+    getOnlinePlayers,
+    broadcast,
+    explode,
     // 物品对象
-    newItem: newItem,
+    newItem,
     // 表单窗口相关
-    newSimpleForm: newSimpleForm,
-    newCustomForm: newCustomForm,
+    newSimpleForm,
+    newCustomForm,
     // 记分榜相关
-    removeScoreObjective: removeScoreObjective,
-    clearDisplayObjective: clearDisplayObjective,
+    removeScoreObjective,
+    clearDisplayObjective,
     // 方块对象API
-    getBlock: getBlock,
-    setBlock: setBlock,
-    spawnParticle: spawnParticle
+    getBlock,
+    setBlock,
+    spawnParticle,
+    //📝 计分板 API
+    newScoreObjective,
+    getScoreObjective,
+    getAllScoreObjectives,
+    getDisplayObjective
 }

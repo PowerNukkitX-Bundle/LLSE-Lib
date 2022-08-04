@@ -1,6 +1,3 @@
-import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
-import { NBTIO } from "cn.nukkit.nbt.NBTIO";
-import { ByteOrder } from "java.nio.ByteOrder";
 import { NbtTypeEnum } from "./NbtTypeEnum.js"
 import { NbtByte } from './NbtByte.js'
 import { NbtByteArray } from './NbtByteArray.js'
@@ -13,6 +10,7 @@ import { NbtString } from './NbtString.js'
 import { NbtShort } from './NbtShort.js'
 import { NbtLong } from './NbtLong.js'
 import { data } from '../utils/data.js'
+import { isEmpty } from "../utils/underscore-esm-min.js";
 import { ByteTag } from 'cn.nukkit.nbt.tag.ByteTag'
 import { ByteArrayTag } from 'cn.nukkit.nbt.tag.ByteArrayTag'
 import { DoubleTag } from 'cn.nukkit.nbt.tag.DoubleTag'
@@ -23,10 +21,19 @@ import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
 import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
 import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
 import { ListTag } from 'cn.nukkit.nbt.tag.ListTag'
+import { CompoundTag } from "cn.nukkit.nbt.tag.CompoundTag";
+import { NBTIO } from "cn.nukkit.nbt.NBTIO";
+import { ByteOrder } from "java.nio.ByteOrder";
 
 export class NbtCompound {
+    /**
+     * @param obj {CompoundTag | Object | null}
+     */
     constructor(obj) {
-        if (obj instanceof CompoundTag) {
+        if (isEmpty(obj)) {
+            this._pnxNbt = new CompoundTag("");
+            this._nbt = {};
+        } else if (obj instanceof CompoundTag) {
             this._pnxNbt = obj;
             this._nbt = {};
             for (let key of obj.getTags().keySet().toArray()) {
@@ -53,7 +60,7 @@ export class NbtCompound {
                     this._nbt[key] = new NbtShort(tag);
                 } else if (tag instanceof StringTag) {
                     this._nbt[key] = new NbtString(tag);
-                } else throw new SyntaxError("参数类型错误!");
+                } else throw new TypeError("解析PNX CompoundTag类型错误!");
             }
         } else if (this._evaluate(obj)) {
             this._pnxNbt = new CompoundTag("");//PNX的CompoundTag
@@ -61,7 +68,7 @@ export class NbtCompound {
             for (let key in obj) {
                 this._pnxNbt.put(key, obj[key]._pnxNbt);
             }
-        } else return null;
+        } else throw new TypeError("参数类型错误!");
     }
 
     getType() {
@@ -126,25 +133,32 @@ export class NbtCompound {
     /**
      * 读取键对应的 NBT 对象
      * @param key {string} 要操作的键名
-     * @returns {cn.nukkit.nbt.tag} 生成的 NBT 对象
-     * @todo 将返回修改为LLSE类型
+     * @returns {any} 生成的 NBT 对象
      */
     getData(key) {
-        let tag = this.getData(key);
-        if (tag.getType() === 9 || tag.getType() === 10) {
-            return tag;
-        } else return tag.get();
+        if (key in this._nbt) {
+            let tag = this._nbt[key];
+            if (tag.getType() === 9 || tag.getType() === 10) {
+                return tag;
+            } else return tag.get();
+        } else return null;
     }
 
     /**
      * 将 NBT 标签对象 序列化为 SNBT
-     * @param space {number} 空格数量。如果要格式化输出的字符串，则传入此参数。
-     * @returns {string} 对应的 SNBT 字符串
+     * @param space {number} 空格数量。如果要格式化输出的字符串，则传入此参数(默认-1不格式化)。
+     * @returns {String} 对应的 SNBT 字符串
      */
     toSNBT(space = -1) {
+        var snbt;
         if (space === -1) {
-            return this._pnxNbt.toSnbt();
-        } else return this._pnxNbt.toSnbt(space);
+            snbt = this._pnxNbt.toSnbt();
+        } else snbt = this._pnxNbt.toSnbt(space);
+        //做这个处理是为了将格式与LLSE统一,pnx内部根Compound会显示 "":{xxx}
+        //而LLSE会显示 {xxx}
+        if (snbt.substring(0, 2) === `""`) {
+            return snbt.substring(snbt.indexOf("{"), snbt.length);
+        } else return snbt;
     }
 
     /**
@@ -154,12 +168,26 @@ export class NbtCompound {
     toObject() {
         let obj = {};
         for (let key of Object.keys(this._nbt)) {
-            if (this._nbt[key].getType() === 10) {
+            if (this._nbt[key].getType() === 10) {//Compound
                 obj[key] = this._nbt[key].toObject();
-            } else if (this._nbt[key].getType() === 9) {
+            } else if (this._nbt[key].getType() === 9) {//List
                 obj[key] = this._nbt[key].toArray();
-            } else {
+            } else if (this._nbt[key].getType() === 8) {//String
+                obj[key] = String(this._nbt[key].get());
+            } else if (this._nbt[key].getType() === 7) {//ByteArray
                 obj[key] = this._nbt[key].get();
+            } else if (this._nbt[key].getType() === 1) {//Byte
+                let result = this._nbt[key].get();
+                if (result === 1) {
+                    result = true;
+                } else if (result === 0) {
+                    result = false;
+                }
+                obj[key] = result;
+            } else if (this._nbt[key].getType() === 0) {//End
+                obj[key] = null;
+            } else {
+                obj[key] = Number(this._nbt[key].get());
             }
         }
         return obj;
@@ -232,7 +260,7 @@ export class NbtCompound {
         return this.setTag(key, new NbtDouble(data));
     }
 
-    setByteBuffer(key, data) {
+    setByteArray(key, data) {
         return this.setTag(key, new NbtByteArray(data));
     }
 
@@ -249,7 +277,6 @@ export class NbtCompound {
                 result = false
             }
         }
-        if (result === false) throw new SyntaxError("解析对象失败");
         return result;
     }
 }

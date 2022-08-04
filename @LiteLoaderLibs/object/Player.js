@@ -8,22 +8,22 @@ import { ScoreObjectives } from './ScoreObjectives.js';
 import { ModalForm } from '../gui/ModalForm.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
+import { isNumber } from '../utils/underscore-esm-min.js';
+import { getLevels, server } from '../utils/Mixins.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
-import { Server } from 'cn.nukkit.Server';
 import { PlayerChatEvent } from 'cn.nukkit.event.player.PlayerChatEvent';
 import { Position } from 'cn.nukkit.level.Position';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageByEntityEvent';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
-import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
-import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { Item as JItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
+import { NbtCompound } from '../nbt/NbtCompound.js'
 
-const server = Server.getInstance();
+
 const ASType = AdventureSettings.Type;
 const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHandler')))({
     handle: function (player, formID) {
@@ -277,15 +277,11 @@ export class Player {
         if (arguments.length === 1) {
             return this._PNXPlayer.teleport(x.position);
         } else if (arguments.length === 4) {
-            const level = server.getLevelByName(isNaN(dimid) ? dimid : this.levels[dimid]);
-            if (level == null) {
-                console.log('\nUnknow worlds: ' + dimid + '\n  at Player.js -> teleport()');
-                return false;
-            }
+            if (isNumber(dimid) && (0 <= dimid <= 2)) {
+                var level = this.levels[dimid];
+            } else return false;
             return this._PNXPlayer.teleport(Position.fromObject(new Vector3(x, y, z), level));
-        } else {
-            throw 'Wrong number of parameters.';
-        }
+        } else return false;
     }
 
     /**
@@ -413,21 +409,15 @@ export class Player {
         /*
         args1: pos
         args2: x,y,z,dimid
-        args2: x,y,z,dim
         */
         if (arguments.length === 1) {
             return this._PNXPlayer.setSpawn(x.position);
         } else if (arguments.length === 4) {
-            const level = server.getLevelByName(isNaN(dimid) ? dimid : this.levels[dimid]);
-            if (level == null) {
-                console.log('\nUnknow worlds: ' + dimid + '\n  at Player.js -> teleport()');
-                return false;
-            }
+            if (isNumber(dimid) && (0 <= dimid <= 2)) {
+                var level = this.levels[dimid];
+            } else return false;
             return this._PNXPlayer.setSpawn(Position.fromObject(new Vector3(x, y, z), level));
-        } else {
-            throw 'Wrong number of parameters.';
-        }
-        return true;
+        } else return false;
     }
 
     /**
@@ -652,21 +642,25 @@ export class Player {
 
     /**
      * 获取玩家对应的 NBT 对象
-     * @todo 待实现
+     * @todo 待测试
      * @returns {NbtCompound} LLSE的NbtCompound对象
      */
     getNbt() {
-        return true;
+        return new NbtCompound(this._PNXPlayer.namedTag);
     }
 
     /**
      * 写入玩家对应的 NBT 对象
-     * @todo 待实现
-     * @param nbt {NbtCompound} NBT 对象
+     * @todo 待测试
+     * @param NbtCompound {NbtCompound} NBT 对象
      * @returns {boolean} 是否成功
      */
-    setNbt(nbt) {
-        return true;
+    setNbt(NbtCompound) {
+        if (!NbtCompound._pnxNbt.isEmpty()) {
+            this._PNXPlayer.namedTag = NbtCompound._pnxNbt;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -983,12 +977,4 @@ export function sendText(sender = '', receiver, msg, type) {
             return false;
     }
     return true;
-}
-
-export function getLevels() {
-    return [
-        EnumLevel.OVERWORLD.getLevel().getName(),
-        EnumLevel.NETHER.getLevel().getName(),
-        EnumLevel.THE_END.getLevel().getName()
-    ];
 }

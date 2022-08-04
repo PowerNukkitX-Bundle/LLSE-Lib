@@ -6,7 +6,9 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtInt extends CommonNbt {
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof IntTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             this._pnxNbt = new IntTag("", data);
         }
     }
@@ -24,10 +26,6 @@ export class NbtInt extends CommonNbt {
     }
 
     _evaluate(data) {
-        if (this._isInteger(data)) {
-            if (Integer.MIN_VALUE <= data <= Integer.MAX_VALUE) {
-                return true;
-            } else throw RangeError("参数数值范围超出int范围!")
-        } else throw new SyntaxError("参数类型错误!");
+        return this._isInteger(data) && Integer.MIN_VALUE <= data <= Integer.MAX_VALUE;
     }
 }

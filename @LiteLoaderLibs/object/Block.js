@@ -1,8 +1,11 @@
 import { Block as JBlock } from 'cn.nukkit.block.Block';
-import { NBT } from '../nbt/NBT.js';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
-import { Position } from 'cn.nukkit.level.Position';
-import { Vector3 } from 'cn.nukkit.math.Vector3';
+import { NbtCompound } from '../nbt/NbtCompound.js'
+import { NbtString } from '../nbt/NbtString.js'
+import { NbtByte } from '../nbt/NbtByte.js'
+import { NbtInt } from '../nbt/NbtInt.js'
+import { IntPos } from './IntPos.js'
+import { BlockState } from 'cn.nukkit.blockstate.BlockState'
 
 export class Block {
     /**
@@ -14,7 +17,7 @@ export class Block {
     }
 
     /**
-     * 获取Block
+     * 获取LLSE版本Block
      * @pnxonly
      * @returns {Block} 物品对象 如返回值为 Null 则表示生成失败
      */
@@ -43,10 +46,10 @@ export class Block {
     /**
      * 方块所在坐标
      * @readonly
-     * @returns {Int}
+     * @returns {IntPos}
      */
     get pos() {
-        return this._PNXBlock.clone();
+        return new IntPos(this._PNXBlock);
     }
 
     /**
@@ -69,45 +72,65 @@ export class Block {
 
     /**
      * 获取物品对应的 NBT 对象
-     * @todo 改为LLSE类型，目前为snbt
-     * @returns {NbtCompound}
+     * @todo 待测试
+     * @returns {NbtCompound} NBT对象
      */
     getNbt() {
-        var property = this._PNXBlock.getStateId().split(';');
-        var data = {name: property[0], states: {}};
+        let property = this._PNXBlock.getStateId().split(';');
         if (property.length === 1) {
-            return data;
+            return new NbtCompound({
+                name: new NbtString(property[0])
+            });
         }
+        let states = {};
         for (let i = 1; i < property.length; i++) {
             let state = property[i].split('=');
-            if (!isNaN(state[1])) {
-                state[1] = Number(state[1]);
+            let key = state[0];
+            let value = state[1];
+            if (key.indexOf("_bit") !== -1) {
+                states[key] = new NbtByte(Number(value));
+            } else if (!isNaN(value)) {
+                states[key] = new NbtInt(Number(value));
+            } else {
+                states[key] = new NbtString(value);
             }
-            data.states[state[0]] = state[0].indexOf('_bit') > -1 ? Boolean(state[1]) : state[1];
         }
-        return NBT.parseSNBT(JSON.stringify(data).replaceAll('_bit":false', '_bit":0b').replaceAll('_bit":true', '_bit":1b'));
+        let result = {name: new NbtString(property[0]), states: new NbtCompound(states)};
+        return new NbtCompound(result);
     }
 
     /**
      * 写入方块对应的 NBT 对象
-     * @todo 未实现
+     * @todo 待测试
      * @param nbt {NbtCompound} NBT 对象
      * @returns {boolean}
      */
     setNbt(nbt) {
-        // more code...
-        return false;
+        if (nbt.getData("name") !== this.type) return false;
+        let state = nbt.getData('name');
+        let states = nbt.getData('states');//还是NBTCompound
+        for (let key of states.getKeys()) {
+            let tag = states.getTag(key);
+            if (tag instanceof NbtByte) {
+                state += ';' + key + '=' + tag.get() + "b";
+            } else {
+                let value = tag.get();
+                let res = isNaN(value) ? value : Number(value);
+                state += ';' + key + '=' + String(res);
+            }
+        }
+        try {
+            var _block = BlockState.of(state).getBlock();
+        } catch (err) {
+            console.error('Unknow states: ' + state);
+            return false;
+        }
+        this._PNXBlock.getLevel().setBlock(this.pos.position, _block);
+        this._PNXBlock = this._PNXBlock.getLevel().getBlock(this.pos.position);
+        return true;
     }
 
     toString() {
         return JSON.stringify({name: this.name, type: this.type, pos: this.pos, tileData: this.tileData});
     }
-}
-
-export function getLevels() {
-    return [
-        EnumLevel.OVERWORLD.getLevel().getName(),
-        EnumLevel.NETHER.getLevel().getName(),
-        EnumLevel.THE_END.getLevel().getName()
-    ];
 }

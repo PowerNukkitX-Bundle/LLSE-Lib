@@ -1,8 +1,8 @@
-import { PowerNukkitX as pnx, EventPriority } from ':powernukkitx';
+import { EventPriority, PowerNukkitX as pnx } from ':powernukkitx';
 import { Player } from '../object/Player.js';
 import { Item } from '../object/Item.js';
 import { Block } from '../object/Block.js';
-import { Server } from 'cn.nukkit.Server';
+import { server } from '../utils/Mixins.js'
 import { Player as PnxPlayer } from 'cn.nukkit.Player';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { PlayerInteractEvent } from 'cn.nukkit.event.player.PlayerInteractEvent';
@@ -13,7 +13,6 @@ import { PlayerInventory } from 'cn.nukkit.inventory.PlayerInventory';
 import { SlotChangeAction } from 'cn.nukkit.inventory.transaction.action.SlotChangeAction';
 import { DamageCause } from '../utils/DamageCause.js';
 
-const server = Server.getInstance();
 const PNXDamageCause = EntityDamageEvent.DamageCause;
 const EventNameMap = {  /* Entity Events */
     "onMobDie": 33,

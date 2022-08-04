@@ -6,7 +6,9 @@ import { NbtTypeEnum } from "./NbtTypeEnum.js"
 export class NbtDouble extends CommonNbt {
     constructor(data) {
         super();
-        if (this._evaluate(data)) {
+        if (data instanceof DoubleTag) {
+            this._pnxNbt = data;
+        } else if (this._evaluate(data)) {
             this._pnxNbt = new DoubleTag("", data);
         }
     }
@@ -24,8 +26,6 @@ export class NbtDouble extends CommonNbt {
     }
 
     _evaluate(data) {
-        if (Double.MIN_VALUE <= data <= Double.MAX_VALUE) {
-            return true;
-        } else throw RangeError("参数数值范围超出double范围!");
+        return Double.MIN_VALUE <= data <= Double.MAX_VALUE;
     }
 }
