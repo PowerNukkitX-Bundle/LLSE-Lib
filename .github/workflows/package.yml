@@ -20,7 +20,7 @@ jobs:
       - name: setup-graalvm-ce
         uses: rinx/setup-graalvm-ce@v0.0.5
         with:
-          graalvm-version: "22.2.0"
+          graalvm-version: "22.1.0"
           java-version: "java17"
           native-image: "true"
       - name: Cache local Maven repository
@@ -37,7 +37,7 @@ jobs:
           cp target/libs -R ../env
           cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
       - name: run Test
-        run: cd env && ls && ./pnx start
+        run: cd env && ls && ./pnx start --stdin=control.txt && ./test.sh
 #  build:
 #    needs: test
 #    runs-on: ubuntu-latest

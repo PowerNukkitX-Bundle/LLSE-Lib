@@ -231,10 +231,14 @@ export class File {
     static writeLine(path, text) {
         const _path = Paths.get(path);
         if (IO.createRAF(_path)) {
-            if (IO.seekTo(_path, IO.getSize(_path) - 1, false) && IO.writeText(_path, text + "\n")) {
-                IO.close(_path);
-                return true;
+            let size = IO.getSize(_path);
+            if (size === 0) {
+                IO.writeText(_path, text + "\n");
+            } else if (size > 0) {
+                IO.seekTo(_path, IO.getPointerPos(_path) + size, true);
+                IO.writeText(_path, text + "\n");
             }
+            return true;
         }
         return false;
     }

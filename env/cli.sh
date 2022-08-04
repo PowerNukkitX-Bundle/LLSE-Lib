@@ -1,6 +1,5 @@
 #!/bin/bash
 #resource link | https://res.nullatom.com
-
 linux_type=`uname -a`;
 pnx_cli_filename='PNX-CLI-Jar.zip';
 if [[ $linux_type =~ x86_64 ]]; then

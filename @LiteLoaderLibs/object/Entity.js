@@ -57,7 +57,7 @@ export class Entity {
     }
 
     get inAir() {// 实体当前是否悬空  Boolean
-        return this._PNXEntity.getInAirTicks() > 0;
+        return this._PNXEntity.getAirTicks() > 0;
     }
 
     get inWater() {// 实体当前是否在水中		Boolean
