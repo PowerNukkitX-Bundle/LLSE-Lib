@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'PowerNukkitX/PowerNukkitX'
-          path: 'powernukkitx'
+          path: 'core'
       - name: setup-graalvm-ce
         uses: rinx/setup-graalvm-ce@v0.0.5
         with:
@@ -32,15 +32,12 @@ jobs:
             ${{ runner.os }}-maven-
       - name: set up PNX environment
         run: |
-          cd powernukkitx/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true"
-          mkdir target/plugins && mv target/powernukkitx-*-PNX.jar target/powernukkitx.jar
-          cd ../ && cp @LiteLoaderLibs @test -R powernukkitx/target/plugins
-          cp env/server.properties env/test.sh powernukkitx/target
+          cd env && bash cli.sh && cd ../
+          cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
+          cp target/libs -R ../env
+          cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
       - name: run Test
-        run: |
-          cd powernukkitx/target
-          java -Dfile.encoding=UTF-8 -Djansi.passthrough=true -Dterminal.ansi=true -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+EnableJVMCI --module-path=; --upgrade-module-path=; --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED -cp powernukkitx.jar;libs/* cn.nukkit.Nukkit
-          echo -e "stop\r\n"
+        run: cd env && ls && ./pnx start && sleep 5s && echo -e "stop\r\n"
 #  build:
 #    needs: test
 #    runs-on: ubuntu-latest
