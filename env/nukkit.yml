@@ -1,0 +1,96 @@
+# Nukkit 的高级配置文件
+# 其中有一些设置是安全的，其他设置如果修改不正确，可能会损害服务器
+# 新的设置/默认设置，在升级时不会自动出现在此文件上
+
+settings:
+ # 多语言设置
+ # 可用: %1
+ language: chs
+ # 是将所有已翻译的字符串发送到服务器区域设置，还是让设备处理
+ force-language: false
+ shutdown-message: "Server closed"
+ # 允许通过Query查询列出服务器的插件
+ query-plugins: true
+ # 当插件使用不推荐的API时，在控制台显示提示
+ deprecated-verbose: true
+ # 异步工作的线程数量
+ # 如果设置为auto，服务器将尝试检测CPU的核心数量（至少4个）
+ async-workers: auto
+ safe-spawn: true
+
+network:
+ batch-threshold: 256
+ compression-level: 7
+ async-compression: false
+
+debug:
+ level: 1
+ commands: false
+ ignored-packets:
+  - LevelChunkPacket
+
+timings:
+ enabled: false
+ verbose: false
+ history-interval: 6000
+ history-length: 72000
+ bypass-max: false
+ privacy: false
+ ignore: [ ]
+
+level-settings:
+ default-format: anvil
+ auto-tick-rate: true
+ auto-tick-rate-limit: 20
+ base-tick-rate: 1
+ always-tick-players: false
+ tick-redstone: true
+
+chunk-sending:
+ per-tick: 4
+ max-chunks: 192
+ spawn-threshold: 56
+ cache-chunks: false
+
+chunk-ticking:
+ per-tick: 40
+ tick-radius: 3
+ light-updates: false
+ clear-tick-list: false
+
+chunk-generation:
+ queue-size: 8
+ population-queue-size: 8
+
+# 这些实体最大随机刻
+ticks-per:
+ animal-spawns: 400
+ monster-spawns: 1
+ autosave: 6000
+ cache-cleanup: 900
+
+# 这些实体的最大数量
+spawn-limits:
+ monsters: 70
+ animals: 15
+ water-animals: 5
+ ambient: 15
+
+player:
+ save-player-data: true
+ skin-change-cooldown: 30
+ force-skin-trusted: false
+ check-movement: true
+
+aliases:
+# 命令别名
+# 示例：
+# showtheversion：版本
+# savestop：[保存、停止]
+
+worlds:
+# 这些设置将覆盖服务器属性中的生成器设置，并允许加载多级
+# 示例：
+#world:
+# seed: 404
+# generator: FLAT:2;7,59x1,3x3,2;1;decoration(treecount=80 grasscount=45)

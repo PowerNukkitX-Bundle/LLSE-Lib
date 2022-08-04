@@ -37,7 +37,7 @@ jobs:
           cp target/libs -R ../env
           cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
       - name: run Test
-        run: cd env && ls && ./pnx start && echo -e "chs\n" &&sleep 5s && echo -e "stop\r\n"
+        run: cd env && ls && ./pnx start
 #  build:
 #    needs: test
 #    runs-on: ubuntu-latest

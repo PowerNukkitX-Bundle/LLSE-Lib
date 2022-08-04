@@ -2,7 +2,7 @@ import { JSAssert } from './assert/Assert.js'
 import { TestNbt } from "./nbt/TestNbt.js";
 import { TestBlock } from "./object/TestBlock.js";
 import { TestKVDatabase } from "./database/TestKVDatabase.js";
-import { colorLog, log } from "../@LiteLoaderLibs/index.js"
+import { colorLog, log, mc } from "../@LiteLoaderLibs/index.js"
 
 /***
  * 总测试入口
@@ -53,6 +53,9 @@ export function main() {
             colorLog("blue", "━".repeat(24));
         }
     });
+    setTimeout(() => {
+        mc.runcmd("stop");
+    }, 2000);
 }
 
 export function close() {
