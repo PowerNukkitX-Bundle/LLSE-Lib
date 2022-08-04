@@ -16,11 +16,11 @@ jobs:
         uses: rinx/setup-graalvm-ce@v0.0.5
         with:
           graalvm-version: "20.2.0"
-          java-version: "java11"
+          java-version: "java17"
           native-image: "true"
       - name: set up PNX environment
         run: |
-          sudo -E apt-get -y install unzip && bash env/start.sh
+          bash env/start.sh
           mkdir env/PowerNukkitX/plugins && mv env/server.properties env/PowerNukkitX
           cp @LiteLoaderLibs @test -R env/PowerNukkitX/plugins
           echo -e "stop\r\n"
