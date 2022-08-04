@@ -38,26 +38,30 @@ jobs:
           cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
       - name: run Test
         run: cd env && ls && ./pnx start --stdin=control.txt && ./test.sh
-#  build:
-#    needs: test
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: checkout source
-#        uses: actions/checkout@master
-#      - name: move
-#        run: |
-#          mkdir $GITHUB_WORKSPACE/src
-#          mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
-#      - name: compress
-#        uses: nizarmah/auto-minify@v2.1
-#        with:
-#          overwrite: true
-#          directory: ./src/@LiteLoaderLibs
-#          js_engine: uglify-js
-#      - name: upload artifact
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: LiteLoaderLibs
-#          path: |
-#            src
-#            !**/jsconfig.json
+        id: test-result
+      - name: Fail the Build
+        if: ${{ steps.test-result.outputs.success == 'false' }}
+        uses: cutenode/action-always-fail@v1.0.0
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source
+        uses: actions/checkout@master
+      - name: move
+        run: |
+          mkdir $GITHUB_WORKSPACE/src
+          mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
+      - name: compress
+        uses: nizarmah/auto-minify@v2.1
+        with:
+          overwrite: true
+          directory: ./src/@LiteLoaderLibs
+          js_engine: uglify-js
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: LiteLoaderLibs
+          path: |
+            src
+            !**/jsconfig.json

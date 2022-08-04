@@ -55,7 +55,7 @@ export function main() {
             colorLog("blue", "━".repeat(24));
         }
     });
-    File.writeLine("control.txt", "stop");
+    File.writeLine("control.txt", "stop\n");
 }
 
 export function close() {
