@@ -1,26 +1,49 @@
 name: package
-on: [push,workflow_dispatch]
+on:
+  push:
+    branches:
+      - master
+      - test
+  workflow_dispatch:
+
 jobs:
-  build:
-    if: github.ref_name=='master'
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: checkout source
         uses: actions/checkout@master
-      - name: move
+      - name: setup-graalvm-ce
+        uses: rinx/setup-graalvm-ce@v0.0.5
+        with:
+          graalvm-version: "20.2.0"
+          java-version: "java11"
+          native-image: "true"
+      - name: set up PNX environment
         run: |
-          mkdir $GITHUB_WORKSPACE/src
-          mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
-      - name: compress
-        uses: nizarmah/auto-minify@v2.1
-        with:
-          overwrite: true
-          directory: ./src/@LiteLoaderLibs
-          js_engine: uglify-js
-      - name: upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: LiteLoaderLibs
-          path: |
-            src
-            !**/jsconfig.json
+          sudo apt install -y unzip && env/start.sh
+          mkdir env/PowerNukkitX/plugins && mv env/server.properties env/PowerNukkitX
+          cp @LiteLoaderLibs @test -R env/PowerNukkitX/plugins
+          echo -e "stop\r\n"
+#  build:
+#    needs: test
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: checkout source
+#        uses: actions/checkout@master
+#      - name: move
+#        run: |
+#          mkdir $GITHUB_WORKSPACE/src
+#          mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
+#      - name: compress
+#        uses: nizarmah/auto-minify@v2.1
+#        with:
+#          overwrite: true
+#          directory: ./src/@LiteLoaderLibs
+#          js_engine: uglify-js
+#      - name: upload artifact
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: LiteLoaderLibs
+#          path: |
+#            src
+#            !**/jsconfig.json
