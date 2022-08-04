@@ -30,13 +30,9 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.4
-        with:
-          maven-version: 3.8.2
       - name: set up PNX environment
         run: |
-          cd powernukkitx/ && mvn -B package -P dev -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true"
+          cd powernukkitx/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true"
           mkdir target/plugins && mv target/powernukkitx-*-PNX.jar target/powernukkitx.jar
           cd ../ && cp @LiteLoaderLibs @test -R powernukkitx/target/plugins
           cp env/server.properties env/test.sh powernukkitx/target
