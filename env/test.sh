@@ -12,8 +12,10 @@ cat result.txt | while read line; do
     error=let ${array[1]} #转整型
     if (($error > 0)); then
       echo "测试失败"
+      echo '::set-output name=success::false'
     else
       echo "测试成功"
+      echo '::set-output name=success::true'
     fi
   else
     array=(${line//=/ }) #以=分割字符串
