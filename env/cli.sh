@@ -1,5 +1,6 @@
 #!/bin/bash
 #resource link | https://res.nullatom.com
+version='v0.0.2';
 linux_type=`uname -a`;
 pnx_cli_filename='PNX-CLI-Jar.zip';
 if [[ $linux_type =~ x86_64 ]]; then
@@ -16,7 +17,7 @@ rm ./$pnx_cli_filename;
 if [[ ! -f "./pnx" ]]; then
   echo "pnx启动器不存在，尝试下载..."
   if [[ ! -f "./$pnx_cli_filename" ]]; then
-    curl https://res.nullatom.com/file/pnx/cli/$pnx_cli_filename -o $pnx_cli_filename -L
+    curl https://github.com/PowerNukkitX/PNX-CLI/releases/download/$version/$pnx_cli_filename -o $pnx_cli_filename -L
   fi
   echo "正在解压zip..."
   unzip -j $pnx_cli_filename
