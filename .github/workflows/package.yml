@@ -15,7 +15,7 @@ jobs:
       - name: setup-graalvm-ce
         uses: rinx/setup-graalvm-ce@v0.0.5
         with:
-          graalvm-version: "20.2.0"
+          graalvm-version: "22.2.0"
           java-version: "java17"
           native-image: "true"
       - name: set up PNX environment
@@ -23,6 +23,7 @@ jobs:
           bash env/start.sh
           mkdir env/PowerNukkitX/plugins && mv env/server.properties env/PowerNukkitX
           cp @LiteLoaderLibs @test -R env/PowerNukkitX/plugins
+          ./pnx start
           echo -e "stop\r\n"
 #  build:
 #    needs: test
