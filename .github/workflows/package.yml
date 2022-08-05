@@ -34,13 +34,13 @@ jobs:
         run: |
           cd env
           curl https://res.nullatom.com/file/pnx/cli/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
-          unzip -j PNX-CLI-Linux-x86.zip && chmod 777 pnx && ./pnx server install --latest
+          unzip -j PNX-CLI-Linux-x86.zip && chmod +x pnx && ./pnx server install --latest
           cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
           cp target/libs -R ../env
           cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
       - name: run Test
-        run: cd env && ls && ./pnx start --stdin=control.txt && ./test.sh
+        run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
         id: test-result
       - name: Result
         if: ${{ steps.test-result.outputs.success == 'false' }}
