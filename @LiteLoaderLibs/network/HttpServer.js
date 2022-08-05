@@ -3,10 +3,99 @@ import { HttpRequest } from "java.net.http.HttpRequest";
 import { HttpResponse } from "java.net.http.HttpResponse";
 import { URI } from "java.net.URI";
 
+import { HttpServer as JHttpServer } from "com.sun.net.httpserver.HttpServer"
+// import { HttpHandler } from "com.sun.net.httpserver.HttpHandler"
+
+import { InetSocketAddress } from "java.net.InetSocketAddress"
+import { Executors } from "java.util.concurrent.Executors"
+
 export class HttpServer {
     constructor() {
-    }
 
+    }
+    request() {
+        return {
+            method: function () { },
+            path: function () { },
+            query: function () { },
+            params: function () { },
+            headers: function () { },
+            body: function () { },
+            remoteAddr: function () { },
+            remotePort: function () { },
+            version: 'HTTP/1.1',
+            matches: [],
+        }
+    }
+    response() {
+        return {
+            getHeader: function () { },
+            setHeader: function () { },
+            write: function () { },
+            status: 114511,
+            headers: {},
+            body: "",
+            version: 'HTTP/1.1',
+            reason: "PI YAN ZI BU GO DA!"
+        }
+    }
+    onGet(path, callback) {
+
+    }
+    onPut(path, callback) {
+
+    }
+    onPost(path, callback) {
+
+    }
+    onPatch(path, callback) {
+
+    }
+    onDelete(path, callback) {
+
+    }
+    onOptions(path, callback) {
+
+    }
+    onPreRouting(callback) {
+
+    }
+    onPostRouting(callback) {
+
+    }
+    onError(callback) {
+
+    }
+    onException(callback) {
+
+    }
+    listen(addr, port = 8080) {
+        let inet = new InetSocketAddress(port);
+        if (addr) inet = new InetSocketAddress(addr, port);
+        this.server = JHttpServer.create(inet, 0)
+        this.server.start();//启动服务器
+
+        //创建一个HttpContext，将路径为/myserver请求映射到MyHttpHandler处理器
+        class HttpHandler {
+            constructor() {
+
+            }
+            handle(HttpExchange) {
+                console.log(HttpExchange,"发生处理");
+            }
+            get IsReusable() { return true }
+        }
+        this.server.createContext("/", new HttpHandler());
+
+        return this;
+    }
+    startAt(addr, port = 8080) {
+        return this.listen(addr, port);
+    }
+    stop() { this.server.stop(); }
+    isRunning() {
+
+    }
     // static
 };
 
@@ -75,4 +164,8 @@ function httpPost(url, ...arg) {
     res.thenApply((res) => callback(res.statusCode(), res.body()));
 }
 
-export let network = {httpGet, httpPost}
+export let network = { httpGet, httpPost }
+
+
+
+
