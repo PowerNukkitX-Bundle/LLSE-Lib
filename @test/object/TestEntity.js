@@ -17,7 +17,7 @@ export const TestEntity = () => {
     //注册测试套件
     JSAssert.addTestSuite("Test Entity", {
         testProperty: function () {
-            assertThat(entity.name).equals(" Pig", "name属性读取异常");
+            assertThat(entity.name).equals("Pig", "name属性读取异常");
             assertThat(entity.type).equals("Pig", "type属性读取异常");
             assertThat(isNumber(entity.id)).isTrue("id属性读取异常");
             assertThat(entity.pos.toString()).equals(`{"x":0,"y":300,"z":0,"dim":"world","dimid":0}`, "pos属性读取异常");
