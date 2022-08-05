@@ -28,7 +28,6 @@ if [[ ! -f "./pnx" ]]; then
   else
     echo "unzip success!"
   fi
-  echo "启动器下载完成，正在启动pnx..."
 fi
 chmod 777 pnx
 

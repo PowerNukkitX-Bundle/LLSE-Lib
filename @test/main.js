@@ -1,9 +1,9 @@
-import { JSAssert } from './assert/Assert.js'
+import { JSAssert } from './assert/Assert.js';
 import { TestNbt } from "./nbt/TestNbt.js";
 import { TestBlock } from "./object/TestBlock.js";
 import { TestKVDatabase } from "./database/TestKVDatabase.js";
 import { TestEntity } from "./object/TestEntity.js";
-import { colorLog, log, File } from "../@LiteLoaderLibs/index.js"
+import { colorLog, File, log } from "../@LiteLoaderLibs/index.js";
 
 /***
  * 总测试入口
@@ -53,9 +53,10 @@ export function main() {
             colorLog("blue", lose);
             colorLog("blue", time);
             colorLog("blue", "━".repeat(28));
+            File.writeTo("result.txt", `${passed};${failed}`);
         }
     });
-    File.writeLine("control.txt", "stop\n");
+    File.writeLine("control.txt", "stop");
 }
 
 export function close() {
