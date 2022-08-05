@@ -30,7 +30,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: set up PNX environment
+      - name: set up running environment
         run: |
           cd env && bash cli.sh && cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
@@ -39,7 +39,7 @@ jobs:
       - name: run Test
         run: cd env && ls && ./pnx start --stdin=control.txt && ./test.sh
         id: test-result
-      - name: Fail the Build
+      - name: Result
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:

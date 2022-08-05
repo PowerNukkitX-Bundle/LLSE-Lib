@@ -16,7 +16,8 @@ rm ./$pnx_cli_filename;
 if [[ ! -f "./pnx" ]]; then
   echo "pnx启动器不存在，尝试下载..."
   if [[ ! -f "./$pnx_cli_filename" ]]; then
-    curl https://res.nullatom.com/file/pnx/cli/$pnx_cli_filename -o $pnx_cli_filename -L
+#    curl https://res.nullatom.com/file/pnx/cli/$pnx_cli_filename -o $pnx_cli_filename -L
+    curl https://github.com/PowerNukkitX/PNX-CLI/suites/7679386671/artifacts/320462537 -o $pnx_cli_filename -L
   fi
   echo "正在解压zip..."
   unzip -j $pnx_cli_filename
