@@ -32,7 +32,10 @@ jobs:
             ${{ runner.os }}-maven-
       - name: set up running environment
         run: |
-          cd env && bash cli.sh && cd ../
+          cd env
+          curl https://res.nullatom.com/file/pnx/cli/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
+          unzip -j PNX-CLI-Linux-x86.zip && ./pnx server install --latest
+          cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
           cp target/libs -R ../env
           cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
