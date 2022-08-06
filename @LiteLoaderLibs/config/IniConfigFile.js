@@ -47,8 +47,7 @@ export class IniConfigFile {
     init(section, name, defaultContext = null) {
         var data = this._data;
         if (!data?.[name]) {
-            data[name] = defaultContext;
-            this._data = data;
+            this.set(section, name, defaultContext);
         }
         return data[name];
     }
@@ -156,15 +155,18 @@ export class IniConfigFile {
             }
             current = current[sectionList[i]]
         }
-        if (current.keys().length === 0) {// 删除空对象
+        if (Object.keys(current).length === 0) {// 删除空对象
             var current = obj;
             for (let i = 0, len = sectionList.length - 1; i < len; i++) {
                 current = current[sectionList[i]]
             }
             delete current[sectionList[sectionList.length - 1]];
+            this._data = obj;
             return true;
         }
         delete current[name];
+        // console.log(obj);
+        this._data = obj;
         return true;
     }
 
@@ -196,7 +198,7 @@ export class IniConfigFile {
     }
 
     /**
-     * 获取配置文件路径
+     * 获取配置文件路径(相对于PNX根目录)
      * @returns {string}
      */
     getPath() {
