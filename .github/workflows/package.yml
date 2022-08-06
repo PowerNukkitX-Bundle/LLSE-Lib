@@ -49,7 +49,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: set up running environment
+      - name: setup running environment
         run: |
           cd env
           curl https://res.nullatom.com/file/pnx/cli/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
@@ -58,14 +58,15 @@ jobs:
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
           cp target/libs -R ../env
           cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
-      - name: run Test
+      - name: run test
         run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
         id: test-result
-      - name: Result
+      - name: fail
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:
     needs: test
+    if: !contains(github.ref_name, 'patch')
     runs-on: ubuntu-latest
     steps:
       - name: checkout source
