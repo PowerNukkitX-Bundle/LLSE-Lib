@@ -4,89 +4,56 @@ import { HttpResponse } from "java.net.http.HttpResponse";
 import { URI } from "java.net.URI";
 
 import { HttpServer as JHttpServer } from "com.sun.net.httpserver.HttpServer"
-// import { HttpHandler } from "com.sun.net.httpserver.HttpHandler"
+import { HttpHandler } from "./HttpHandler.js"
 
 import { InetSocketAddress } from "java.net.InetSocketAddress"
 import { Executors } from "java.util.concurrent.Executors"
 
 export class HttpServer {
     constructor() {
-
+        this.handler = new HttpHandler();
     }
-    request() {
-        return {
-            method: function () { },
-            path: function () { },
-            query: function () { },
-            params: function () { },
-            headers: function () { },
-            body: function () { },
-            remoteAddr: function () { },
-            remotePort: function () { },
-            version: 'HTTP/1.1',
-            matches: [],
-        }
-    }
-    response() {
-        return {
-            getHeader: function () { },
-            setHeader: function () { },
-            write: function () { },
-            status: 114511,
-            headers: {},
-            body: "",
-            version: 'HTTP/1.1',
-            reason: "PI YAN ZI BU GO DA!"
-        }
+    on(method, path, callback) {
+        this.handler.on(method, new RegExp(["^",path,"$"].join(""), "g"), callback)
+        return this;
     }
     onGet(path, callback) {
-
+        return this.on("GET", path, callback);
     }
     onPut(path, callback) {
-
+        return this.on("PUT", path, callback);
     }
     onPost(path, callback) {
-
+        return this.on("POST", path, callback);
     }
     onPatch(path, callback) {
-
+        return this.on("PATCH", path, callback);
     }
     onDelete(path, callback) {
-
+        return this.on("DELETE", path, callback);
     }
     onOptions(path, callback) {
-
+        return this.on("POTIONS", path, callback);
     }
     onPreRouting(callback) {
-
+        return this.on("PREROUTING", path, callback);
     }
     onPostRouting(callback) {
-
+        return this.on("POSTROUTING", path, callback);
     }
     onError(callback) {
-
+        return this.on("ERROR", path, callback);
     }
     onException(callback) {
-
+        return this.on("EXCEPTION", path, callback);
     }
     listen(addr, port = 8080) {
         let inet = new InetSocketAddress(port);
         if (addr) inet = new InetSocketAddress(addr, port);
-        this.server = JHttpServer.create(inet, 0)
+        this.server = JHttpServer.create(inet, 0);
         this.server.start();//启动服务器
-
         //创建一个HttpContext，将路径为/myserver请求映射到MyHttpHandler处理器
-        class HttpHandler {
-            constructor() {
-
-            }
-            handle(HttpExchange) {
-                console.log(HttpExchange,"发生处理");
-            }
-            get IsReusable() { return true }
-        }
-        this.server.createContext("/", new HttpHandler());
-
+        this.server.createContext("/", this.handler);
         return this;
     }
     startAt(addr, port = 8080) {
