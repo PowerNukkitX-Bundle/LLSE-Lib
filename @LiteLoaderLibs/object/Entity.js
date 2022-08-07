@@ -10,7 +10,7 @@ import { EntityArmorContainer } from "../container/EntityArmorContainer.js";
 import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Position } from 'cn.nukkit.level.Position'
-import { server } from '../utils/Mixins.js';
+import { getLevels, server } from '../utils/Mixins.js';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Collectors } from "java.util.stream.Collectors";
 import { EntityMob } from "cn.nukkit.entity.mob.EntityMob";
@@ -57,7 +57,7 @@ export class Entity {
     }
 
     get inAir() {// 实体当前是否悬空  Boolean
-        return this._PNXEntity.getInAirTicks() > 0;
+        return this._PNXEntity.getAirTicks() > 0;
     }
 
     get inWater() {// 实体当前是否在水中		Boolean
@@ -88,7 +88,7 @@ export class Entity {
         if (arguments.length === 1) {
             return this._PNXEntity.teleport(x.position);
         } else {
-            const level = server.getLevel(dimid);
+            const level = getLevels()[dimid];
             if (level == null) {
                 console.log('\nUnknow worlds: ' + dimid + '\n  at Entity.js -> teleport()');
                 return false;
@@ -179,7 +179,7 @@ export class Entity {
             return new EntityArmorContainer(this._PNXEntity.getArmorInventory());
         } else if (this._PNXEntity instanceof PNXPlayer) {
             return new PlayerArmorContainer(this._PNXEntity.getInventory().getArmorContents());
-        }
+        } else return null;
     }
 
     /**
@@ -275,7 +275,6 @@ export class Entity {
 
     /**
      * 获取实体对应的 NBT 对象
-     * @todo 待测试
      * @returns {NbtCompound} LLSE的NbtCompound对象
      */
     getNbt() {
@@ -284,7 +283,6 @@ export class Entity {
 
     /**
      * 写入实体对应的 NBT 对象
-     * @todo 待测试
      * @param nbt {NbtCompound} NBT 对象
      * @returns {boolean} 是否成功
      */

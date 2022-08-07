@@ -131,6 +131,6 @@ export class Block {
     }
 
     toString() {
-        return JSON.stringify({name: this.name, type: this.type, pos: this.pos, tileData: this.tileData});
+        return `{"name": "${this.name}", "type": "${this.type}", "pos": ${this.pos}, "id": ${this.id}, "tileData": ${this.tileData}}`;
     }
 }

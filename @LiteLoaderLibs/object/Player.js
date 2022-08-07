@@ -449,7 +449,10 @@ export class Player {
         let inv = this._PNXPlayer.getInventory()
         let limit = inv.getSize() + 4
         for (let i = 0; i < limit; i++) {
-            if (inv.getItem(i).getNamespaceId() == type) { inv.clear(i); num++ };
+            if (inv.getItem(i).getNamespaceId() == type) {
+                inv.clear(i);
+                num++
+            }
         }
         return num;
     }

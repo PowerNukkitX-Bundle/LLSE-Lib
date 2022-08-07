@@ -7,6 +7,7 @@ load: POSTWORLD # 插件加载顺序，只能填写 STARTUP 或 POSTWORLD
 # POSTWORLD: 此时服务器所有地图都加载完毕，通常填写POSTWORLD即可
 authors: # 此项可以不存在
   - Mcayear
+  - CoolLoong
 description: 测试 LiteLoaderLibs
 website: https://mc.xz.cn
 features: # 拥有此项才能使用WSClient
