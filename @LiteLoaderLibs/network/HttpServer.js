@@ -3,10 +3,66 @@ import { HttpRequest } from "java.net.http.HttpRequest";
 import { HttpResponse } from "java.net.http.HttpResponse";
 import { URI } from "java.net.URI";
 
+import { HttpServer as JHttpServer } from "com.sun.net.httpserver.HttpServer"
+import { HttpHandler } from "./HttpHandler.js"
+
+import { InetSocketAddress } from "java.net.InetSocketAddress"
+import { Executors } from "java.util.concurrent.Executors"
+
 export class HttpServer {
     constructor() {
+        this.handler = new HttpHandler();
     }
+    on(method, path, callback) {
+        this.handler.on(method, new RegExp(["^",path,"$"].join(""), "g"), callback)
+        return this;
+    }
+    onGet(path, callback) {
+        return this.on("GET", path, callback);
+    }
+    onPut(path, callback) {
+        return this.on("PUT", path, callback);
+    }
+    onPost(path, callback) {
+        return this.on("POST", path, callback);
+    }
+    onPatch(path, callback) {
+        return this.on("PATCH", path, callback);
+    }
+    onDelete(path, callback) {
+        return this.on("DELETE", path, callback);
+    }
+    onOptions(path, callback) {
+        return this.on("POTIONS", path, callback);
+    }
+    onPreRouting(callback) {
+        return this.on("PREROUTING", path, callback);
+    }
+    onPostRouting(callback) {
+        return this.on("POSTROUTING", path, callback);
+    }
+    onError(callback) {
+        return this.on("ERROR", path, callback);
+    }
+    onException(callback) {
+        return this.on("EXCEPTION", path, callback);
+    }
+    listen(addr, port = 8080) {
+        let inet = new InetSocketAddress(port);
+        if (addr) inet = new InetSocketAddress(addr, port);
+        this.server = JHttpServer.create(inet, 0);
+        this.server.start();//启动服务器
+        //创建一个HttpContext，将路径为/myserver请求映射到MyHttpHandler处理器
+        this.server.createContext("/", this.handler);
+        return this;
+    }
+    startAt(addr, port = 8080) {
+        return this.listen(addr, port);
+    }
+    stop() { this.server.stop(); }
+    isRunning() {
 
+    }
     // static
 };
 
@@ -75,4 +131,8 @@ function httpPost(url, ...arg) {
     res.thenApply((res) => callback(res.statusCode(), res.body()));
 }
 
-export let network = {httpGet, httpPost}
+export let network = { httpGet, httpPost }
+
+
+
+
