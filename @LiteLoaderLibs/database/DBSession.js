@@ -1,16 +1,13 @@
 import { File as JFile } from "java.io.File";
 import { URL as JURL } from "java.net.URL";
 import { Files } from "java.nio.file.Files";
-import { SQLiteConfig } from "org.sqlite.SQLiteConfig";
 import { Class } from "java.lang.Class";
 import { System } from "java.lang.System";
 import { isEmpty, isNull, isNumber, isString, isUndefined } from '../utils/underscore-esm-min.js'
 import { IllegalArgumentError } from '../error/IllegalArgumentError.js'
 import { Connection } from 'java.sql.Connection';
 
-downloadSqlite();
-
-function downloadSqlite() {
+const downloadSqlite = function () {
     const filePath = "org/xerial/sqlite-jdbc/3.39.2.0";
     const fileName = "sqlite-jdbc-3.39.2.0.jar";
     const url = new JURL("https://repo1.maven.org/maven2/" + filePath + '/' + fileName);
@@ -28,8 +25,15 @@ function downloadSqlite() {
             System.exit(0);
         } catch (e) {
             console.error("下载sqlite驱动失败,具体异常:" + e);
+            return false;
         }
     }
+    return true;
+}
+var SQLiteConfig;
+if (downloadSqlite()) {
+    const sqlite = await import('org.sqlite.SQLiteConfig');
+    ({SQLiteConfig} = sqlite);
 }
 
 function createSqlite(url, mode) {
