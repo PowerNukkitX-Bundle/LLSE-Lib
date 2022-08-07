@@ -3,7 +3,9 @@ import { TestNbt } from "./nbt/TestNbt.js";
 import { TestBlock } from "./object/TestBlock.js";
 import { TestKVDatabase } from "./database/TestKVDatabase.js";
 import { TestEntity } from "./object/TestEntity.js";
+import { TestIniConfig } from './config/TestIniConfig.js'
 import { colorLog, File, log } from "../@LiteLoaderLibs/index.js";
+import { TestDBSession } from './database/TestDBSession.js'
 
 /***
  * 总测试入口
@@ -16,6 +18,8 @@ export function main() {
     TestBlock();
     TestEntity();
     TestKVDatabase();
+    TestIniConfig();
+    TestDBSession();
     //执行测试,传入配置参数
     JSAssert.execute({
         onSuiteStarted: function ({name, id}) {
