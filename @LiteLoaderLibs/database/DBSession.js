@@ -32,8 +32,10 @@ const downloadSqlite = function () {
 }
 var SQLiteConfig;
 if (downloadSqlite()) {
-    const sqlite = await import('org.sqlite.SQLiteConfig');
-    ({SQLiteConfig} = sqlite);
+    (async () => {
+        let sqlite = await import('org.sqlite.SQLiteConfig');
+        ({SQLiteConfig} = sqlite);
+    })();
 }
 
 function createSqlite(url, mode) {
