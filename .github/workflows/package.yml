@@ -70,11 +70,10 @@ jobs:
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:
-    if: (!contains(github.ref_name,'patch'))
+    if: (!contains(GITHUB_HEAD_REF,'patch'))
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{github.ref_name}}
       - name: checkout source
         uses: actions/checkout@master
       - name: move
