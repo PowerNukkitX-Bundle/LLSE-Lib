@@ -36,6 +36,11 @@ jobs:
         with:
           repository: 'PowerNukkitX/PowerNukkitX'
           path: 'core'
+      - name: checkout LL-libs runtime
+        uses: actions/checkout@v3
+        with:
+          repository: 'PowerNukkitX/LL-libs-Runtime'
+          path: 'env'
       - name: setup-graalvm-ce
         uses: rinx/setup-graalvm-ce@v0.0.5
         with:
@@ -65,10 +70,11 @@ jobs:
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:
-    if: (! contains(github.ref_name,'patch'))
+    if: (!contains(github.ref_name,'patch'))
     needs: test
     runs-on: ubuntu-latest
     steps:
+      - run: echo ${{github.ref_name}}
       - name: checkout source
         uses: actions/checkout@master
       - name: move
