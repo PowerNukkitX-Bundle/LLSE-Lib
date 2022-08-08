@@ -1,8 +1,5 @@
 name: package
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
   pull_request:
 
@@ -70,7 +67,7 @@ jobs:
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:
-    if: (!contains(github_head_ref,'patch'))
+    if: (!contains(GITHUB_HEAD_REF,'patch'))
     needs: test
     runs-on: ubuntu-latest
     steps:
