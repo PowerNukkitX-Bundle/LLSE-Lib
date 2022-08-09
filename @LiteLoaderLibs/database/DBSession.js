@@ -32,9 +32,12 @@ const downloadSqlite = function () {
 }
 var SQLiteConfig;
 if (downloadSqlite()) {
-    (async () => {
-        let sqlite = await import('org.sqlite.SQLiteConfig');
-        ({SQLiteConfig} = sqlite);
+    (() => {
+        import('org.sqlite.SQLiteConfig').then(s => {
+            ({SQLiteConfig} = s);
+        }, e => {
+            console.error("载入sqlite依赖库失败,具体异常:" + e)
+        });
     })();
 }
 
