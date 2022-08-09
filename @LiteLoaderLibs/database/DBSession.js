@@ -260,7 +260,7 @@ class DBStmt {
      * <p>1.val {Any} 要绑定的值</p>
      * <p>2.obj {Object} 要绑定的对象，等同于遍历此对象并执行bind(val, key)</p>
      * <p>3.arr {Array} 要绑定的数组，等同于遍历此数组并执行bind(val)</p>
-     * <p>4.(val, index) {Any,Integer} {要绑定的值 , 要绑定到的参数索引(从0开始)}</p>
+     * <p>4.(val, index) {Any,Integer} {要绑定的值 , 要绑定到的参数索引(从0开始,这里让人非常难受,因为数据库Sql语句中指定位置是从1开始)}</p>
      * <p>5.(val, name) {Any,String} {要绑定的值 , 要绑定到的参数的参数名}</p>
      * @param param {Any} 参数数组
      * @return {DBStmt} 处理完毕的语句对象（便于连锁进行其他操作）
@@ -347,16 +347,27 @@ class DBStmt {
         return this;
     }
 
+    /**
+     * @see next
+     */
     step() {
         return this.next();
     }
 
+    /**
+     * 步进到下一行结果
+     * @return {Boolean} 执行成功与否
+     */
     next() {
         if (this.#row === this.#result.length - 1) return false;
         this.#row++;
         return true;
     }
 
+    /**
+     * 获取当前结果行(初始在第一行)
+     * @return {Object} 当前结果行，形如{col1: "value", col2: 2333}
+     */
     fetch() {
         let obj = {};
         let title = this.#result[0];
@@ -368,17 +379,29 @@ class DBStmt {
         return obj;
     }
 
+    /**
+     * 获取所有结果行
+     * @param callback {any | function} 回调函数，用于遍历结果行；在回调函数中返回false可终止遍历
+     * @return {Array<Array> | DBStmt} <p>查询的结果(结果集),详见执行{@link Sqlite#query 执行SQL并获取结果集}<p>处理完毕的语句对象（便于连锁进行其他操作）
+     */
     fetchAll(callback) {
         if (isUndefined(callback)) {
             return this.#result;
         } else if (callback.constructor.name === "Function") {
             let subLen = this.#result[0].length;
             for (let i = 1, len = this.#result.length; i < len; ++i) {
-                callback.apply(null, this.#result[i]);
+                if (callback.apply(null, this.#result[i]) === false) {
+                    break;
+                }
             }
+            return this;
         }
     }
 
+    /**
+     * 重置当前语句状态至“待执行”
+     * @return {DBStmt} 处理完毕的语句对象（便于连锁进行其他操作）
+     */
     reset() {
         this.#result = [];
         this.#row = 1;
@@ -387,10 +410,18 @@ class DBStmt {
         return this;
     }
 
+    /**
+     * 重新执行预准备语句
+     * @return {DBStmt} 处理完毕的语句对象（便于连锁进行其他操作）
+     */
     reexec() {
         return this.reset().execute();
     }
 
+    /**
+     * 清除所有已绑定的参数
+     * @return {DBStmt} 处理完毕的语句对象（便于连锁进行其他操作）
+     */
     clear() {
         this.statement.clearParameters();
         this.#maxid = 1;
