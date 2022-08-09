@@ -11,6 +11,7 @@ import { Player } from "../../@LiteLoaderLibs/object/Player.js";
 import { Player as PNXPlayer } from "cn.nukkit.Player";
 import { MethodHandles } from "java.lang.invoke.MethodHandles";
 import { Void } from "java.lang.Void";
+import { isEmpty } from '../../@LiteLoaderLibs/utils/underscore-esm-min.js'
 
 export const TestPlayer = () => {
     //测试环境配置
@@ -53,8 +54,8 @@ export const TestPlayer = () => {
     JSAssert.addTestSuite("Test Player", {
         testProperty: function () {
             assertThat(player.name).equals("TestPlayer", "name属性读取异常");
-            assertThat(player.pos.toString()).equals(`{"x":126.72190501718826,"y":65.5,"z":132.3720853375359,"dim":"world","dimid":0}`, "pos属性读取异常");
-            assertThat(player.blockPos.toString()).equals(`{"x":126,"y":65,"z":132,"dim":"world","dimid":0}`, "blockPos属性读取异常");
+            assertThat(!isEmpty(player.pos)).isTrue("pos属性读取异常");
+            assertThat(!isEmpty(player.blockPos)).isTrue("blockPos属性读取异常");
             assertThat(player.realName).equals("TestPlayer", "realName属性读取异常");
             assertThat(player.xuid).equals(null, "xuid属性读取异常");
             assertThat(player.uuid).equals(null, "uuid属性读取异常");
