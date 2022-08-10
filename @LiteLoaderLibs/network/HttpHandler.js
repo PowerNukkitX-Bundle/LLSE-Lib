@@ -86,6 +86,11 @@ export class HttpHandler {
             version,
             reason: "PI YAN ZI BU GO DA!",
             body: new StringBuffer(),
+            /**
+             * 
+             * @param  {...any} content 
+             * @returns {response} response
+             */
             write: function (...content) {
                 response.body.append(content.join(""));
                 return response
@@ -94,7 +99,7 @@ export class HttpHandler {
              * 
              * @param {string} key 
              * @param {string} value 
-             * @returns {response}
+             * @returns {response} response
              */
             setHeader: function (key, value) {
                 resHeaders.set(key, value);
@@ -104,7 +109,7 @@ export class HttpHandler {
             /**
              * 
              * @param {string|java} key 
-             * @returns {array}
+             * @returns {array} array
              */
             getHeader(key) {
                 let resh = resHeaders.get(key)?.toArray()

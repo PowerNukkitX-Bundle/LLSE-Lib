@@ -8,45 +8,110 @@ import { HttpHandler } from "./HttpHandler.js"
 
 import { InetSocketAddress } from "java.net.InetSocketAddress"
 import { Executors } from "java.util.concurrent.Executors"
-
 export class HttpServer {
+    /**
+    * @returns {HttpServer} HTTP服务器对象
+    */
     constructor() {
         this.handler = new HttpHandler();
         this.running = false;
     }
+    /**
+     * @example 
+     * http.on("GET", "/a", ()=>{console.log("get请求");})
+     * @param {string} method 可用值 GET PUT POST PATCH DELETE POTIONS PREROUTING POSTROUTING ERROR EXCEPTION
+     * @param {string} path  
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     on(method, path, callback) {
         this.handler.on(method, new RegExp(["^", path, "$"].join(""), "g"), callback)
         return this;
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onGet(path, callback) {
         return this.on("GET", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPut(path, callback) {
         return this.on("PUT", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPost(path, callback) {
         return this.on("POST", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPatch(path, callback) {
         return this.on("PATCH", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onDelete(path, callback) {
         return this.on("DELETE", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onOptions(path, callback) {
         return this.on("POTIONS", path, callback);
     }
 
-
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPreRouting(callback) {
         return this.on("PREROUTING", '', callback);
     }
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPostRouting(callback) {
         return this.on("POSTROUTING", '', callback);
     }
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onError(callback) {
         return this.on("ERROR", '', callback);
     }
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onException(callback) {
         return this.on("EXCEPTION", '', callback);
     }
