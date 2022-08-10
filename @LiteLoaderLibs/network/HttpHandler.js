@@ -118,16 +118,30 @@ export class HttpHandler {
                 if (request.path.match(path)) {
                     request.matches = request.path.match(path);//请求路径正则匹配结果
                     try {
+                        let PRE = true
+                        if (this.PREROUTING?.length) {
+                            this.PREROUTING.forEach(i => {
+                                if (i[1](request, response)===false) PRE = false;
+                            })
+                        }
 
-                        callback(request, response);
+                        if (PRE) callback(request, response);
                         let resBody = httpExchange.getResponseBody()
                         let byte = strToUtf8Bytes(response.body.toString())
-                        httpExchange.sendResponseHeaders(response.status,byte.length)
+                        httpExchange.sendResponseHeaders(response.status, byte.length)
                         resBody.write(byte)
                         resBody.flush();
                         resBody.close();
+                        if (this.POSTROUTING?.length) {
+                            this.POSTROUTING.forEach(i => i[1](request, response));
+                        }
+                        if (response.status >= 400 && this.ERROR?.length) {
+                            this.ERROR.forEach(i => i[1](request, response))
+                        }
                     } catch (error) {
-                        console.log(error, "??");
+                        if (this.EXCEPTION?.length) {
+                            this.EXCEPTION.forEach(i => i[1](request, response, error))
+                        }
                     }
                     break;
                 }

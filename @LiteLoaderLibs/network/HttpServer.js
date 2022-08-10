@@ -12,9 +12,10 @@ import { Executors } from "java.util.concurrent.Executors"
 export class HttpServer {
     constructor() {
         this.handler = new HttpHandler();
+        this.running = false;
     }
     on(method, path, callback) {
-        this.handler.on(method, new RegExp(["^",path,"$"].join(""), "g"), callback)
+        this.handler.on(method, new RegExp(["^", path, "$"].join(""), "g"), callback)
         return this;
     }
     onGet(path, callback) {
@@ -35,33 +36,39 @@ export class HttpServer {
     onOptions(path, callback) {
         return this.on("POTIONS", path, callback);
     }
+
+
     onPreRouting(callback) {
-        return this.on("PREROUTING", path, callback);
+        return this.on("PREROUTING", '', callback);
     }
     onPostRouting(callback) {
-        return this.on("POSTROUTING", path, callback);
+        return this.on("POSTROUTING", '', callback);
     }
     onError(callback) {
-        return this.on("ERROR", path, callback);
+        return this.on("ERROR", '', callback);
     }
     onException(callback) {
-        return this.on("EXCEPTION", path, callback);
+        return this.on("EXCEPTION", '', callback);
     }
+
+
+
     listen(addr, port = 8080) {
         let inet = new InetSocketAddress(port);
         if (addr) inet = new InetSocketAddress(addr, port);
         this.server = JHttpServer.create(inet, 0);
         this.server.start();//启动服务器
-        //创建一个HttpContext，将路径为/myserver请求映射到MyHttpHandler处理器
+        //创建一个HttpContext，将路径为/启示的请求映射到MyHttpHandler处理器
         this.server.createContext("/", this.handler);
+        this.running = true;
         return this;
     }
     startAt(addr, port = 8080) {
         return this.listen(addr, port);
     }
-    stop() { this.server.stop(); }
+    stop() { this.server.stop(1); this.running = false; }
     isRunning() {
-
+        return this.running;
     }
     // static
 };
