@@ -1,6 +1,5 @@
 import { Options } from 'org.iq80.leveldb.Options';
 import { Iq80DBFactory } from 'org.iq80.leveldb.impl.Iq80DBFactory';
-import { server } from '../utils/Mixins.js';
 import { File as JFile } from 'java.io.File';
 
 const bytes = Iq80DBFactory.bytes;
@@ -17,9 +16,7 @@ export class KVDatabase {
     constructor(dir) {
         const opt = new Options();
         opt.createIfMissing(true);
-        let rootDir = server.getDataPath();
-        rootDir = rootDir.substring(0, rootDir.length - 1) + '\\' + dir;
-        let file = new JFile(rootDir);
+        let file = new JFile(dir);
         try {
             this.db = factory.open(file, opt);
         } catch (e) {

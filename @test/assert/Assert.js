@@ -389,11 +389,7 @@ var arrayAssertions = {
      * @param message the optionnal message displayed in case of failure.
      */
     equals: function (expected, message) {
-        assertThat(this.object).isNotNull(message);
-        assertThat(this.object.length == expected.length).isTrue(message);
-        for (var property in expected) {
-            assertThat(this.object[property]).equals(expected[property], message);
-        }
+        assertThat(isEqual(this.object, expected)).isTrue(message);
         return this;
     },
 

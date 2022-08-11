@@ -36,12 +36,17 @@ jobs:
         with:
           repository: 'PowerNukkitX/PowerNukkitX'
           path: 'core'
+      - name: checkout LL-libs runtime
+        uses: actions/checkout@v3
+        with:
+          repository: 'PowerNukkitX/LL-libs-Runtime'
+          path: 'env'
       - name: setup-graalvm-ce
         uses: rinx/setup-graalvm-ce@v0.0.5
         with:
           graalvm-version: "22.1.0"
           java-version: "java17"
-          native-image: "true"
+          native-image: "false"
       - name: Cache local Maven repository
         uses: actions/cache@v3
         with:
@@ -65,7 +70,7 @@ jobs:
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:
-    if: (!contains(github.ref_name, 'patch'))
+    if: (!contains(github.event.pull_request.head.ref,'patch'))
     needs: test
     runs-on: ubuntu-latest
     steps:
