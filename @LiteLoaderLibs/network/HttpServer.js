@@ -8,60 +8,132 @@ import { HttpHandler } from "./HttpHandler.js"
 
 import { InetSocketAddress } from "java.net.InetSocketAddress"
 import { Executors } from "java.util.concurrent.Executors"
-
 export class HttpServer {
+    /**
+    * @returns {HttpServer} HTTP服务器对象
+    */
     constructor() {
         this.handler = new HttpHandler();
+        this.running = false;
     }
+    /**
+     * @example 
+     * http.on("GET", "/a", ()=>{console.log("get请求");})
+     * @param {string} method 可用值 GET PUT POST PATCH DELETE POTIONS PREROUTING POSTROUTING ERROR EXCEPTION
+     * @param {string} path  
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     on(method, path, callback) {
-        this.handler.on(method, new RegExp(["^",path,"$"].join(""), "g"), callback)
+        this.handler.on(method, new RegExp(["^", path, "$"].join(""), "g"), callback)
         return this;
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onGet(path, callback) {
         return this.on("GET", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPut(path, callback) {
         return this.on("PUT", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPost(path, callback) {
         return this.on("POST", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPatch(path, callback) {
         return this.on("PATCH", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onDelete(path, callback) {
         return this.on("DELETE", path, callback);
     }
+    /**
+     * 
+     * @param {string} path 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onOptions(path, callback) {
         return this.on("POTIONS", path, callback);
     }
+
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPreRouting(callback) {
-        return this.on("PREROUTING", path, callback);
+        return this.on("PREROUTING", '', callback);
     }
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onPostRouting(callback) {
-        return this.on("POSTROUTING", path, callback);
+        return this.on("POSTROUTING", '', callback);
     }
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onError(callback) {
-        return this.on("ERROR", path, callback);
+        return this.on("ERROR", '', callback);
     }
+    /**
+     * 
+     * @param {function} callback 
+     * @returns {HttpServer} HttpServer
+     */
     onException(callback) {
-        return this.on("EXCEPTION", path, callback);
+        return this.on("EXCEPTION", '', callback);
     }
+
+
+
     listen(addr, port = 8080) {
         let inet = new InetSocketAddress(port);
         if (addr) inet = new InetSocketAddress(addr, port);
         this.server = JHttpServer.create(inet, 0);
         this.server.start();//启动服务器
-        //创建一个HttpContext，将路径为/myserver请求映射到MyHttpHandler处理器
+        //创建一个HttpContext，将路径为/启示的请求映射到MyHttpHandler处理器
         this.server.createContext("/", this.handler);
+        this.running = true;
         return this;
     }
     startAt(addr, port = 8080) {
         return this.listen(addr, port);
     }
-    stop() { this.server.stop(); }
+    stop() { this.server.stop(1); this.running = false; }
     isRunning() {
-
+        return this.running;
     }
     // static
 };
