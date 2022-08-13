@@ -3,8 +3,21 @@ import { BigInteger } from 'java.math.BigInteger';
 import { String as JString } from "java.lang.String";
 import { strToUtf8Bytes } from '../file/IO.js';
 import { Base64 } from './Base64.js';
+import { server } from '../utils/Mixins.js';
+import { DBSession } from '../database/DBSession.js';
 
 const CharArray = Java.type("char[]");
+
+if (!contain('PlayerDB')) {// 防止重复database
+    exposeObject('PlayerDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/PlayerDB.db' }));
+}
+const PlayerDB = contain('PlayerDB');
+if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) PlayerDB.exec(`CREATE TABLE player
+(
+    NAME TEXT PRIMARY KEY NOT NULL,
+    XUID TEXT NOT NULL,
+    UUID TEXT NOT NULL
+) WITHOUT ROWID;`);
 
 export var data = {
     /**
@@ -91,13 +104,46 @@ export var data = {
     },
     /**
      * 数据转Base64
-     * @todo 未检查 Int8Array
-     * @param base64 {string} 要解码的base64字符串
+     * @param base64 {string|Int8Array} 要解码的base64字符串
      * @param [isBinary=false] {boolean} 返回数据类型是否为二进制数据，默认为 false
      * @returns {string|Int8Array} 解码后的数据
      */
     fromBase64(base64, isBinary) {
         return isBinary ? strToUtf8Bytes(Base64.decode(base64)) : Base64.decode(base64);
+    },
+    /**
+     * 玩家名转xuid
+     * @param name {string} 玩家名
+     * @returns {string} xuid
+     */
+    name2xuid(name) {
+        return PlayerDB.query("SELECT XUID FROM PlayerInfo WHERE NAME='" + name.toLowerCase() + "';")[1][0];
+    },
+    /**
+     * xuid转玩家名
+     * @param xuid {string} xuid
+     * @returns {string} 玩家名（小写）
+     */
+    xuid2name(xuid) {
+        return PlayerDB.query("SELECT NAME FROM PlayerInfo WHERE XUID='" + xuid.toLowerCase() + "';")[1][0];
+    },
+    /**
+     * 字符串转玩家名
+     * @pnxonly
+     * @param str {string} 可以是xuid,uuid,name
+     * @returns {string} 玩家名（小写）
+     */
+    str2name(str) {
+        let name = str;
+        switch (str.length) {
+            case 36:
+                name = server.getOfflinePlayer(UUID.fromString(str)).getName();
+                break;
+            case 16:
+                name = PlayerDB.query("SELECT NAME FROM PlayerInfo WHERE XUID='" + str.toLowerCase() + "';")[1][0];
+                break;
+        }
+        return name.toLowerCase();
     }
 }
 
