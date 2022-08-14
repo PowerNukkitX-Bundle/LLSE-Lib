@@ -34,11 +34,12 @@ function downloadSqlite() {
     }
     return true;
 }
+
 var SQLiteConfig;
 if (downloadSqlite()) {
     try {
         SQLiteConfig = Java.type('org.sqlite.SQLiteConfig');
-    } catch(err) {
+    } catch (err) {
         console.error("载入sqlite依赖库失败,具体异常:" + e)
     }
 }
@@ -84,9 +85,8 @@ export class DBSession {
     /**
      * @see execute
      */
-     exec(sql) {
-        this.execute(sql);
-        return this;
+    exec(sql) {
+        return this.execute(sql);
     }
 
     /**

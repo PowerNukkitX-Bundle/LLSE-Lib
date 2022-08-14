@@ -1,5 +1,6 @@
 import { EventPriority, PowerNukkitX as pnx } from ':powernukkitx';
 import { Player } from '../object/Player.js';
+import { Entity } from '../object/Entity.js';
 import { Item } from '../object/Item.js';
 import { Block } from '../object/Block.js';
 import { server } from '../utils/Mixins.js'
@@ -207,7 +208,7 @@ const onAttackEntity = {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerInteractEntityEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
             let entity = event.getEntity();
-            let cancel = callback(Player.getPlayer(player), entity);
+            let cancel = callback(Player.getPlayer(player), new Entity(entity));
             if (cancel === false) event.setCancelled(true);
         });
     }
@@ -518,13 +519,13 @@ const onMobHurt = {
         let e1 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL, event => {
             if (event.getCause() !== EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 let entity = event.getEntity();
-                let cancel = callback(entity, null, event.getDamage(), DamageCause.getCause(event.getCause()));
+                let cancel = callback(new Entity(entity), null, event.getDamage(), DamageCause.getCause(event.getCause()));
                 if (cancel === false) event.setCancelled(true);
             }
         });
         let e2 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageByEntityEvent", EventPriority.NORMAL, event => {
             let entity = event.getEntity();
-            let cancel = callback(entity, event.getDamager(), event.getDamage(), DamageCause.getCause(PNXDamageCause.ENTITY_ATTACK));
+            let cancel = callback(new Entity(entity), new Entity(event.getDamager()), event.getDamage(), DamageCause.getCause(PNXDamageCause.ENTITY_ATTACK));
             if (cancel === false) event.setCancelled(true);
         });
         return e1 && e2;

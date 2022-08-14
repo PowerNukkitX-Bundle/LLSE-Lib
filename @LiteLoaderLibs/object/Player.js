@@ -69,8 +69,10 @@ export class Player {
         if (!Player.PlayerMap.has(PNXPlayer.name) || !Player.PlayerMap.get(PNXPlayer.name)._PNXPlayer.isOnline()) {
             Player.BossBarIdMap.set(PNXPlayer.name, new Map());
             Player.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
+            let uuid = String(PNXPlayer.getLoginChainData().getClientUUID()).toLowerCase();
+            let xuid = String(PNXPlayer.getLoginChainData().getXUID()).toLowerCase();
             PlayerDB.exec(`INSERT INTO player (NAME, XUID, UUID) VALUES 
-             ('${PNXPlayer.name.toLowerCase()}','${String(PNXPlayer.getLoginChainData().getXUID()).toLowerCase()}','${String(PNXPlayer.getLoginChainData().getClientUUID()).toLowerCase()}');`);
+             ('${PNXPlayer.name.toLowerCase()}','${xuid}','${uuid}') ON CONFLICT (NAME) DO UPDATE SET XUID='${xuid}',UUID='${uuid}';`);
         }
         return Player.PlayerMap.get(PNXPlayer.name);
     }

@@ -117,7 +117,7 @@ export var data = {
      * @returns {string} xuid
      */
     name2xuid(name) {
-        return PlayerDB.query("SELECT XUID FROM PlayerInfo WHERE NAME='" + name.toLowerCase() + "';")[1][0];
+        return PlayerDB.query("SELECT XUID FROM player WHERE NAME='" + name.toLowerCase() + "';")[1][0];
     },
     /**
      * xuid转玩家名
@@ -125,7 +125,7 @@ export var data = {
      * @returns {string} 玩家名（小写）
      */
     xuid2name(xuid) {
-        return PlayerDB.query("SELECT NAME FROM PlayerInfo WHERE XUID='" + xuid.toLowerCase() + "';")[1][0];
+        return PlayerDB.query("SELECT NAME FROM player WHERE XUID='" + xuid.toLowerCase() + "';")[1][0];
     },
     /**
      * 字符串转玩家名
@@ -140,7 +140,7 @@ export var data = {
                 name = server.getOfflinePlayer(UUID.fromString(str)).getName();
                 break;
             case 16:
-                name = PlayerDB.query("SELECT NAME FROM PlayerInfo WHERE XUID='" + str.toLowerCase() + "';")[1][0];
+                name = PlayerDB.query("SELECT NAME FROM player WHERE XUID='" + str.toLowerCase() + "';")[1][0];
                 break;
         }
         return name.toLowerCase();
