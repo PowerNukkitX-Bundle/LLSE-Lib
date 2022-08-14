@@ -39,7 +39,6 @@ if (!economyDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and
 
 /**
  * money API
- * @todo 待完成
  */
 export class money {
     /**
@@ -57,7 +56,7 @@ export class money {
             return false;
         }
         economyDB.exec(`INSERT INTO money (XUID, Money)
-                 VALUES ('${data.name2xuid(data.str2name(xuid1))}','${money}'`);
+                 VALUES ('${data.name2xuid(data.str2name(xuid1))}','${money}') ON CONFLICT (XUID) DO UPDATE SET Money=${money}`);
         return true;
     }
 
@@ -74,7 +73,7 @@ export class money {
             value = _API.LlamaEconomy.getMoney(data.str2name(xuid));
         }
         economyDB.exec(`INSERT INTO money (XUID, Money)
-                 VALUES ('${data.name2xuid(data.str2name(xuid1))}','${value}'`);
+                 VALUES ('${data.name2xuid(data.str2name(xuid1))}','${value}') ON CONFLICT (XUID) DO UPDATE SET Money=${value}`);
         return value;
     }
 
@@ -129,7 +128,7 @@ export class money {
         if (money.reduce(data.str2name(xuid1), money_)) {
             money.add(data.str2name(xuid2), money_);
             economyDB.exec(`INSERT INTO mtrans (tFrom, tTo, Money, Time, Note)
-                     VALUES ('${data.name2xuid(data.str2name(xuid1))}','${data.name2xuid(data.str2name(xuid2))}','${money}','${~~(new Date().getTime()/1e3)}','${String(note)}');`);
+                     VALUES ('${data.name2xuid(data.str2name(xuid1))}','${data.name2xuid(data.str2name(xuid2))}','${money_}','${~~(new Date().getTime()/1e3)}','${String(note)}');`);
             money.get(data.str2name(xuid1));// 更新数据库
             money.get(data.str2name(xuid2));
             return true;
