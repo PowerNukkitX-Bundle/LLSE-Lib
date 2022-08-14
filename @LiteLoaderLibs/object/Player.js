@@ -36,6 +36,17 @@ const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHand
     }
 });
 
+if (!contain('PlayerDB')) {// 防止重复database
+    exposeObject('PlayerDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/PlayerDB.db'}));
+}
+const PlayerDB = contain('PlayerDB');
+if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) PlayerDB.exec(`CREATE TABLE player
+(
+    NAME TEXT PRIMARY KEY NOT NULL,
+    XUID TEXT NOT NULL,
+    UUID TEXT NOT NULL
+) WITHOUT ROWID;`);
+
 export class Player {
     static BossBarIdMap = new Map();// '玩家名': Map
 
@@ -58,6 +69,10 @@ export class Player {
         if (!Player.PlayerMap.has(PNXPlayer.name) || !Player.PlayerMap.get(PNXPlayer.name)._PNXPlayer.isOnline()) {
             Player.BossBarIdMap.set(PNXPlayer.name, new Map());
             Player.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
+            let uuid = String(PNXPlayer.getLoginChainData().getClientUUID()).toLowerCase();
+            let xuid = String(PNXPlayer.getLoginChainData().getXUID()).toLowerCase();
+            PlayerDB.exec(`INSERT INTO player (NAME, XUID, UUID) VALUES 
+             ('${PNXPlayer.name.toLowerCase()}','${xuid}','${uuid}') ON CONFLICT (NAME) DO UPDATE SET XUID='${xuid}',UUID='${uuid}';`);
         }
         return Player.PlayerMap.get(PNXPlayer.name);
     }
