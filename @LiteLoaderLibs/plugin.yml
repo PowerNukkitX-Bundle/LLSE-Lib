@@ -10,9 +10,6 @@ authors: # 此项可以不存在
   - CoolLoong
 description: LiteLoader 的实现库
 website: https://mc.xz.cn/list/Minecraft
-softdepend: # 插件的软依赖项
-  - LlamaEconomy
-  - EconomyAPI
 features:
   - WsClient
   - testFeature

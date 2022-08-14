@@ -1,6 +1,5 @@
 import { File as JFile } from "java.io.File";
 import { URL as JURL } from "java.net.URL";
-import { Paths } from "java.nio.file.Paths";
 import { Files } from "java.nio.file.Files";
 import { Class } from "java.lang.Class";
 import { System } from "java.lang.System";
@@ -8,13 +7,10 @@ import { isEmpty, isNull, isNumber, isString, isUndefined } from '../utils/under
 import { IllegalArgumentError } from '../error/IllegalArgumentError.js'
 import { Connection } from 'java.sql.Connection';
 
-if (!contain('DBSession')) exposeObject('DBSession', new Map());
-const DBSessionMap = contain('DBSession');
-
-function downloadSqlite() {
-    // origin: https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.39.2.0/sqlite-jdbc-3.39.2.0.jar
+const downloadSqlite = function () {
+    const filePath = "org/xerial/sqlite-jdbc/3.39.2.0";
     const fileName = "sqlite-jdbc-3.39.2.0.jar";
-    const url = new JURL('https://res.nullatom.com/file/maven/' + fileName);
+    const url = new JURL("https://repo1.maven.org/maven2/" + filePath + '/' + fileName);
     const folder = new JFile("libs");
     if (folder.mkdirs()) {
         console.info("Created " + folder.getPath() + '.');
@@ -22,7 +18,7 @@ function downloadSqlite() {
     const file = new JFile(folder, fileName);
     if (!file.isFile()) {
         try {
-            console.info("Get library from: " + url);
+            console.info("Get library from " + url + '.');
             Files.copy(url.openStream(), file.toPath());
             console.info("Get library " + fileName + " done!");
             console.info("§4sqlite驱动下载完成,需重新启动服务器加载驱动");
@@ -36,14 +32,14 @@ function downloadSqlite() {
 }
 var SQLiteConfig;
 if (downloadSqlite()) {
-    try {
-        SQLiteConfig = Java.type('org.sqlite.SQLiteConfig');
-    } catch(err) {
-        console.error("载入sqlite依赖库失败,具体异常:" + e)
-    }
+    (() => {
+        import('org.sqlite.SQLiteConfig').then(s => {
+            ({SQLiteConfig} = s);
+        }, e => {
+            console.error("载入sqlite依赖库失败,具体异常:" + e)
+        });
+    })();
 }
-
-//import { SQLiteConfig } from 'org.sqlite.SQLiteConfig';
 
 function createSqlite(url, mode) {
     if (isEmpty(url)) throw new IllegalArgumentError("指定的数据库路径不能为空!");
@@ -84,9 +80,8 @@ export class DBSession {
     /**
      * @see execute
      */
-     exec(sql) {
+    exec(sql) {
         this.execute(sql);
-        return this;
     }
 
     /**
@@ -96,7 +91,6 @@ export class DBSession {
      */
     execute(sql) {
         this.database.execute(sql);
-        return this;
     }
 
     /**
@@ -139,20 +133,12 @@ class Sqlite {
         Class.forName("org.sqlite.JDBC");//加载sqlite驱动
         let mode = 0;
         if (readonly === true && readwrite === false) mode = 1;
-        const db = new JFile(path);
-        this._path = db.getCanonicalPath();
         if (create) {
-            Files.createDirectories(Paths.get(path).getParent());// 创建目录
-            if (!DBSessionMap.has(this._path)) {
-                DBSessionMap.set(this._path, createSqlite(path, mode));
-            }
-            this.connection = DBSessionMap.get(this._path);
+            this.connection = createSqlite(path, mode);
         } else {
+            const db = new JFile(path);
             if (db.exists()) {
-                if (!DBSessionMap.has(this._path)) {
-                    DBSessionMap.set(this._path, createSqlite(path, mode));
-                }
-                this.connection = DBSessionMap.get(this._path);
+                this.connection = createSqlite(path, mode);
             } else {
                 console.error("指定的sqlite数据库不存在!");
                 return {};
@@ -182,7 +168,6 @@ class Sqlite {
                 result.push(col);
             }
         } catch (e) {
-            console.error(sql);
             console.error("执行sql语句时出错,具体异常:" + e);
         } finally {
             statement.close();
@@ -199,7 +184,6 @@ class Sqlite {
             var statement = this.connection.createStatement();
             statement.execute(sql);
         } catch (e) {
-            console.error(sql);
             console.error("执行sql语句时出错,具体异常:" + e);
         } finally {
             statement.close();
@@ -216,7 +200,6 @@ class Sqlite {
             s.close();
         })
         this.connection.close();
-        DBSessionMap.delete(this._path);
         return this.connection.isClosed();
     }
 
@@ -359,7 +342,6 @@ class DBStmt {
                 this.#insertId = this.#connection.createStatement().executeQuery(`SELECT LAST_INSERT_ROWID();`).getObject(1);
             }
         } catch (e) {
-            console.error(sql);
             console.error("执行sql语句时出错,具体异常:" + e);
         }
         return this;
