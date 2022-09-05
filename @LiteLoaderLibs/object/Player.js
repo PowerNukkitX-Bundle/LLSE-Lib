@@ -629,7 +629,7 @@ export class Player {
         }
         let mapData = Player.BossBarIdMap.get(this._PNXPlayer.name);
         if (mapData.has(uid)) {
-            this.updateBossBar(title, percent, mapData.get(uid));
+            this._PNXPlayer.updateBossBar(title, percent, mapData.get(uid));
             this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
         } else {
             mapData.set(uid, this._PNXPlayer.createBossBar(title, percent));
