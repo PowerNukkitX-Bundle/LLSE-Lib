@@ -4,8 +4,6 @@
 
 ## Tips
 
-
-
 ```git
 //clone此厂库请使用下命令
 git clone --recursive https://github.com/PowerNukkitX/LiteLoader-Libs
