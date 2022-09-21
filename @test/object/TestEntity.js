@@ -14,6 +14,7 @@ export const TestEntity = () => {
     //12是猪的network id
     var pnxEntity = JEntity.createEntity("12", getLevels()[0].getChunk(0, 0, true), JEntity.getDefaultNBT(new Vector3(0, 300, 0)));
     var entity = new Entity(pnxEntity);
+
     //注册测试套件
     JSAssert.addTestSuite("Test Entity", {
         testProperty: function () {
@@ -23,7 +24,7 @@ export const TestEntity = () => {
             assertThat(entity.pos.toString()).equals(`{"x":0,"y":300,"z":0,"dim":"world","dimid":0}`, "pos属性读取异常");
             assertThat(entity.blockPos.toString()).equals(`{"x":0,"y":300,"z":0,"dim":"world","dimid":0}`, "blockPos属性读取异常");
             assertThat(entity.maxHealth).equals(10, "maxHealth属性读取异常");
-            assertThat(entity.health).equals(20, "health属性读取异常");
+            assertThat(entity.health).equals(10, "health属性读取异常");
             assertThat(entity.inAir).equals(true, "inAir属性读取异常");
             assertThat(entity.inWater).equals(false, "inWater属性读取异常");
             assertThat(entity.speed).equals(0.10000000149011612, "speed属性读取异常");
@@ -39,7 +40,7 @@ export const TestEntity = () => {
             entity.teleport(0, 280, 0, 0);
             assertThat(entity.pos.toString()).equals(`{"x":0,"y":280,"z":0,"dim":"world","dimid":0}`, "teleport函数执行异常");
             entity.hurt(2);
-            assertThat(entity.health).equals(18, "hurt函数执行异常");
+            assertThat(entity.health).equals(8, "hurt函数执行异常");
             assertThat(!entity.isPlayer()).isTrue("isPlayer函数执行异常");
             assertThat(!entity.isItemEntity()).isTrue("isItemEntity函数执行异常");
             assertThat(JSON.parse(entity.getBlockStandingOn().toString())["name"]).equals("Air", "getBlockStandingOn函数执行异常");
