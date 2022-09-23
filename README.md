@@ -2,9 +2,7 @@
 
 实现LiteLoader所有方法的库
 
-## faq
-
-
+## Tips
 
 ```git
 //clone此厂库请使用下命令

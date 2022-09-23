@@ -539,7 +539,7 @@ function getAllScoreObjectives() {
  * @returns {ScoreObjectives|null} 正在slot槽位显示的计分项
  */
 function getDisplayObjective(slot) {
-    return ScoreObjectives.getDisplayObjective(...arguments);
+    return ScoreObjectives.getDisplayObjective(slot);
 }
 
 export const mc = {

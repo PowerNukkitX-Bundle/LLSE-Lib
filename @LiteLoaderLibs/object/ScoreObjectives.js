@@ -7,12 +7,12 @@ import { PlayerScorer } from 'cn.nukkit.scoreboard.scorer.PlayerScorer';
 import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
 import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
 import { server } from '../utils/Mixins.js'
-import { Scoreboard } from 'cn.nukkit.scoreboard.Scoreboard';
+import { Scoreboard } from 'cn.nukkit.scoreboard.scoreboard.Scoreboard';
 
 export class ScoreObjectives {
     /**
      * 生产新的 ScoreObjectives 对象
-     * @returns {Objectives} 计分项对象
+     * @returns {ScoreObjectives} 计分项对象
      */
     constructor(name) {
         this._ObjectivesName = name;
@@ -22,11 +22,12 @@ export class ScoreObjectives {
 
     /**
      * 获取ScoreObjectives对象
-     * @returns {Objectives|null} 计分项对象
+     * @see pnx only
+     * @returns {ScoreObjectives|null} 计分项对象
      */
     static getObjectives(name) {
         const manager = server.getScoreboardManager();
-        if (!manager.hasScoreboard(name)) {
+        if (!manager.containScoreboard(name)) {
             return null;
         }
         if (!ScoreObjectives.ScoreMap.has(name)) {
@@ -38,22 +39,25 @@ export class ScoreObjectives {
     /**
      * 创建一个新的计分项
      * 此接口的作用类似命令 /scoreboard objectives add <name> <displayName> dummy
+     * @see pnx only
      * @param name {string} 计分项名称
      * @param displayName  {string} 计分项显示名称
-     * @returns {Objective|null} 新增创建的计分项对象
+     * @returns {ScoreObjectives|null} 新增创建的计分项对象
      */
     static newScoreObjective(name, displayName) {
         const manager = server.getScoreboardManager();
-        if (manager.hasScoreboard(name)) {
+        if (manager.containScoreboard(name)) {
             return null;
         }
         manager.addScoreboard(new Scoreboard(name, displayName, 'dummy', SortOrder.ASCENDING, manager));
         return ScoreObjectives.getObjectives(name);
     }
+
     /**
      * 获取所有计分项
      * 此接口的作用类似命令 /scoreboard objectives list
-     * @returns {Array<ScoreObjectives,...>} 计分板系统记录的所有计分项对象
+     * @see pnx only
+     * @returns {Array<ScoreObjectives>} 计分板系统记录的所有计分项对象
      */
     static getAllScoreObjectives() {
         const manager = server.getScoreboardManager();
@@ -63,8 +67,10 @@ export class ScoreObjectives {
         }
         return allScoreObjectives;
     }
+
     /**
      * 获取某个处于显示状态的计分项
+     * @see pnx only
      * @param slot {string} 待查询的显示槽位名称，可以为"sidebar"/"belowname"/"list"
      * @returns {ScoreObjectives|null} 正在slot槽位显示的计分项
      */
@@ -73,23 +79,23 @@ export class ScoreObjectives {
         var objectiveName = null;
         switch (slot) {
             case 'sidebar':
-                objectiveName = manager.getDisplay(DisplaySlot.SIDEBAR);
+                objectiveName = manager.getDisplaySlot(DisplaySlot.SIDEBAR);
                 break;
             case 'list':
-                objectiveName = manager.getDisplay().get(DisplaySlot.LIST);
+                objectiveName = manager.getDisplaySlot(DisplaySlot.LIST);
                 break;
             case 'belowname':
-                objectiveName = manager.getDisplay().get(DisplaySlot.BELOW_NAME);
+                objectiveName = manager.getDisplaySlot(DisplaySlot.BELOW_NAME);
                 break;
             default:
-                objectiveName = manager.getDisplay().get(DisplaySlot.SIDEBAR);
+                objectiveName = manager.getDisplaySlot(DisplaySlot.SIDEBAR);
         }
         return ScoreObjectives.getObjectives(objectiveName);
     }
 
     get _PNXScore() {
         const manager = server.getScoreboardManager();
-        if (!manager.hasScoreboard(this._ObjectivesName)) {
+        if (!manager.containScoreboard(this._ObjectivesName)) {
             return null;
         }
         return manager.getScoreboards().get(this._ObjectivesName);
@@ -98,16 +104,16 @@ export class ScoreObjectives {
 
     /**
      * 获取跟踪的某个目标的分数
-     * @param target {Entity|string} 实体对象
+     * @param target {Player|Entity|string} 实体对象
      * @returns {number|null} 该目标 / 玩家在此计分项中的分数
      */
     getScore(target) {
         const scoreboard = this._PNXScore;
-        const [wildcard, scorers] = paraseTarget(target, scoreboard);
+        const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
         }
-        for (scorer of scorers) {
+        for (let scorer of scorers) {
             if (scoreboard.getLines().containsKey(scorer)) {
                 scoreboard.getLines().get(scorer);
             } else {
@@ -118,17 +124,17 @@ export class ScoreObjectives {
 
     /**
      * 修改某个目标的分数
-     * @param target {Entity|string} 实体对象
+     * @param target {Player|Entity|string} 实体对象
      * @param score {number} 分数
      * @returns {number|null} 该目标 / 玩家在操作后的分数
      */
     setScore(target, score) {
         const scoreboard = this._PNXScore;
-        const [wildcard, scorers] = paraseTarget(target, scoreboard);
+        const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
         }
-        for (scorer of scorers) {
+        for (let scorer of scorers) {
             if (scoreboard.getLines().containsKey(scorer)) {
                 scoreboard.getLines().get(scorer).setScore(score);
             } else {
@@ -144,11 +150,11 @@ export class ScoreObjectives {
      */
     addScore(target, score) {
         const scoreboard = this._PNXScore;
-        const [wildcard, scorers] = paraseTarget(target, scoreboard);
+        const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
         }
-        for (scorer of scorers) {
+        for (let scorer of scorers) {
             if (scoreboard.getLines().containsKey(scorer)) {
                 scoreboard.getLines().get(scorer).addScore(score);
             } else {
@@ -164,11 +170,11 @@ export class ScoreObjectives {
      */
     reduceScore(target, score) {
         const scoreboard = this._PNXScore;
-        const [wildcard, scorers] = paraseTarget(target, scoreboard);
+        const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
         }
-        for (scorer of scorers) {
+        for (let scorer of scorers) {
             if (scoreboard.getLines().containsKey(scorer)) {
                 scoreboard.getLines().get(scorer).removeScore(score);
             } else {
@@ -180,16 +186,16 @@ export class ScoreObjectives {
 
     /**
      * 删除记分板上的目标
-     * @param target {Entity|string} 实体对象，允许 *
+     * @param target {Player|Entity|string} 实体对象，允许 *
      * @returns {boolean} 是否成功删除
      */
     deleteScore(target) {
         const scoreboard = this._PNXScore;
-        const [wildcard, scorers] = paraseTarget(target, scoreboard);
+        const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty()) {
             return false;
         }
-        for (scorer of scorers) {
+        for (let scorer of scorers) {
             scoreboard.removeLine(scorer);
         }
         return true;
@@ -232,20 +238,20 @@ export class ScoreObjectives {
 /**
  * 解析目标
  * @param target {Entity|string} 目标
- * @param scoreboard {cn.nukkit.scoreboard} 记分榜对象
- * @returns {Array<boolean wildcard, ArrayList scorers>} 返回数组为 是否为通配符，目标列表
+ * @param scoreboard {cn.nukkit.scoreboard.scoreboard.IScoreboard} 记分榜对象
+ * @returns {(boolean|java.util.ArrayList)[]} 返回数组为 是否为通配符，目标列表
  */
-export function paraseTarget(target, scoreboard) {
+export function parseTarget(target, scoreboard) {
     var scorers = new JList();
     var wildcard = false;
     if (scoreboard === null) {
         return [wildcard, scorers];
     }
-    if (target.equals('*')) {// 所有追踪的对象
+    if (Object.is(target, "*")) {// 所有追踪的对象
         wildcard = true;
         scorers.addAll(scoreboard.getLines().keySet());
-    } else if (server.getPlayer(string) != null) {// 玩家名
-        scorers.add(server.getPlayer(string))
+    } else if (server.getPlayer(target) != null) {// 玩家名
+        scorers.add(server.getPlayer(target))
     } else if (target instanceof Player) {// 玩家对象
         scorers.add(new PlayerScorer(target._PNXPlayer));
     } else if (target instanceof Entity) {// 实体对象
