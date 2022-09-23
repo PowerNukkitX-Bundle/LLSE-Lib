@@ -12,7 +12,7 @@ import { Scoreboard } from 'cn.nukkit.scoreboard.scoreboard.Scoreboard';
 export class ScoreObjectives {
     /**
      * 生产新的 ScoreObjectives 对象
-     * @returns {Objectives} 计分项对象
+     * @returns {ScoreObjectives} 计分项对象
      */
     constructor(name) {
         this._ObjectivesName = name;
