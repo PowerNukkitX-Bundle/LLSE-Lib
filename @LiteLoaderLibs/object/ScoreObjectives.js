@@ -7,7 +7,7 @@ import { PlayerScorer } from 'cn.nukkit.scoreboard.scorer.PlayerScorer';
 import { DisplaySlot } from 'cn.nukkit.scoreboard.data.DisplaySlot';
 import { SortOrder } from 'cn.nukkit.scoreboard.data.SortOrder';
 import { server } from '../utils/Mixins.js'
-import { Scoreboard } from 'cn.nukkit.scoreboard.Scoreboard';
+import { Scoreboard } from 'cn.nukkit.scoreboard.scoreboard.Scoreboard';
 
 export class ScoreObjectives {
     /**
