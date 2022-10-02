@@ -54,7 +54,7 @@ jobs:
       - name: setup running environment
         run: |
           cd env
-          curl https://res.nullatom.com/file/pnx/cli/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
+          curl https://github.com/PowerNukkitX/PNX-CLI/releases/download/v0.0.6/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
           unzip -j PNX-CLI-Linux-x86.zip && chmod +x pnx && ./pnx server install --latest
           cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
