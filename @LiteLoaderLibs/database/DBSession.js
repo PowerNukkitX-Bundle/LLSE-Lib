@@ -2,14 +2,15 @@ import { File as JFile } from "java.io.File";
 import { URL as JURL } from "java.net.URL";
 import { Paths } from "java.nio.file.Paths";
 import { Files } from "java.nio.file.Files";
-import { Class } from "java.lang.Class";
-import { System } from "java.lang.System";
-import { isEmpty, isNull, isNumber, isString, isUndefined } from '../utils/underscore-esm-min.js'
-import { IllegalArgumentError } from '../error/IllegalArgumentError.js'
+import { isEmpty, isNull, isNumber, isString, isUndefined } from '../utils/underscore-esm-min.js';
+import { IllegalArgumentError } from '../error/IllegalArgumentError.js';
 import { Connection } from 'java.sql.Connection';
+import { onlyOnceExecute } from '../utils/Mixins.js';
+import { loadJar } from ':jvm';
 
+var SQLiteConfig;
 if (!contain('DBSession')) exposeObject('DBSession', new Map());
-const DBSessionMap = contain('DBSession');
+export const DBSessionMap = contain('DBSession');
 
 function downloadSqlite() {
     // origin: https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.39.2.0/sqlite-jdbc-3.39.2.0.jar
@@ -25,8 +26,7 @@ function downloadSqlite() {
             console.info("Get library from: " + url);
             Files.copy(url.openStream(), file.toPath());
             console.info("Get library " + fileName + " done!");
-            console.info("§4sqlite驱动下载完成,需重新启动服务器加载驱动");
-            System.exit(0);
+            loadJar(file.getPath());
         } catch (e) {
             console.error("下载sqlite驱动失败,具体异常:" + e);
             return false;
@@ -34,17 +34,6 @@ function downloadSqlite() {
     }
     return true;
 }
-
-var SQLiteConfig;
-if (downloadSqlite()) {
-    try {
-        SQLiteConfig = Java.type('org.sqlite.SQLiteConfig');
-    } catch (err) {
-        console.error("载入sqlite依赖库失败,具体异常:" + e)
-    }
-}
-
-//import { SQLiteConfig } from 'org.sqlite.SQLiteConfig';
 
 function createSqlite(url, mode) {
     if (isEmpty(url)) throw new IllegalArgumentError("指定的数据库路径不能为空!");
@@ -60,6 +49,8 @@ function createSqlite(url, mode) {
 }
 
 export class DBSession {
+    static id = "3ADD4ABD-A7F3-B60C-F9AD-97445917339A";
+
     /**
      * 打开一个数据库会话
      * @param type {String} 数据库的类型，目前仅支持"sqlite3"
@@ -136,7 +127,7 @@ export class DBSession {
 
 class Sqlite {
     constructor({path = "-", create = true, readonly = false, readwrite = true}) {
-        Class.forName("org.sqlite.JDBC");//加载sqlite驱动
+        // Class.forName("org.sqlite.JDBC");//加载sqlite驱动
         let mode = 0;
         if (readonly === true && readwrite === false) mode = 1;
         const db = new JFile(path);
@@ -449,3 +440,13 @@ class DBStmt {
         return this;
     }
 }
+
+onlyOnceExecute(() => {
+    if (downloadSqlite()) {
+        try {
+            SQLiteConfig = Java.type('org.sqlite.SQLiteConfig');
+        } catch (err) {
+            console.error("载入sqlite依赖库失败,具体异常:" + err)
+        }
+    }
+}, DBSession.id);

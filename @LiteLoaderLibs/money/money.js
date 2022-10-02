@@ -2,45 +2,20 @@ import { UUID } from 'java.util.UUID';
 import { system } from '../utils/system.js';
 import { data } from '../utils/data.js';
 import { DBSession } from '../database/DBSession.js';
+import { onlyOnceExecute } from '../utils/Mixins.js';
 
 const _API = {};
-import('me.onebone.economyapi.EconomyAPI').then(s => {
-    let { EconomyAPI } = s;
-    _API.EconomyAPI = EconomyAPI.getInstance();
-    console.log("成功载入EconomyAPI");
-}, e => {
-    import('net.lldv.llamaeconomy.LlamaEconomy').then(s => {
-        let { LlamaEconomy } = s;
-        _API.LlamaEconomy = LlamaEconomy.getAPI();
-        console.log("成功载入LlamaEconomy");
-    }, e => {
-        console.warn('没有找到经济插件 money API 已失效，请加载 EconomyAPI / LlamaEconomy 后重载...');
-    });
-});
 if (!contain('economyDB')) {// 防止重复database
     exposeObject('economyDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/economy.db'}));
 }
-const economyDB = contain('economyDB');
-if (!economyDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='mtrans'")[1][0]) {
-    economyDB.exec(`CREATE TABLE mtrans (
-    tFrom TEXT NOT NULL,
-    tTo TEXT NOT NULL,
-    Money NUMERIC NOT NULL,
-    Time NUMERIC NOT NULL,
-    Note TEXT
-	);`);
-}
-if (!economyDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='money'")[1][0]) {
-    economyDB.exec(`CREATE TABLE money (
-    XUID TEXT PRIMARY KEY UNIQUE NOT NULL,
-    Money NUMERIC NOT NULL
-	) WITHOUT ROWID;`);
-}
+export var economyDB = contain('economyDB');
 
 /**
  * money API
  */
 export class money {
+    static id = "A0FDE4B9-0F47-DA25-A2B4-D24EFE286484";
+
     /**
      * 设置玩家的存款金额
      * @param xuid {string|UUID} 要操作的玩家的Xuid/Uuid/name标识符
@@ -56,7 +31,9 @@ export class money {
             return false;
         }
         economyDB.exec(`INSERT INTO money (XUID, Money)
-                 VALUES ('${data.name2xuid(data.str2name(xuid1))}','${money}') ON CONFLICT (XUID) DO UPDATE SET Money=${money}`);
+                        VALUES ('${data.name2xuid(data.str2name(xuid1))}', '${money}') ON CONFLICT (XUID) DO
+        UPDATE
+            SET Money=${money}`);
         return true;
     }
 
@@ -73,7 +50,9 @@ export class money {
             value = _API.LlamaEconomy.getMoney(data.str2name(xuid));
         }
         economyDB.exec(`INSERT INTO money (XUID, Money)
-                 VALUES ('${data.name2xuid(data.str2name(xuid1))}','${value}') ON CONFLICT (XUID) DO UPDATE SET Money=${value}`);
+                        VALUES ('${data.name2xuid(data.str2name(xuid1))}', '${value}') ON CONFLICT (XUID) DO
+        UPDATE
+            SET Money=${value}`);
         return value;
     }
 
@@ -128,7 +107,8 @@ export class money {
         if (money.reduce(data.str2name(xuid1), money_)) {
             money.add(data.str2name(xuid2), money_);
             economyDB.exec(`INSERT INTO mtrans (tFrom, tTo, Money, Time, Note)
-                     VALUES ('${data.name2xuid(data.str2name(xuid1))}','${data.name2xuid(data.str2name(xuid2))}','${money_}','${~~(new Date().getTime()/1e3)}','${String(note)}');`);
+                            VALUES ('${data.name2xuid(data.str2name(xuid1))}', '${data.name2xuid(data.str2name(xuid2))}
+                                    ', '${money_}', '${~~(new Date().getTime() / 1e3)}', '${String(note)}');`);
             money.get(data.str2name(xuid1));// 更新数据库
             money.get(data.str2name(xuid2));
             return true;
@@ -152,13 +132,17 @@ export class money {
      */
     static getHistory(xuid, time) {
         let res = [];
-        let d = economyDB.qreuy(`SELECT * FROM mtrans WHERE (tFrom = '${xuid}' OR tTo = '${xuid}') AND Time BETWEEN ${~~(new Date().getTime()/1e3)} AND ${~~(new Date().getTime()/1e3)+Number(time)};`);
-        for (let i = 1; i< d.length; i++) {
+        let d = economyDB.qreuy(`SELECT *
+                                 FROM mtrans
+                                 WHERE (tFrom = '${xuid}' OR tTo = '${xuid}')
+                                   AND Time BETWEEN ${~~(new Date().getTime() / 1e3)}
+                                   AND ${~~(new Date().getTime() / 1e3) + Number(time)};`);
+        for (let i = 1; i < d.length; i++) {
             res.push({
                 from: d[i][0],
                 to: d[i][1],
                 money: d[i][2],
-                time: system.getTimeStr(d[i][3]*1e3),
+                time: system.getTimeStr(d[i][3] * 1e3),
                 note: d[i][4]
             });
         }
@@ -173,7 +157,7 @@ export class money {
      */
     static clearHistory(time) {
         economyDB.listKey().filter(v => {
-            let is = v > (~~(new Date().getTime()/1e3) - ~~time);
+            let is = v > (~~(new Date().getTime() / 1e3) - ~~time);
             if (is) {
                 economyDB.delete(v);
             }
@@ -182,3 +166,37 @@ export class money {
         return true;
     }
 }
+
+onlyOnceExecute(() => {
+    import('me.onebone.economyapi.EconomyAPI').then(s => {
+        let {EconomyAPI} = s;
+        _API.EconomyAPI = EconomyAPI.getInstance();
+        console.log("成功载入EconomyAPI");
+    }, e => {
+        import('net.lldv.llamaeconomy.LlamaEconomy').then(s => {
+            let {LlamaEconomy} = s;
+            _API.LlamaEconomy = LlamaEconomy.getAPI();
+            console.log("成功载入LlamaEconomy");
+        }, e => {
+            console.warn('没有找到经济插件 money API 已失效，请加载 EconomyAPI / LlamaEconomy 后重载...');
+        });
+    });
+
+    if (!economyDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='mtrans'")[1][0]) {
+        economyDB.exec(`CREATE TABLE mtrans
+                        (
+                            tFrom TEXT    NOT NULL,
+                            tTo   TEXT    NOT NULL,
+                            Money NUMERIC NOT NULL,
+                            Time  NUMERIC NOT NULL,
+                            Note  TEXT
+                        );`);
+    }
+    if (!economyDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='money'")[1][0]) {
+        economyDB.exec(`CREATE TABLE money
+                        (
+                            XUID  TEXT PRIMARY KEY UNIQUE NOT NULL,
+                            Money NUMERIC                 NOT NULL
+                        ) WITHOUT ROWID;`);
+    }
+}, money.id);

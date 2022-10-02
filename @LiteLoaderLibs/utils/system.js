@@ -2,7 +2,7 @@ import { UUID } from 'java.util.UUID';
 
 /**
  * 系统API对象
- * 
+ *
  * 不可实例化
  */
 export class system {
@@ -23,7 +23,7 @@ export class system {
      * @returns {object} 返回一个对象
      */
     static getTimeObj(date = new Date()) {
-        if (typeof(date) != 'object') date = new Date(date);// 转为Date
+        if (typeof (date) != 'object') date = new Date(date);// 转为Date
         return {
             Y: date.getFullYear(),// 年份数值（4 位）
             M: date.getMonth() + 1,// 月份数值1-12

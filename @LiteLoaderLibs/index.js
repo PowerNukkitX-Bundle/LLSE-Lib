@@ -1,9 +1,16 @@
+import { economyDB } from "./money/money.js";
+import { DBSessionMap } from "./database/DBSession.js";
+
 export function main() {
     console.log("LiteLoader-Libs start");
 }
 
 export function close() {
     print("LiteLoader-Libs close");
+    economyDB.close();
+    DBSessionMap.forEach((v, k) => {
+        v.close();
+    });
 }
 
 /**

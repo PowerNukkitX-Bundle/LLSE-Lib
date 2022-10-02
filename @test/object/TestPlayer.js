@@ -47,8 +47,12 @@ export const TestPlayer = () => {
     loginPacket.put(bytes("{}"));
     loginPacket.putLInt(0);
     _player.handleDataPacket(loginPacket);
-    completeLoginSequence.invoke(_player);
-    doFirstSpawn.invoke(_player);
+    try {
+        completeLoginSequence.invoke(_player);
+        doFirstSpawn.invoke(_player);
+    } catch (e) {
+        console.error(e);
+    }
     var player = new Player(_player);
     //注册测试套件
     JSAssert.addTestSuite("Test Player", {
