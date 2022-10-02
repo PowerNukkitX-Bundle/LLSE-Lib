@@ -67,7 +67,7 @@ jobs:
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:
-    if: (!contains(github.event.pull_request.head.ref,'patch'))
+    if: github.event_name == 'push' && (!contains(github.ref_name, 'patch'))
     needs: test
     runs-on: ubuntu-latest
     steps:
