@@ -1,4 +1,4 @@
-import { server } from '../utils/Mixins.js'
+import { server } from '../utils/Mixins.js';
 
 /**
  * 向加载器提供一些插件相关的信息

@@ -9,7 +9,7 @@ import { DBSession } from '../database/DBSession.js';
 const CharArray = Java.type("char[]");
 
 if (!contain('PlayerDB')) {// 防止重复database
-    exposeObject('PlayerDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/PlayerDB.db' }));
+    exposeObject('PlayerDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/PlayerDB.db'}));
 }
 const PlayerDB = contain('PlayerDB');
 if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) PlayerDB.exec(`CREATE TABLE player

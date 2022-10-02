@@ -1,6 +1,7 @@
 import { BufferedReader } from "java.io.BufferedReader";
 import { InputStreamReader } from "java.io.InputStreamReader";
 import { StringBuffer } from "java.lang.StringBuffer";
+
 function strToUtf8Bytes(str) {
     const utf8 = [];
     for (let ii = 0; ii < str.length; ii++) {
@@ -33,9 +34,11 @@ function strToUtf8Bytes(str) {
     }
     return utf8;
 }
+
 export class HttpHandler {
     constructor() {
     }
+
     handle(httpExchange) {
         let version = "HTTP/114.514";
         let URI = httpExchange.getRequestURI();
@@ -73,7 +76,10 @@ export class HttpHandler {
                 } else request.query[value[0]] = value[1]
 
             } else {
-                list.forEach(data => { data = data.split("="); request.query[data[0]] = data[1] })
+                list.forEach(data => {
+                    data = data.split("=");
+                    request.query[data[0]] = data[1]
+                })
             }
             request.params = request.query;
         }
@@ -87,8 +93,8 @@ export class HttpHandler {
             reason: "PI YAN ZI BU GO DA!",
             body: new StringBuffer(),
             /**
-             * 
-             * @param  {...any} content 
+             *
+             * @param  {...any} content
              * @returns {response} response
              */
             write: function (...content) {
@@ -96,9 +102,9 @@ export class HttpHandler {
                 return response
             },
             /**
-             * 
-             * @param {string} key 
-             * @param {string} value 
+             *
+             * @param {string} key
+             * @param {string} value
              * @returns {response} response
              */
             setHeader: function (key, value) {
@@ -107,8 +113,8 @@ export class HttpHandler {
                 return response
             },
             /**
-             * 
-             * @param {string|java} key 
+             *
+             * @param {string|java} key
              * @returns {array} array
              */
             getHeader(key) {
@@ -126,7 +132,7 @@ export class HttpHandler {
                         let PRE = true
                         if (this.PREROUTING?.length) {
                             this.PREROUTING.forEach(i => {
-                                if (i[1](request, response)===false) PRE = false;
+                                if (i[1](request, response) === false) PRE = false;
                             })
                         }
 
@@ -155,9 +161,13 @@ export class HttpHandler {
         }
         // console.log(request, "发生处理");
     }
+
     on(method, path, callback) {
         if (this[method] == undefined) this[method] = [];
         this[method].push([path, callback]);
     }
-    get IsReusable() { return true }//可复用？
+
+    get IsReusable() {
+        return true
+    }//可复用？
 }

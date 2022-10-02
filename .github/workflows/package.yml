@@ -54,7 +54,7 @@ jobs:
       - name: setup running environment
         run: |
           cd env
-          curl https://res.nullatom.com/file/pnx/cli/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
+          curl https://github.com/PowerNukkitX/PNX-CLI/releases/download/v0.0.6/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
           unzip -j PNX-CLI-Linux-x86.zip && chmod +x pnx && ./pnx server install --latest
           cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
@@ -67,7 +67,7 @@ jobs:
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
   build:
-    if: (!contains(github.event.pull_request.head.ref,'patch'))
+    if: github.event_name == 'push' && (!contains(github.ref_name, 'patch'))
     needs: test
     runs-on: ubuntu-latest
     steps:
