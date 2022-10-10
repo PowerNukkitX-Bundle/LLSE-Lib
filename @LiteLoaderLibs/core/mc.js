@@ -416,14 +416,14 @@ function getBlock(x, y, z, dimid) {
  */
 function setBlock(x, y, z, dimid, block, tiledata = 0) {
     var _pos, _block;
-    if (arguments.length === 5) {// 5 个参数
+    if (arguments.length === 5 || arguments.length === 6) {// 5 个参数
         const level = dimToLevel(dimid);
         if (level === null) {
             return false;
         }
         _pos = Position.fromObject(new Vector3(x, y, z), level).getLevelBlock();
         _block = block;
-    } else if (arguments.length === 2) {// 2 个参数
+    } else if (arguments.length === 2 || arguments.length === 3) {// 2 个参数
         _pos = x.position;
         _block = y;
         if (isNaN(z)) {// 设置默认值
@@ -434,14 +434,18 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
     } else {
         throw 'error arguments: ' + JSON.stringify([...arguments]);
     }
+    if (!isNaN(_block)) _block = Number(_block);
     switch (_block.constructor.name) {
+        case 'Number':
+            _block = JBlock.get(_block, tiledata);
+            break;
         case 'String':
-            var blockid = BlockStateRegistry.getBlockId(_block);
-            if (!blockid) {
+            var blockid = _block.indexOf(":air") > -1 ? 0 : BlockStateRegistry.getBlockId(_block);
+            if (!blockid && isNaN(blockid)) {
                 console.error('Unknow block: ' + _block);
                 return false;
             }
-            _block = JBlock.get(blockid, tiledata)
+            _block = JBlock.get(blockid, tiledata);
             break;
         case 'Block':
             _block = _block._PNXBlock;
@@ -449,10 +453,19 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
         case 'NbtCompound':
             let state = _block.getData('name');
             let states = _block.getData('states');//还是NBTCompound
+            if (!states) {
+                var blockid = state.indexOf(":air") > -1 ? 0 : BlockStateRegistry.getBlockId(state);
+                if (!blockid && isNaN(blockid)) {
+                    console.error('Unknow block spacename: ' + state);
+                    return false;
+                }
+                _block = JBlock.get(blockid, 0);
+                break;
+            }
             for (let key of states.getKeys()) {
                 let tag = states.getTag(key);
                 if (tag instanceof NbtByte) {
-                    state += ';' + key + '=' + tag.get() + "b";
+                    state += ';' + key + '=' + tag.get();
                 } else {
                     let value = tag.get();
                     let res = isNaN(value) ? value : Number(value);

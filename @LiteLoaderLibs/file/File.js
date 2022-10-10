@@ -61,7 +61,7 @@ export class File {
                 return job;
             }
         }
-        const newJob = new Job(Nukkit.PLUGIN_PATH + "/@LiteLoaderLibs/utils/IO.js");
+        const newJob = new Job(Nukkit.PLUGIN_PATH + "/@LiteLoaderLibs/file/IO.js");
         this.jobs.set(newJob, true);
         return newJob;
     }
