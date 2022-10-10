@@ -1,30 +1,30 @@
 import { assertThat, JSAssert } from '../assert/Assert.js'
 import { DBSession } from "../../@LiteLoaderLibs/database/DBSession.js";
-import { File } from "../../@LiteLoaderLibs/index.js";
 
 /**
  * Test suite for the object assertions of jsassert framework.
  */
 export const TestDBSession = () => {
     //测试环境配置
-    var db = new DBSession("sqlite3", {path: "database/sqlite.db"});
+    var db = new DBSession("sqlite3", {path: "./plugins/Test/sqlite.db"});
     //注册测试套件
     JSAssert.addTestSuite("Test DBSession", {
         testMethods: function () {
             //测试创建一张表
             db.exec(`CREATE TABLE Persons
                      (
-                         LastName varchar(255),
+                         LastName  varchar(255),
                          FirstName varchar(255),
-                         Address varchar(255),
-                         Nation varchar(255)
+                         Address   varchar(255),
+                         Nation    varchar(255)
                      );`);
             assertThat(db.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='Persons'")[1][0]).equals(1, "exec(数据表创建)异常");
 
             //测试插入一条数据
             db.exec(`INSERT INTO Persons (LastName, FirstName, Address, Nation)
-                     VALUES ('dao','ge','sichuan','CN');`)
-            assertThat(db.query(`SELECT LastName,FirstName FROM Persons;`)).equals([["LastName", "FirstName"], ["dao", "ge"]], "query异常");
+                     VALUES ('dao', 'ge', 'sichuan', 'CN');`)
+            assertThat(db.query(`SELECT LastName, FirstName
+                                 FROM Persons;`)).equals([["LastName", "FirstName"], ["dao", "ge"]], "query异常");
 
             //测试用预准备SQL查询国家为CN的数据
             let st1 = db.prepare("SELECT * FROM Persons WHERE Nation=?10;");
@@ -63,7 +63,6 @@ export const TestDBSession = () => {
             st3.execute();
             assertThat(st3.fetch()).equals({}, "clear异常");
             assertThat(db.close()).isTrue("close异常");
-            File.delete("database/sqlite.db");
         }
     });
 };

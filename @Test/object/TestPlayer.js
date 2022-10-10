@@ -9,8 +9,6 @@ import { Iq80DBFactory } from 'org.iq80.leveldb.impl.Iq80DBFactory';
 import { Long } from 'java.lang.Long';
 import { Player } from "../../@LiteLoaderLibs/object/Player.js";
 import { Player as PNXPlayer } from "cn.nukkit.Player";
-import { MethodHandles } from "java.lang.invoke.MethodHandles";
-import { Void } from "java.lang.Void";
 import { isEmpty } from '../../@LiteLoaderLibs/utils/underscore-esm-min.js'
 
 export const TestPlayer = () => {

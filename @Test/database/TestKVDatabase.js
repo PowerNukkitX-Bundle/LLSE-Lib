@@ -6,7 +6,7 @@ import { KVDatabase } from "../../@LiteLoaderLibs/database/KVDatabase.js";
  */
 export const TestKVDatabase = () => {
     //测试环境配置
-    var db = new KVDatabase("database/test.db");
+    var db = new KVDatabase("./plugins/Test/test.db");
     //注册测试套件
     JSAssert.addTestSuite("Test KVDatabase", {
         testMethods: function () {
