@@ -1,5 +1,4 @@
 import { Block as JBlock } from 'cn.nukkit.block.Block';
-import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { NbtCompound } from '../nbt/NbtCompound.js'
 import { NbtString } from '../nbt/NbtString.js'
 import { NbtByte } from '../nbt/NbtByte.js'

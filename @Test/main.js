@@ -10,6 +10,7 @@ import { TestPlayer } from './object/TestPlayer.js';
 import { TestJsonConfig } from './config/TestJsonConfig.js';
 import { FileUtils } from 'org.apache.commons.io.FileUtils';
 import { File as JFile } from 'java.io.File';
+import { TestItem } from './object/TestItem.js'
 
 /***
  * 总测试入口
@@ -26,6 +27,7 @@ export function main() {
     TestIniConfig();
     TestDBSession();
     TestJsonConfig();
+    TestItem();
     //执行测试,传入配置参数
     JSAssert.execute({
         onSuiteStarted: function ({name, id}) {
@@ -51,18 +53,18 @@ export function main() {
         onFinished: function ({passed, failed, duration}) {
             colorLog("yellow", "━".repeat(28));
             log('');
-            colorLog("blue", "━".repeat(64));
-            colorLog("blue", "┃\t\t\t全部套件测试完成\t\t\t§b┃");
-            let success = "┃\t\t\t总成功数:§a " + passed;
-            success = success + " ".repeat(20 - success.length) + "\t\t\t§b┃";
-            let lose = "┃\t\t\t总失败数:§c " + failed;
-            lose = lose + " ".repeat(20 - lose.length) + "\t\t\t§b┃";
-            let time = "┃\t\t\t总耗时: " + duration + "ms";
-            time = time + " ".repeat(20 - time.length) + "\t\t\t§b┃";
+            colorLog("blue", "━".repeat(28));
+            colorLog("blue", "\t\t\t\t\t全部套件测试完成\t\t\t§b");
+            let success = "\t\t\t\t\t总成功数:§a " + passed;
+            success = success + " ".repeat(20 - success.length) + "\t\t\t";
+            let lose = "\t\t\t\t\t总失败数:§c " + failed;
+            lose = lose + " ".repeat(20 - lose.length) + "\t\t\t";
+            let time = "\t\t\t\t\t总耗时: " + duration + "ms";
+            time = time + " ".repeat(20 - time.length) + "\t\t\t";
             colorLog("blue", success);
             colorLog("blue", lose);
             colorLog("blue", time);
-            colorLog("blue", "━".repeat(64));
+            colorLog("blue", "━".repeat(28));
             File.writeTo("result.txt", `${passed};${failed}`);
         }
     });

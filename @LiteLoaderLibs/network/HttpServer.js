@@ -7,7 +7,6 @@ import { HttpServer as JHttpServer } from "com.sun.net.httpserver.HttpServer"
 import { HttpHandler } from "./HttpHandler.js"
 
 import { InetSocketAddress } from "java.net.InetSocketAddress"
-import { Executors } from "java.util.concurrent.Executors"
 
 export class HttpServer {
     /**
