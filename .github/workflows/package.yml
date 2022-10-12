@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: 检出仓库内容
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -59,7 +59,7 @@ jobs:
           cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
           cp target/libs -R ../env
-          cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @test -R env/plugins
+          cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @Test -R env/plugins
       - name: run test
         run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
         id: test-result

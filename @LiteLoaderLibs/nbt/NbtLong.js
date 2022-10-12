@@ -2,7 +2,6 @@ import { CommonNbt } from "./CommonNbt.js";
 import { LongTag } from "cn.nukkit.nbt.tag.LongTag";
 import { Long } from "java.lang.Long";
 import { NbtTypeEnum } from "./NbtTypeEnum.js"
-import { Integer } from 'java.lang.Integer'
 
 export class NbtLong extends CommonNbt {
     constructor(data) {

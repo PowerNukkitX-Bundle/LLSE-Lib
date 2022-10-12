@@ -1,4 +1,4 @@
-import { assertThat, JSAssert } from '../assert/Assert.js'
+import { assertThat, JSAssert } from '../assert/Assert.js';
 import { IniConfigFile } from "../../@LiteLoaderLibs/index.js";
 
 /**
@@ -6,7 +6,7 @@ import { IniConfigFile } from "../../@LiteLoaderLibs/index.js";
  */
 export const TestIniConfig = () => {
     //测试环境配置
-    var config = new IniConfigFile("config/test1.ini");
+    var config = new IniConfigFile("./plugins/Test/test1.ini");
     //注册测试套件
     JSAssert.addTestSuite("Test IniConfig", {
         testMethods: function () {
@@ -26,7 +26,7 @@ export const TestIniConfig = () => {
             config.delete("key4", "test4");
             config.delete("key5", "test5");
             assertThat(config.read()).equals("[key1.test]\ntest1=1\n", "delete函数异常");
-            assertThat(config.getPath()).equals("config/test1.ini", "getPath函数异常");
+            assertThat(config.getPath()).equals("./plugins/Test/test1.ini", "getPath函数异常");
             assertThat(config.reload()).isTrue("reload函数异常");
             config.write("")
             assertThat(config.read()).equals("", "write函数异常");

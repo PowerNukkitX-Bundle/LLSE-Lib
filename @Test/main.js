@@ -3,11 +3,14 @@ import { TestNbt } from "./nbt/TestNbt.js";
 import { TestBlock } from "./object/TestBlock.js";
 import { TestKVDatabase } from "./database/TestKVDatabase.js";
 import { TestEntity } from "./object/TestEntity.js";
-import { TestIniConfig } from './config/TestIniConfig.js'
+import { TestIniConfig } from './config/TestIniConfig.js';
 import { colorLog, File, log } from "../@LiteLoaderLibs/index.js";
-import { TestDBSession } from './database/TestDBSession.js'
-import { TestPlayer } from './object/TestPlayer.js'
-import { TestJsonConfig } from './config/TestJsonConfig.js'
+import { TestDBSession } from './database/TestDBSession.js';
+import { TestPlayer } from './object/TestPlayer.js';
+import { TestJsonConfig } from './config/TestJsonConfig.js';
+import { FileUtils } from 'org.apache.commons.io.FileUtils';
+import { File as JFile } from 'java.io.File';
+import { TestItem } from './object/TestItem.js'
 
 /***
  * 总测试入口
@@ -24,6 +27,7 @@ export function main() {
     TestIniConfig();
     TestDBSession();
     TestJsonConfig();
+    TestItem();
     //执行测试,传入配置参数
     JSAssert.execute({
         onSuiteStarted: function ({name, id}) {
@@ -50,13 +54,13 @@ export function main() {
             colorLog("yellow", "━".repeat(28));
             log('');
             colorLog("blue", "━".repeat(28));
-            colorLog("blue", "┃\t\t全部套件测试完成\t\t§b┃");
-            let success = "┃\t\t总成功数:§a " + passed;//支持9位passed制表
-            success = success + " ".repeat(20 - success.length) + "\t§b┃";
-            let lose = "┃\t\t总失败数:§c " + failed;//支持9位failed制表
-            lose = lose + " ".repeat(20 - lose.length) + "\t§b┃";
-            let time = "┃\t\t总耗时: " + duration + "ms";//支持10位ms制表,超出异常RangeError: illegal repeat count
-            time = time + " ".repeat(20 - time.length) + "\t§b┃";
+            colorLog("blue", "\t\t\t\t\t全部套件测试完成\t\t\t§b");
+            let success = "\t\t\t\t\t总成功数:§a " + passed;
+            success = success + " ".repeat(20 - success.length) + "\t\t\t";
+            let lose = "\t\t\t\t\t总失败数:§c " + failed;
+            lose = lose + " ".repeat(20 - lose.length) + "\t\t\t";
+            let time = "\t\t\t\t\t总耗时: " + duration + "ms";
+            time = time + " ".repeat(20 - time.length) + "\t\t\t";
             colorLog("blue", success);
             colorLog("blue", lose);
             colorLog("blue", time);
@@ -68,4 +72,5 @@ export function main() {
 }
 
 export function close() {
+    FileUtils.deleteDirectory(new JFile('./plugins/Test'));
 }

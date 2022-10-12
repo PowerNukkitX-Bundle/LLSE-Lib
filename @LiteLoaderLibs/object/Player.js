@@ -41,11 +41,11 @@ if (!contain('PlayerDB')) {// 防止重复database
 }
 const PlayerDB = contain('PlayerDB');
 if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) PlayerDB.exec(`CREATE TABLE player
-(
-    NAME TEXT PRIMARY KEY NOT NULL,
-    XUID TEXT NOT NULL,
-    UUID TEXT NOT NULL
-) WITHOUT ROWID;`);
+                                                                                                                       (
+                                                                                                                           NAME TEXT PRIMARY KEY NOT NULL,
+                                                                                                                           XUID TEXT             NOT NULL,
+                                                                                                                           UUID TEXT             NOT NULL
+                                                                                                                       ) WITHOUT ROWID;`);
 
 export class Player {
     static BossBarIdMap = new Map();// '玩家名': Map
@@ -63,6 +63,8 @@ export class Player {
         this._PNXPlayer = Player;
         this.DirectionAngle = new DirectionAngle(Player);
         this.levels = getLevels();
+        /*用来存放其他LLSE插件对该玩家物品的操作信息，refreshItems函数利用这个执行,refreshItems之后清空<p>[pnxItem, type: [hand, offhand], slot: number]*/
+        this.itemChangeList = [];
     }
 
     static getPlayer(PNXPlayer) {
@@ -71,8 +73,10 @@ export class Player {
             Player.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
             let uuid = String(PNXPlayer.getLoginChainData().getClientUUID()).toLowerCase();
             let xuid = String(PNXPlayer.getLoginChainData().getXUID()).toLowerCase();
-            PlayerDB.exec(`INSERT INTO player (NAME, XUID, UUID) VALUES 
-             ('${PNXPlayer.name.toLowerCase()}','${xuid}','${uuid}') ON CONFLICT (NAME) DO UPDATE SET XUID='${xuid}',UUID='${uuid}';`);
+            PlayerDB.exec(`INSERT INTO player (NAME, XUID, UUID)
+                           VALUES ('${PNXPlayer.name.toLowerCase()}', '${xuid}', '${uuid}') ON CONFLICT (NAME) DO
+            UPDATE
+                SET XUID='${xuid}', UUID='${uuid}';`);
         }
         return Player.PlayerMap.get(PNXPlayer.name);
     }
@@ -359,11 +363,10 @@ export class Player {
      * @returns {Item} 玩家主手中的物品对象
      */
     getHand() {
-        const handitem = Item.newItem(this._PNXPlayer.getInventory().getItemInHand(), null);
+        const handitem = new Item(this._PNXPlayer.getInventory().getItemInHand());
         if (handitem != null) {
-            handitem._reference = [this._PNXPlayer, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()];
+            this.itemChangeList.push([handitem._PNXItem, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()]);
         }
-
         return handitem;
     }
 
@@ -372,9 +375,9 @@ export class Player {
      * @returns {Item} Item对象
      */
     getOffHand() {
-        const offhandItem = Item.newItem(this._PNXPlayer.getOffhandInventory().getItem(0), null);
+        const offhandItem = new Item(this._PNXPlayer.getOffhandInventory().getItem(0));
         if (offhandItem != null) {
-            offhandItem._reference = [this._PNXPlayer, 'offhand', 0];
+            this.itemChangeList.push([offhandItem._PNXItem, 'offhand', 0]);
         }
         return offhandItem;
     }
@@ -477,8 +480,23 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     refreshItems() {
-        this._PNXPlayer.getInventory().sendContents(this._PNXPlayer);
-        this._PNXPlayer.getInventory().sendArmorContents(this._PNXPlayer);
+        if (this.itemChangeList.length === 0) return false;
+        for (let array of this.itemChangeList) {
+            //todo 支持物品栏 盔甲栏刷新
+            switch (array[1]) {
+                case 'hand': {
+                    this._PNXPlayer.getInventory().setItem(array[2], array[0], true);
+                    break;
+                }
+                case 'offhand': {
+                    this._PNXPlayer.getOffhandInventory().setItem(array[2], array[0], true);
+                    break;
+                }
+                default:
+                    return false;
+            }
+        }
+        this.itemChangeList = [];
         return true;
     }
 

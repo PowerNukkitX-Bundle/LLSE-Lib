@@ -3,6 +3,7 @@ import { PermType } from '../utils/PermType.js';
 import { Player, sendText } from '../object/Player.js';
 import { Event } from '../event/Event.js';
 import { Item } from '../object/Item.js';
+import { Item as PNXItem } from 'cn.nukkit.item.Item';
 import { Block } from '../object/Block.js';
 import { ScoreObjectives } from '../object/ScoreObjectives.js';
 import { Command } from '../command/Command.js';
@@ -21,6 +22,11 @@ import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Permission } from 'cn.nukkit.permission.Permission';
 import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
 import { NbtByte } from "../nbt/NbtByte.js";
+import { EntityItem } from 'cn.nukkit.entity.item.EntityItem'
+import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
+import { Random } from 'java.util.Random'
+import { NBTIO } from 'cn.nukkit.nbt.NBTIO'
+import { Entity } from '../object/Entity.js'
 
 const PlayerCommandMap = new Map();
 const ConsoleCommandMap = new Map();
@@ -177,7 +183,7 @@ function regConsoleCmd(cmd, description, callback) {
     if (server.getCommandMap().getCommand(cmd)) {// 存在于系统命令
         if (PlayerCommandMap.has(cmd)) {// 控制台命令中存在
             ConsoleCommandMap.set(cmd, function (sender, args) {
-                if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
+                if (sender.getName() !== 'CONSOLE') {// 简易的判断是否为控制台
                     return;
                 }
                 callback.bind(sender)(args);
@@ -187,7 +193,7 @@ function regConsoleCmd(cmd, description, callback) {
         return false;
     }
     ConsoleCommandMap.set(cmd, function (sender, args) {
-        if (sender.getName() != 'CONSOLE') {// 简易的判断是否为控制台
+        if (sender.getName() !== 'CONSOLE') {// 简易的判断是否为控制台
             return;
         }
         callback.bind(sender)(args);
@@ -233,7 +239,7 @@ function getPlayer(info) {
                     found = player;
                     delta = curDelta;
                 }
-                if (curDelta == 0) {
+                if (curDelta === 0) {
                     break;
                 }
             }
@@ -289,13 +295,14 @@ function broadcast(msg, type = 0) {
  * @returns {boolean} 是否成功制造爆炸
  */
 function explode(x, y, z, dimid, source, power, range, isDestroy, isFire) {
+    let explode
     if (arguments.length === 6) {
-        var explode = new Explosion(x, range, source);
+        explode = new Explosion(x, range, source)
         explode.doesDamage = isDestroy;
         explode.setIncendiary(isFire);
         return explode.explode();
     } else if (arguments.length === 9) {
-        var explode = new Explosion(new Position(x, y, z, dimToLevel(dimid)), range, source);
+        explode = new Explosion(new Position(x, y, z, dimToLevel(dimid)), range, source)
         explode.doesDamage = isDestroy;
         explode.setIncendiary(isFire);
         return explode.explode();
@@ -305,14 +312,63 @@ function explode(x, y, z, dimid, source, power, range, isDestroy, isFire) {
 // 物品对象
 /**
  * 生成新的物品对象
- * @param name {string} 物品的标准类型名，如 minecraft:bread
+ * @param name {String} 物品的标准类型名，如 minecraft:bread
  * @param count {number} 物品堆叠数量
  * @args1 name, count
  * @args2 NbtCompound
  * @returns {Item|null}
  */
 function newItem(name, count) {
-    return Item.newItem(name, count);
+    let item = new Item(name, count);
+    if (item.isNull()) {
+        return null;
+    }
+    return item;
+}
+
+/**
+ * 根据物品对象生成掉落物实体
+ * @todo 应该返回Entity LLSE类型
+ * @param item {Item}
+ * @param pos {IntPos|FloatPos}
+ * @returns {Entity|null}
+ */
+function spawnItem(item, pos) {
+    /*
+    args1: item,pos
+    args2: item,x,y,z,dimid
+    */
+    let position, thisitem;
+    if (arguments.length === 5) {
+        const level = server.getLevel(arguments[4]);
+        position = Position.fromObject(new Vector3(arguments[1], arguments[2], arguments[3]), level);
+    } else if (arguments.length === 2) {
+        if (pos instanceof Position) {
+            position = pos;
+        } else {
+            position = pos.position;
+        }
+    } else {
+        throw 'Wrong number of parameters.';
+    }
+    if (item instanceof PNXItem) {
+        thisitem = item;
+    } else if (item instanceof Item) {
+        thisitem = item._PNXItem;
+    }
+    if (thisitem.getId() !== 0 && thisitem.getCount() > 0) {
+        let itemEntity = new EntityItem(
+            position.getLevel().getChunk(position.getX() >> 4, position.getZ() >> 4, true),
+            PNXEntity.getDefaultNBT(position, new Vector3(0, 0, 0), new Random().nextFloat() * 360, 0)
+                .putShort("Health", 5)
+                .putCompound("Item", NBTIO.putItemHelper(thisitem))
+                .putShort("PickupDelay", 10));
+        if (itemEntity != null) {
+            itemEntity.spawnToAll();
+            return new Entity(itemEntity);
+        } else return null;
+    }
+    return null;
 }
 
 // 表单窗口相关
@@ -540,7 +596,7 @@ function getScoreObjective(name) {
 /**
  * 获取所有计分项
  * 此接口的作用类似命令 /scoreboard objectives list
- * @returns {Array<ScoreObjectives,...>} 计分板系统记录的所有计分项对象
+ * @returns {ScoreObjectives[]} 计分板系统记录的所有计分项对象
  */
 function getAllScoreObjectives() {
     return ScoreObjectives.getAllScoreObjectives();
@@ -576,17 +632,17 @@ export const mc = {
     explode,
     // 物品对象
     newItem,
+    spawnItem,
     // 表单窗口相关
     newSimpleForm,
     newCustomForm,
-    // 记分榜相关
-    removeScoreObjective,
-    clearDisplayObjective,
     // 方块对象API
     getBlock,
     setBlock,
     spawnParticle,
     //📝 计分板 API
+    removeScoreObjective,
+    clearDisplayObjective,
     newScoreObjective,
     getScoreObjective,
     getAllScoreObjectives,

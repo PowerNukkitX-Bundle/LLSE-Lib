@@ -126,7 +126,7 @@ export class Container {
     getAllItems() {
         let slots = [];
         for (const item of this._PNXInv.getContents().values()) {
-            slots.push(Item.newItem(item));
+            slots.push(new Item(item));
         }
         return slots;
     }
