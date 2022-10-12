@@ -17,6 +17,7 @@ import { Random } from "java.util.Random";
 import { NBTIO } from "cn.nukkit.nbt.NBTIO";
 import { Entity } from "./Entity.js";
 import { server } from '../utils/Mixins.js'
+import { NbtCompound } from '../nbt/NbtCompound.js'
 
 export class Item {
     /**
@@ -25,7 +26,7 @@ export class Item {
      * @param count {Number}
      * @returns {Item} 物品对象 如返回值为 Null 则表示生成失败
      */
-    constructor(name, count) {
+    constructor(name, count = null) {
         if (name instanceof PNXItem) {
             this._PNXItem = name;
         } else {
@@ -34,26 +35,6 @@ export class Item {
                 this._PNXItem.setCount(count);
             }
         }
-    }
-
-    /**
-     * 生成新的物品对象
-     * @todo 未完善
-     * @param name {String} 物品的标准类型名，如 minecraft:bread
-     * @param count {Number} 物品堆叠数量
-     * @returns {Item|null}
-     */
-    static newItem(name, count = null) {
-        /*
-        args1: JItem
-        args2: name, count
-        args3: NbtCompound // 未实现
-        */
-        let item = new Item(name, count);
-        if (item.isNull()) {
-            return null;
-        }
-        return item;
     }
 
     /**
@@ -100,7 +81,7 @@ export class Item {
     }
 
     /**
-     * @return {string} 物品攻击伤害
+     * @return {Number} 物品攻击伤害
      */
     get attackDamage() {
         return this._PNXItem.getAttackDamage();
@@ -182,9 +163,8 @@ export class Item {
      * @return {boolean} 物品是否为马铠
      */
     get isHorseArmorItem() {
-        if (this._PNXItem instanceof ItemHorseArmorLeather || this._PNXItem instanceof ItemHorseArmorDiamond
-            || this._PNXItem instanceof ItemHorseArmorGold || this._PNXItem instanceof ItemHorseArmorIron) return true;
-        else return false;
+        return this._PNXItem instanceof ItemHorseArmorLeather || this._PNXItem instanceof ItemHorseArmorDiamond
+            || this._PNXItem instanceof ItemHorseArmorGold || this._PNXItem instanceof ItemHorseArmorIron;
     }
 
     /**
@@ -305,28 +285,25 @@ export class Item {
      */
     setAux(aux) {
         this._PNXItem.setDamage(aux);
-        return true;
+        return this._PNXItem.getDamage() === aux;
     }
 
     /**
      * 获取物品对应的 NBT 对象
-     * @todo 改为LLSE类型，目前为snbt
      * @returns {NbtCompound}
      */
     getNbt() {
-        const nbtcomp = this._PNXItem.getNamedTag();
-        return nbtcomp.toSnbt().substr(3);// toSnbt返回例子 "": {object: {}}
+        return new NbtCompound(this._PNXItem.getNamedTag());
     }
 
     /**
      * 写入物品对应的 NBT 对象
-     * @todo 未实现
      * @param nbt {NbtCompound} NBT 对象
      * @returns {boolean}
      */
     setNbt(nbt) {
-        // more code...
-        return false;
+        const result = this._PNXItem.setNamedTag(nbt._pnxNbt);
+        return result.getNamedTag().equals(nbt._pnxNbt);
     }
 
     /**
@@ -335,53 +312,8 @@ export class Item {
      * @returns {boolean} 是否设置成功
      */
     setLore(names) {
-        this._PNXItem.setLore(names);
-        return true;
-    }
-
-    /**
-     * 根据物品对象生成掉落物实体
-     * @todo 应该返回Entity LLSE类型
-     * @param item {Item}
-     * @param pos {IntPos|FloatPos}
-     * @returns {Entity|null}
-     */
-    spawnItem(item, pos) {
-        /*
-        args1: item,pos
-        args2: item,x,y,z,dimid
-        */
-        let position, thisitem;
-        if (arguments.length === 5) {
-            const level = server.getLevel(arguments[4]);
-            position = Position.fromObject(new Vector3(arguments[1], arguments[2], arguments[3]), level);
-        } else if (arguments.length === 2) {
-            if (pos instanceof Position) {
-                position = pos;
-            } else {
-                position = pos.position;
-            }
-        } else {
-            throw 'Wrong number of parameters.';
-        }
-        if (item instanceof PNXItem) {
-            thisitem = item;
-        } else if (item instanceof Item) {
-            thisitem = item._PNXItem;
-        }
-        if (thisitem.getId() !== 0 && thisitem.getCount() > 0) {
-            let itemEntity = new EntityItem(
-                position.getLevel().getChunk(position.getX() >> 4, position.getZ() >> 4, true),
-                PNXEntity.getDefaultNBT(position, new Vector3(0, 0, 0), new Random().nextFloat() * 360, 0)
-                    .putShort("Health", 5)
-                    .putCompound("Item", NBTIO.putItemHelper(thisitem))
-                    .putShort("PickupDelay", 10));
-            if (itemEntity != null) {
-                itemEntity.spawnToAll();
-                return new Entity(itemEntity);
-            } else return null;
-        }
-        return null;
+        const result = this._PNXItem.setLore(names);
+        return !!result.getLore().equals(names);
     }
 
     /**
@@ -391,9 +323,7 @@ export class Item {
      */
     setDisplayName(name) {
         let result = this._PNXItem.setCustomName(name);
-        if (result.getCustomName() === name) {
-            return true;
-        } else return false;
+        return result.getCustomName() === name;
     }
 
     /**

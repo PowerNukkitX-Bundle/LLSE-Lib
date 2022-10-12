@@ -32,39 +32,10 @@ export class NbtCompound {
     constructor(obj) {
         if (isEmpty(obj)) {
             this._pnxNbt = new CompoundTag("");
-            this._nbt = {};
         } else if (obj instanceof CompoundTag) {
             this._pnxNbt = obj;
-            this._nbt = {};
-            for (let key of obj.getTags().keySet().toArray()) {
-                let tag = obj.get(key);
-                if (tag instanceof ByteTag) {
-                    this._nbt[key] = new NbtByte(tag);
-                } else if (tag instanceof ByteArrayTag) {
-                    this._nbt[key] = new NbtByteArray(tag);
-                } else if (tag instanceof DoubleTag) {
-                    this._nbt[key] = new NbtDouble(tag);
-                } else if (tag instanceof FloatTag) {
-                    this._nbt[key] = new NbtFloat(tag);
-                } else if (tag instanceof CompoundTag) {
-                    this._nbt[key] = new NbtCompound(tag);
-                } else if (tag instanceof ListTag) {
-                    this._nbt[key] = new NbtList(tag);
-                } else if (tag instanceof EndTag) {
-                    this._nbt[key] = new NbtEnd(tag);
-                } else if (tag instanceof IntTag) {
-                    this._nbt[key] = new NbtInt(tag);
-                } else if (tag instanceof LongTag) {
-                    this._nbt[key] = new NbtLong(tag);
-                } else if (tag instanceof ShortTag) {
-                    this._nbt[key] = new NbtShort(tag);
-                } else if (tag instanceof StringTag) {
-                    this._nbt[key] = new NbtString(tag);
-                } else throw new TypeError("解析PNX CompoundTag类型错误!");
-            }
         } else if (this._evaluate(obj)) {
             this._pnxNbt = new CompoundTag("");//PNX的CompoundTag
-            this._nbt = obj;//js的对象存储着llse版本的NbtTag
             for (let key in obj) {
                 this._pnxNbt.put(key, obj[key]._pnxNbt);
             }
@@ -89,32 +60,27 @@ export class NbtCompound {
      * @return {Number} 对应的值的数据类型
      */
     getTypeOf(key) {
-        if (key in this._nbt) {
-            return this._nbt[key].getType();
-        } else return null;
+        return this._convertTagType(this._pnxNbt.get(key)).getType();
     }
 
     /**
      * 设置键对应的 NBT 对象
      * @param key {string} 要操作的键名
-     * @param tag {any} NBT对象
+     * @param tag {CommonNbt} NBT对象
      * @returns {NbtCompound} 处理完毕的 NBT 对象
      */
     setTag(key, tag) {
         this._pnxNbt.put(key, tag._pnxNbt);
-        this._nbt[key] = tag;
         return this;
     }
 
     /**
      * 读取键对应的 NBT 对象
      * @param key {string} 要操作的键名
-     * @returns {any} 生成的 NBT 对象
+     * @returns {CommonNbt} 生成的 NBT 对象
      */
     getTag(key) {
-        if (key in this._nbt) {
-            return this._nbt[key];
-        } else return null;
+        return this._convertTagType(this._pnxNbt.get(key));
     }
 
     /**
@@ -123,25 +89,22 @@ export class NbtCompound {
      * @returns {NbtCompound} 处理完毕的 NBT 对象
      */
     removeTag(key) {
-        if (key in this._nbt) {
-            this._pnxNbt.remove(key);
-            delete this._nbt[key];
-            return this;
-        } else return null;
+        this._pnxNbt.remove(key);
+        return this;
     }
 
     /**
-     * 读取键对应的 NBT 对象
+     * 读取键对应的值的具体数据<p>
+     * 如果目标位置储存的是List类型 NBT，将返回一个NbtList对象；如果目标位置储存的是Compound类型 NBT，将返回一个NbtCompound对象<p>
+     * 如果要读取的NBT不存在，将返回Null
      * @param key {string} 要操作的键名
-     * @returns {any} 生成的 NBT 对象
+     * @returns {any} 键对应的值的具体数据
      */
     getData(key) {
-        if (key in this._nbt) {
-            let tag = this._nbt[key];
-            if (tag.getType() === 9 || tag.getType() === 10) {
-                return tag;
-            } else return tag.get();
-        } else return null;
+        const result = this._convertTagType(this._pnxNbt.get(key));
+        if (result.getType() === 9 || result.getType() === 10) {
+            return result;
+        } else return result.get();
     }
 
     /**
@@ -167,27 +130,28 @@ export class NbtCompound {
      */
     toObject() {
         let obj = {};
-        for (let key of Object.keys(this._nbt)) {
-            if (this._nbt[key].getType() === 10) {//Compound
-                obj[key] = this._nbt[key].toObject();
-            } else if (this._nbt[key].getType() === 9) {//List
-                obj[key] = this._nbt[key].toArray();
-            } else if (this._nbt[key].getType() === 8) {//String
-                obj[key] = String(this._nbt[key].get());
-            } else if (this._nbt[key].getType() === 7) {//ByteArray
-                obj[key] = this._nbt[key].get();
-            } else if (this._nbt[key].getType() === 1) {//Byte
-                let result = this._nbt[key].get();
+        for (let key of this.getKeys()) {
+            let tag = this._convertTagType(this._pnxNbt.get(key));
+            if (tag.getType() === 10) {//Compound
+                obj[key] = tag.toObject();
+            } else if (tag.getType() === 9) {//List
+                obj[key] = tag.toArray();
+            } else if (tag.getType() === 8) {//String
+                obj[key] = String(tag.get());
+            } else if (tag.getType() === 7) {//ByteArray
+                obj[key] = tag.get();
+            } else if (tag.getType() === 1) {//Byte
+                let result = tag.get();
                 if (result === 1) {
                     result = true;
                 } else if (result === 0) {
                     result = false;
                 }
                 obj[key] = result;
-            } else if (this._nbt[key].getType() === 0) {//End
+            } else if (tag.getType() === 0) {//End
                 obj[key] = null;
             } else {
-                obj[key] = Number(this._nbt[key].get());
+                obj[key] = Number(tag.get());
             }
         }
         return obj;
@@ -211,12 +175,12 @@ export class NbtCompound {
 
     _preToObject() {
         let obj = {};
-        for (let key of Object.keys(this._nbt)) {
-            let tag = this._nbt[key];
+        for (let key of this.getKeys()) {
+            let tag = this._convertTagType(this._pnxNbt.get(key));
             if (tag.getType() === 10) {
                 obj[key] = tag._preToObject();
             } else if (tag.getType() === 9) {
-                obj[key] = tag._preToObject();
+                obj[key] = tag._preToArray();
             } else if (tag.getType() === 7) {
                 let str = "";
                 let int2array = tag.get();
@@ -230,6 +194,10 @@ export class NbtCompound {
     }
 
     destroy() {
+        if (!this._pnxNbt instanceof CompoundTag) return false;
+        this._pnxNbt = null;
+        delete this;
+        return true;
     }
 
     setEnd(key) {
@@ -278,5 +246,35 @@ export class NbtCompound {
             }
         }
         return result;
+    }
+
+    /**
+     * 将PNX的NBT转换为LLSE的NBT类型
+     * @returns {CommonNbt | NbtCompound | NbtList} LLSE的NBT
+     */
+    _convertTagType(tag) {
+        if (tag instanceof ByteTag) {
+            return new NbtByte(tag);
+        } else if (tag instanceof ByteArrayTag) {
+            return new NbtByteArray(tag);
+        } else if (tag instanceof DoubleTag) {
+            return new NbtDouble(tag);
+        } else if (tag instanceof FloatTag) {
+            return new NbtFloat(tag);
+        } else if (tag instanceof CompoundTag) {
+            return new NbtCompound(tag);
+        } else if (tag instanceof ListTag) {
+            return new NbtList(tag);
+        } else if (tag instanceof EndTag) {
+            return new NbtEnd(tag);
+        } else if (tag instanceof IntTag) {
+            return new NbtInt(tag);
+        } else if (tag instanceof LongTag) {
+            return new NbtLong(tag);
+        } else if (tag instanceof ShortTag) {
+            return new NbtShort(tag);
+        } else if (tag instanceof StringTag) {
+            return new NbtString(tag);
+        } else return null;
     }
 }

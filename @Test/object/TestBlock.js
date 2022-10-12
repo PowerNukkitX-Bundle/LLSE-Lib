@@ -27,7 +27,7 @@ export const TestBlock = () => {
         testNBT: function () {
             assertThat(block.getNbt().toSNBT()).equals(`{"name":"minecraft:chest","states":{"facing_direction":0}}`, "getNbt异常");
             let nbt = NBT.parseSNBT(`{"name":"minecraft:chest","states":{"facing_direction":"0"}}`);
-            nbt = nbt.setTag("states", nbt.getData("states").setInt("facing_direction", 2))
+            nbt = nbt.setTag("states", nbt.getData("states").setInt("facing_direction", 2));
             block.setNbt(nbt);
             assertThat(block.tileData).equals(2, "setNbt异常");
         }

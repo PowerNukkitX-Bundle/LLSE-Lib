@@ -10,7 +10,6 @@ import { NbtDouble } from './NbtDouble.js'
 import { NbtByteArray } from './NbtByteArray.js'
 import { NbtString } from './NbtString.js'
 import { data } from '../utils/data.js'
-import { ArrayList } from 'java.util.ArrayList'
 import { ListTag } from "cn.nukkit.nbt.tag.ListTag";
 import { ByteTag } from 'cn.nukkit.nbt.tag.ByteTag'
 import { ByteArrayTag } from 'cn.nukkit.nbt.tag.ByteArrayTag'
@@ -33,71 +32,19 @@ export class NbtList {
     constructor(array) {
         if (isEmpty(array)) {
             this._pnxNbt = new ListTag("");
-            this._nbt = [];
         } else if (array instanceof ListTag) {
             this._pnxNbt = array;
-            this._nbt = [];
-            let type = array.getAll()[0];
-            if (!isUndefined(type)) {
-                if (type instanceof ByteTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtByte(tag));
-                    }
-                } else if (type instanceof ByteArrayTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtByteArray(tag));
-                    }
-                } else if (type instanceof DoubleTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtDouble(tag));
-                    }
-                } else if (type instanceof FloatTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtFloat(tag));
-                    }
-                } else if (type instanceof CompoundTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtCompound(tag));
-                    }
-                } else if (type instanceof ListTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtList(tag));
-                    }
-                } else if (type instanceof EndTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtEnd());
-                    }
-                } else if (type instanceof IntTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtInt(tag));
-                    }
-                } else if (type instanceof LongTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtLong(tag));
-                    }
-                } else if (type instanceof ShortTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtShort(tag));
-                    }
-                } else if (type instanceof StringTag) {
-                    for (let tag of array.getAll()) {
-                        this._nbt.push(new NbtString(tag));
-                    }
-                } else throw new TypeError("解析PNX ListTag类型错误!");
-            }
         } else {
             let type = array[0].getType();
             for (let j = 1, len = array.length; j < len; j++) {
                 if (array[j].getType() !== type) throw new TypeError("数值中NBT元素类型不一致!");
             }
             this._pnxNbt = new ListTag('');
-            this._nbt = array;
             for (let tag of array) {
                 this._pnxNbt.add(tag._pnxNbt);
             }
         }
     }
-
 
     /**
      * 获取列表长度
@@ -118,10 +65,10 @@ export class NbtList {
     /**
      * 获取某个下标位置储存的数据类型
      * @param index {Integer} 要查询的目标下标
-     * @return {Enum} 此下标处储存的NBT的数据类型
+     * @return {Number} 此下标处储存的NBT的数据类型
      */
     getTypeOf(index) {
-        return this._nbt[index].getType();
+        return this._convertTagType(this._pnxNbt.get(index)).getType();
     }
 
     /**
@@ -131,27 +78,19 @@ export class NbtList {
      * @returns {NbtList} 写入完毕的NBT列表（便于连锁进行其他操作）
      */
     setTag(index, tag) {
-        if (this._evaluate(index, tag)) {
-            this._nbt[index] = tag;
-            let tags = new ArrayList();
-            for (let j of this._nbt) {
-                tags.add(j._pnxNbt);
-            }
-            this._pnxNbt.setAll(tags);
-            return this;
-        }
+        if (!this._evaluate(index, tag)) return this;
+        this._pnxNbt.add(index, tag._pnxNbt);
+        return this;
     }
 
     /**
      * 读取某个下标位置的NBT对象
      * @param index {Integer} 要操作的目标下标
-     * @returns {any} 下标位置的NBT对象
+     * @returns {CommonNbt} 下标位置的NBT对象
      */
     getTag(index) {
-        if (!this._evaluate(index)) {
-            throw new RangeError("索引溢出");
-        }
-        return this._nbt[index];
+        if (!this._evaluate(index)) return null;
+        return this._convertTagType(this._pnxNbt.get(index));
     }
 
     /**
@@ -160,7 +99,6 @@ export class NbtList {
      * @returns {NbtList} 追加完毕的NBT列表（便于连锁进行其他操作）
      */
     addTag(tag) {
-        this._nbt.push(tag);
         this._pnxNbt.add(tag._pnxNbt);
         return this;
     }
@@ -171,11 +109,8 @@ export class NbtList {
      * @returns {NbtList} 处理完毕的NBT列表（便于连锁进行其他操作）
      */
     removeTag(index) {
-        if (!this._evaluate(index)) {
-            throw new RangeError("索引溢出");
-        }
+        if (!this._evaluate(index)) return this;
         this._pnxNbt.remove(index);
-        this._nbt.splice(index, 1);
         return this;
     }
 
@@ -232,15 +167,19 @@ export class NbtList {
      * @return {Array} 对应的数组/列表
      */
     toArray() {
+        const result = [];
         let tag = this.getTag(0);
         if (isUndefined(tag)) {
-            return this._nbt;
+            return [];
         } else if (tag.getType() === 9) {
-            return this._nbt.map(k => k.toArray());
+            for (let nbt of this._pnxNbt.getAll()) result.push(new ListTag(nbt).toArray());
+            return result;
         } else if (tag.getType() === 10) {
-            return this._nbt.map(k => k.toObject());
+            for (let nbt of this._pnxNbt.getAll()) result.push(new CompoundTag(nbt).toObject());
+            return result;
         } else {
-            return this._nbt.map(k => k.get());
+            for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt).get());
+            return result;
         }
     }
 
@@ -251,30 +190,37 @@ export class NbtList {
      */
     toString(space = -1) {
         if (space === -1) {
-            return JSON.stringify(this._preToObject());
+            return JSON.stringify(this._preToArray());
         } else {
-            return JSON.stringify(this._preToObject(), null, space);
+            return JSON.stringify(this._preToArray(), null, space);
         }
     }
 
-    _preToObject() {
+    _preToArray() {
+        const result = [];
         let tag = this.getTag(0);
         if (isUndefined(tag)) {
-            return this._nbt;
+            return {};
         } else if (tag.getType() === 10) {
-            return this._nbt.map(k => k._preToObject());
+            for (let nbt of this._pnxNbt.getAll()) result.push(nbt._preToObject());
+            return result;
         } else if (tag.getType() === 9) {
-            return this._nbt.map(k => k._preToObject());
+            for (let nbt of this._pnxNbt.getAll()) result.push(nbt._preToArray());
+            return result;
         } else if (tag.getType() === 7) {
-            return this._nbt.map(k => {
+            for (let nbt of this._pnxNbt.getAll()) {
                 let str = "";
-                let int2array = k.get();
+                let int2array = nbt.get();
                 for (let j = 0, len = int2array.length; j < len; j++) {
                     str += int2array[j];
                 }
-                return data.toBase64(str);
-            });
-        } else return this._nbt.map(k => k.get());
+                result.push(data.toBase64(str));
+            }
+            return result;
+        } else {
+            for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt).get());
+            return result;
+        }
     }
 
     _evaluate(index, tag) {
@@ -289,5 +235,35 @@ export class NbtList {
             }
         }
         return true;
+    }
+
+    /**
+     * 将PNX的NBT转换为LLSE的NBT类型
+     * @returns {CommonNbt | NbtCompound | NbtList} LLSE的NBT
+     */
+    _convertTagType(tag) {
+        if (tag instanceof ByteTag) {
+            return new NbtByte(tag);
+        } else if (tag instanceof ByteArrayTag) {
+            return new NbtByteArray(tag);
+        } else if (tag instanceof DoubleTag) {
+            return new NbtDouble(tag);
+        } else if (tag instanceof FloatTag) {
+            return new NbtFloat(tag);
+        } else if (tag instanceof CompoundTag) {
+            return new NbtCompound(tag);
+        } else if (tag instanceof ListTag) {
+            return new NbtList(tag);
+        } else if (tag instanceof EndTag) {
+            return new NbtEnd(tag);
+        } else if (tag instanceof IntTag) {
+            return new NbtInt(tag);
+        } else if (tag instanceof LongTag) {
+            return new NbtLong(tag);
+        } else if (tag instanceof ShortTag) {
+            return new NbtShort(tag);
+        } else if (tag instanceof StringTag) {
+            return new NbtString(tag);
+        } else return null;
     }
 }

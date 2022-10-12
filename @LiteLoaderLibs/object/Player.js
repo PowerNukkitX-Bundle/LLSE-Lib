@@ -363,7 +363,7 @@ export class Player {
      * @returns {Item} 玩家主手中的物品对象
      */
     getHand() {
-        const handitem = Item.newItem(this._PNXPlayer.getInventory().getItemInHand());
+        const handitem = new Item(this._PNXPlayer.getInventory().getItemInHand());
         if (handitem != null) {
             this.itemChangeList.push([handitem._PNXItem, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()]);
         }
@@ -375,7 +375,7 @@ export class Player {
      * @returns {Item} Item对象
      */
     getOffHand() {
-        const offhandItem = Item.newItem(this._PNXPlayer.getOffhandInventory().getItem(0));
+        const offhandItem = new Item(this._PNXPlayer.getOffhandInventory().getItem(0));
         if (offhandItem != null) {
             this.itemChangeList.push([offhandItem._PNXItem, 'offhand', 0]);
         }
