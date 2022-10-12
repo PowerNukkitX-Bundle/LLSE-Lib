@@ -5,8 +5,6 @@ import { IntPos } from './IntPos.js';
 import { FloatPos } from './FloatPos.js';
 import { Player } from "./Player.js";
 import { PlayerArmorContainer } from "../container/PlayerArmorContainer.js";
-import { EntityArmorContainer } from "../container/EntityArmorContainer.js";
-
 import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Position } from 'cn.nukkit.level.Position'
@@ -176,9 +174,9 @@ export class Entity {
      */
     getArmor() {
         if (this._PNXEntity instanceof EntityMob || this._PNXEntity instanceof EntityArmorStand) {
-            return new EntityArmorContainer(this._PNXEntity.getArmorInventory());
+            return new Container(this._PNXEntity.getArmorInventory());
         } else if (this._PNXEntity instanceof PNXPlayer) {
-            return new PlayerArmorContainer(this._PNXEntity.getInventory().getArmorContents());
+            return new PlayerArmorContainer(this._PNXEntity.getInventory());
         } else return null;
     }
 

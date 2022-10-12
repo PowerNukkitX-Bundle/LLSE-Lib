@@ -384,6 +384,7 @@ export class Player {
 
     /**
      * 获取玩家背包对象
+     * @todo 测试
      * @returns {Container} Container对象
      */
     getInventory() {
@@ -392,15 +393,16 @@ export class Player {
 
     /**
      * 获取玩家盔甲栏对象
-     * @todo 需要更多...
+     * @todo 测试
      * @returns {Container} Container对象
      */
     getArmor() {
-        return this._PNXPlayer.getInventory().getArmorContents();// Item[]
+        return new PlayerArmorContainer(this._PNXPlayer.getInventory());
     }
 
     /**
      * 获取玩家末影箱对象
+     * @todo 测试
      * @returns {Container} Container对象
      */
     getEnderChest() {

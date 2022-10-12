@@ -1,10 +1,12 @@
 import { Block as JBlock } from 'cn.nukkit.block.Block';
-import { NbtCompound } from '../nbt/NbtCompound.js'
-import { NbtString } from '../nbt/NbtString.js'
-import { NbtByte } from '../nbt/NbtByte.js'
-import { NbtInt } from '../nbt/NbtInt.js'
-import { IntPos } from './IntPos.js'
-import { BlockState } from 'cn.nukkit.blockstate.BlockState'
+import { NbtCompound } from '../nbt/NbtCompound.js';
+import { NbtString } from '../nbt/NbtString.js';
+import { NbtByte } from '../nbt/NbtByte.js';
+import { NbtInt } from '../nbt/NbtInt.js';
+import { IntPos } from './IntPos.js';
+import { BlockState } from 'cn.nukkit.blockstate.BlockState';
+import { InventoryHolder } from 'cn.nukkit.inventory.InventoryHolder';
+import { Container } from '../container/Container.js';
 
 export class Block {
     /**
@@ -127,6 +129,28 @@ export class Block {
         this._PNXBlock.getLevel().setBlock(this.pos.position, _block);
         this._PNXBlock = this._PNXBlock.getLevel().getBlock(this.pos.position);
         return true;
+    }
+
+    /**
+     * 判断方块是否拥有容器
+     * @returns {Boolean} 这个方块是否拥有容器
+     */
+    hasContainer() {
+        const entity = this._PNXBlock.getLevelBlockEntity();
+        if (entity !== null && entity instanceof InventoryHolder) {
+            return true;
+        } else return false;
+    }
+
+    /**
+     * 获取方块所拥有的容器对象
+     * @returns {Container} 这个方块所拥有的容器对象
+     */
+    getContainer() {
+        if (this.hasContainer()) {
+            return new Container(this._PNXBlock.getLevelBlockEntity().getInventory());
+        }
+        return null
     }
 
     toString() {

@@ -10,10 +10,10 @@ export class PlayerArmorContainer extends Container {
     }
 
     get size() {
-        return this._PNXInv.getSize();
+        return 4;
     }
 
-    _setArmor(item) {
+    addItem(item) {
         if (item._PNXItem.isHelmet()) {
             return this._PNXInv.setHelmet(item);
         } else if (item._PNXItem.isChestplate()) {
@@ -26,83 +26,73 @@ export class PlayerArmorContainer extends Container {
         return false;
     }
 
-    addItem(item) {
-        return this._setArmor(item);
-    }
-
     addItemToFirstEmptySlot(item) {
-        return this._setArmor(item);
+        let index;
+        for (let i = this._PNXInv.getSize(), len = 4; i < len; ++i) {
+            if (this._PNXInv.getItem(i).getId() === 0) {
+                index = i;
+                break;
+            }
+        }
+        return this.setItem(index, item);
     }
 
     hasRoomFor(item) {
-        if (item._PNXItem.isHelmet()) {
-            return this._PNXInv.getHelmet().isNull();
-        } else if (item._PNXItem.isChestplate()) {
-            return this._PNXInv.getChestplate().isNull();
-        } else if (item._PNXItem.isLeggings()) {
-            return this._PNXInv.getLeggings().isNull();
-        } else if (item._PNXItem.isBoots()) {
-            return this._PNXInv.getBoots().isNull();
+        let item2 = item.clone();
+        let checkDamage = item2._PNXItem.hasMeta();
+        let checkTag = item2._PNXItem.getCompoundTag() != null;
+        for (let i = 0, len = 4; i < len; ++i) {
+            let slot = this._PNXInv.getItem(this._PNXInv.getSize() + i);
+            if (item2._PNXItem.equals(slot, checkDamage, checkTag)) {
+                let diff;
+                if ((diff = Math.min(slot.getMaxStackSize(), this._PNXInv.getMaxStackSize()) - slot.getCount()) > 0) {
+                    item2._PNXItem.setCount(item2._PNXItem.getCount() - diff);
+                }
+            } else if (slot.getId() === 0) {
+                item2._PNXItem.setCount(item2._PNXItem.getCount() - Math.min(slot.getMaxStackSize(), this._PNXInv.getMaxStackSize()));
+            }
+
+            if (item2._PNXItem.getCount() <= 0) {
+                return true;
+            }
         }
         return false;
     }
 
-    removeItem(item, count) {
-        let checkDamage = item._PNXItem.hasMeta();
-        let checkTag = item._PNXItem.getCompoundTag() != null;
-        let pnxInv = this._PNXInv;
-        if (item._PNXItem.isHelmet()) {
-            if (item._PNXItem.equals(pnxInv.getHelmet(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize());
-                return true;
-            }
-            return false;
-        } else if (item._PNXItem.isChestplate()) {
-            if (item._PNXItem.equals(pnxInv.getChestplate(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize() + 1);
-                return true;
-            }
-            return false;
-        } else if (item._PNXItem.isLeggings()) {
-            if (item._PNXItem.equals(pnxInv.getLeggings(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize() + 2);
-                return true;
-            }
-            return false;
-        } else if (item._PNXItem.isBoots()) {
-            if (item._PNXItem.equals(pnxInv.getBoots(), checkDamage, checkTag)) {
-                pnxInv.clear(pnxInv.getSize() + 3);
-                return true;
-            }
-            return false;
+    removeItem(index, count) {
+        if (index < 0 || index > 3) return null;
+        let item = this._PNXInv.getItem(this._PNXInv.getSize() + index);
+        if (item.getCount() > 0) {
+            item.count -= count;
+            this._PNXInv.setItem(this._PNXInv.getSize() + index, item);
         }
-        return false;
+        return true;
     }
 
     getItem(index) {
-        if (index < 0 || index > 3) throw '玩家盔甲栏的索引超出范围(0-3)';
+        if (index < 0 || index > 3) return null;
         switch (index) {
             case 0:
-                return new Item(this._PNXInv.getHelmet(), null);
+                return new Item(this._PNXInv.getHelmet());
             case 1:
-                return new Item(this._PNXInv.getChestplate(), null);
+                return new Item(this._PNXInv.getChestplate());
             case 2:
-                return new Item(this._PNXInv.getLeggings(), null);
+                return new Item(this._PNXInv.getLeggings());
             case 3:
-                return new Item(this._PNXInv.getBoots(), null);
+                return new Item(this._PNXInv.getBoots());
         }
         return null;
     }
 
     setItem(index, item) {
-        if (index < 0 || index > 3) throw '玩家盔甲栏的索引超出范围(0-3)';
+        if (index < 0 || index > 3) return null;
         return this._PNXInv.setItem(this._PNXInv.getSize() + index, item._PNXItem);
     }
 
     getAllItems() {
         let allItems = [];
         for (let item of this._PNXInv.getArmorContents()) {
-            allItems.push(new Item(item, null));
+            allItems.push(new Item(item));
         }
         return allItems;
     }
