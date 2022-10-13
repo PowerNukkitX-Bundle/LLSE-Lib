@@ -166,6 +166,195 @@ export class Player {
     }
 
     /**
+     * @return {Boolean} 玩家是否已经加载
+     */
+    get isLoading() {
+        return false;
+    }
+
+    /**
+     * @return {Boolean} 玩家设置的语言的标识符(形如zh_CN)
+     */
+    get langCode() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在岩浆中
+     */
+    get inLava() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在雨中
+     */
+    get inRain() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在雪中
+     */
+    get inSnow() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在墙上
+     */
+    get inWall() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在水中或雨中
+     */
+    get inWaterOrRain() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在世界中
+     */
+    get inWorld() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在云端
+     */
+    get inClouds() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否不可见
+     */
+    get isInvisible() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在门户内
+     */
+    get isInsidePortal() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否受伤
+     */
+    get isHurt() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否饿了
+     */
+    get isHungry() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否信任
+     */
+    get isTrusting() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否接触到伤害方块
+     */
+    get isTouchingDamageBlock() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否着火
+     */
+    get isOnFire() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在地面
+     */
+    get isOnGround() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在热块上
+     */
+    get isOnHotBlock() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在交易
+     */
+    get isTrading() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否正在骑行
+     */
+    get isRiding() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在跳舞
+     */
+    get isDancing() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在睡觉
+     */
+    get isSleeping() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否移动
+     */
+    get isMoving() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是冒险模式
+     */
+    get isAdventure() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是生存模式
+     */
+    get isSurvival() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是观众模式
+     */
+    get isSpectator() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是创造模式
+     */
+    get isCreative() {
+        return true;
+    }
+
+    /**
      * @return {Boolean} 玩家当前是否正在潜行
      */
     get sneaking() {

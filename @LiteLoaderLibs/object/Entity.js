@@ -62,6 +62,146 @@ export class Entity {
         return this._PNXEntity.isSwimming();
     }
 
+    /**
+     * @returns {boolean} 实体是否在岩浆中
+     */
+    get inLava() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在雨中
+     */
+    get inRain() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在雪中
+     */
+    get inSnow() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在墙上
+     */
+    get inWall() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在水中或雨中
+     */
+    get inWaterOrRain() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在世界中
+     */
+    get inWorld() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否不可见
+     */
+    get isInvisible() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在门户内
+     */
+    get isInsidePortal() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否信任
+     */
+    get isTrusting() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否接触到伤害方块
+     */
+    get isTouchingDamageBlock() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否着火
+     */
+    get isOnFire() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在地面
+     */
+    get isOnGround() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在热块上
+     */
+    get isOnHotBlock() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在交易
+     */
+    get isTrading() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否正在骑行
+     */
+    get isRiding() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在跳舞
+     */
+    get isDancing() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否在睡觉
+     */
+    get isSleeping() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否生气
+     */
+    get isAngry() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否为幼体
+     */
+    get isBaby() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 实体是否移动
+     */
+    get isMoving() {
+        return true;
+    }
+
     get speed() {// 实体当前速度	Float
         return this._PNXEntity.getMovementSpeed();
     }
