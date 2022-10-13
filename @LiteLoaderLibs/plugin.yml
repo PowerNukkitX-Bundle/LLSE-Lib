@@ -1,6 +1,6 @@
 name: LiteLoaderLibs
 main: index.js # JS入口文件，应该导出一个main函数（如main.js）
-version: "0.0.1"
+version: "0.0.3"
 api: [ "1.0.13" ] # API版本，PNX从1.0.13起开始支持JS插件
 load: STARTUP # 插件加载顺序，只能填写 STARTUP 或 POSTWORLD
 # STARTUP: 此时服务器刚启动，地图尚未加载，通常用于依赖库
@@ -14,5 +14,4 @@ softdepend: # 插件的软依赖项
   - LlamaEconomy
   - EconomyAPI
 features:
-  - WsClient
-  - testFeature
+  - WsClient # 拥有此项才能使用WSClient
