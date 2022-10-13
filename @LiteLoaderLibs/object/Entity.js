@@ -6,6 +6,7 @@ import { FloatPos } from './FloatPos.js';
 import { Player } from "./Player.js";
 import { PlayerArmorContainer } from "../container/PlayerArmorContainer.js";
 import { Player as PNXPlayer } from 'cn.nukkit.Player';
+import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Position } from 'cn.nukkit.level.Position'
 import { getLevels } from '../utils/Mixins.js';
@@ -15,7 +16,21 @@ import { EntityMob } from "cn.nukkit.entity.mob.EntityMob";
 import { EntityArmorStand } from "cn.nukkit.entity.item.EntityArmorStand";
 import { Container } from "../container/Container.js";
 import { EntityHumanType } from "cn.nukkit.entity.EntityHumanType";
-import { NbtCompound } from '../nbt/NbtCompound.js'
+import { NbtCompound } from '../nbt/NbtCompound.js';
+import { BlockWallBase } from 'cn.nukkit.block.BlockWallBase';
+import { BlockNetherPortal } from 'cn.nukkit.block.BlockNetherPortal';
+import { BlockEndPortal } from 'cn.nukkit.block.BlockEndPortal';
+import { BlockWitherRose } from 'cn.nukkit.block.BlockWitherRose';
+import { BlockSnow } from 'cn.nukkit.block.BlockSnow';
+import { BlockPowderSnow } from 'cn.nukkit.block.BlockPowderSnow';
+import { BlockLava } from 'cn.nukkit.block.BlockLava';
+import { BlockMagma } from 'cn.nukkit.block.BlockMagma';
+import { BlockCampfireSoul } from 'cn.nukkit.block.BlockCampfireSoul';
+import { BlockCampfire } from 'cn.nukkit.block.BlockCampfire';
+import { BlockFireSoul } from 'cn.nukkit.block.BlockFireSoul';
+import { BlockFire } from 'cn.nukkit.block.BlockFire';
+import { EntityWolf } from 'cn.nukkit.entity.passive.EntityWolf';
+import { EntityAgeable } from 'cn.nukkit.entity.EntityAgeable';
 
 export class Entity {
     /**
@@ -66,10 +81,11 @@ export class Entity {
      * @returns {boolean} 实体是否在岩浆中
      */
     get inLava() {
-        return false;
+        return this._PNXEntity.isInsideOfLava();
     }
 
     /**
+     * todo 未实现
      * @returns {boolean} 实体是否在雨中
      */
     get inRain() {
@@ -80,24 +96,25 @@ export class Entity {
      * @returns {boolean} 实体是否在雪中
      */
     get inSnow() {
-        return false;
+        return this._checkCollisionBlocks([BlockSnow, BlockPowderSnow]);
     }
 
     /**
      * @returns {boolean} 实体是否在墙上
      */
     get inWall() {
-        return false;
+        return this._checkCollisionBlocks([BlockWallBase]);
     }
 
     /**
      * @returns {boolean} 实体是否在水中或雨中
      */
     get inWaterOrRain() {
-        return false;
+        return this.inWater;
     }
 
     /**
+     * todo 不懂什么意思
      * @returns {boolean} 实体是否在世界中
      */
     get inWorld() {
@@ -108,17 +125,18 @@ export class Entity {
      * @returns {boolean} 实体是否不可见
      */
     get isInvisible() {
-        return true;
+        return this._PNXEntity.getDataPropertyBoolean(PNXEntity.DATA_FLAG_INVISIBLE);
     }
 
     /**
      * @returns {boolean} 实体是否在门户内
      */
     get isInsidePortal() {
-        return true;
+        return this._checkCollisionBlocks([BlockEndPortal, BlockNetherPortal]);
     }
 
     /**
+     * todo 不知道啥意思
      * @returns {boolean} 实体是否信任
      */
     get isTrusting() {
@@ -129,73 +147,88 @@ export class Entity {
      * @returns {boolean} 实体是否接触到伤害方块
      */
     get isTouchingDamageBlock() {
-        return true;
-    }
-
-    /**
-     * @returns {boolean} 实体是否着火
-     */
-    get isOnFire() {
-        return true;
+        return this._checkCollisionBlocks([BlockLava, BlockWitherRose, BlockMagma, BlockFire, BlockFireSoul, BlockCampfire, BlockCampfireSoul]);
     }
 
     /**
      * @returns {boolean} 实体是否在地面
      */
     get isOnGround() {
-        return true;
+        return !this.inAir;
     }
 
     /**
-     * @returns {boolean} 实体是否在热块上
+     * @returns {boolean} 实体是否在岩浆块上
      */
     get isOnHotBlock() {
-        return true;
+        return this._checkCollisionBlocks([BlockMagma]);
     }
 
     /**
+     * todo pnx未实现检测
      * @returns {boolean} 实体是否在交易
      */
     get isTrading() {
-        return true;
+        if (this._PNXEntity instanceof PNXPlayer) {
+
+        }
+        return false;
     }
 
     /**
+     * todo pnx未实现检测
      * @returns {boolean} 实体是否正在骑行
      */
     get isRiding() {
-        return true;
+        if (this._PNXEntity instanceof PNXPlayer) {
+
+        }
+        return false;
     }
 
     /**
+     * todo pnx未实现检测
      * @returns {boolean} 实体是否在跳舞
      */
     get isDancing() {
-        return true;
+        if (this._PNXEntity instanceof PNXPlayer) {
+
+        }
+        return false;
     }
 
     /**
      * @returns {boolean} 实体是否在睡觉
      */
     get isSleeping() {
-        return true;
+        if (this._PNXEntity instanceof PNXPlayer) {
+            return this._PNXEntity.isSleeping();
+        }
+        return false;
     }
 
     /**
      * @returns {boolean} 实体是否生气
      */
     get isAngry() {
-        return true;
+        if (this._PNXEntity instanceof EntityWolf) {
+            return this._PNXEntity.isAngry();
+        }
+        return false;
     }
 
     /**
      * @returns {boolean} 实体是否为幼体
      */
     get isBaby() {
-        return true;
+        if (this._PNXEntity instanceof EntityAgeable) {
+            return this._PNXEntity.isBaby();
+        }
+        return false;
     }
 
     /**
+     * todo pnx未实现检测
      * @returns {boolean} 实体是否移动
      */
     get isMoving() {
@@ -212,6 +245,23 @@ export class Entity {
 
     get uniqueId() {// 实体唯一标识符	String
         return this._PNXEntity.getUniqueId().toString();
+    }
+
+    /**
+     * 按照输入检查实体碰撞到的方块
+     * @pnxonly
+     * @param blocks {Array} 目标检查的方块数组
+     * @return boolean 实体是否碰撞到目标方块
+     */
+    _checkCollisionBlocks(blocks) {
+        for (let block of this._PNXEntity.getCollisionBlocks()) {
+            blocks.map((v, i) => {
+                if (block instanceof v) {
+                    return true;
+                }
+            });
+        }
+        return false
     }
 
     /**
