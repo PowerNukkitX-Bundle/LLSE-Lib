@@ -2,6 +2,7 @@ import { DirectionAngle } from './DirectionAngle.js';
 import { IntPos } from './IntPos.js';
 import { FloatPos } from './FloatPos.js';
 import { Device } from './Device.js';
+import { Block } from './Block.js';
 import { Item } from './Item.js';
 import { Container } from '../container/Container.js';
 import { ScoreObjectives } from './ScoreObjectives.js';
@@ -186,11 +187,10 @@ export class Player {
     }
 
     /**
-     * todo 未实现
      * @return {string} 玩家设置的语言的标识符(形如zh_CN)
      */
     get langCode() {
-        return "";
+        return this._PNXPlayer.getLoginChainData().getLanguageCode();
     }
 
     /**
@@ -201,7 +201,7 @@ export class Player {
     }
 
     /**
-     * todo 未实现
+     * @todo 未实现
      * @returns {boolean} 玩家是否在雨中
      */
     get inRain() {
@@ -230,7 +230,7 @@ export class Player {
     }
 
     /**
-     * todo 不懂什么意思
+     * @todo 不懂什么意思
      * @returns {boolean} 玩家是否在世界中
      */
     get inWorld() {
@@ -273,7 +273,7 @@ export class Player {
     }
 
     /**
-     * todo 弄懂这是啥
+     * @todo 弄懂这是啥
      * @returns {boolean} 玩家是否信任
      */
     get isTrusting() {
@@ -302,7 +302,7 @@ export class Player {
     }
 
     /**
-     * todo pnx未实现检测
+     * @todo pnx未实现检测
      * @returns {boolean} 玩家是否在交易
      */
     get isTrading() {
@@ -310,7 +310,7 @@ export class Player {
     }
 
     /**
-     * todo pnx未实现检测
+     * @todo pnx未实现检测
      * @returns {boolean} 玩家是否正在骑行
      */
     get isRiding() {
@@ -318,7 +318,7 @@ export class Player {
     }
 
     /**
-     * todo pnx未实现检测
+     * @todo pnx未实现检测
      * @returns {boolean} 玩家是否在跳舞
      */
     get isDancing() {
@@ -333,7 +333,7 @@ export class Player {
     }
 
     /**
-     * todo pnx未实现检测
+     * @todo pnx未实现检测
      * @returns {boolean} 玩家是否移动
      */
     get isMoving() {
@@ -563,11 +563,10 @@ export class Player {
 
     /**
      * 获取玩家当前站立所在的方块
-     * @todo 改为LLSE类型
      * @returns {Block} 当前站立在的方块对象
      */
     getBlockStandingOn() {
-        return this._PNXPlayer.getPosition().add(0, -0.1).getLevelBlock();
+        return new Block(this._PNXPlayer.getPosition().add(0, -0.1).getLevelBlock());
     }
 
     /**
