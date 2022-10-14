@@ -10,6 +10,5 @@ authors: # 此项可以不存在
   - CoolLoong
 description: 测试 LiteLoaderLibs
 website: https://mc.xz.cn
-features: # 拥有此项才能使用WSClient
-  - WsClient
-  - testFeature
+features:
+  - WsClient # 拥有此项才能使用WSClient

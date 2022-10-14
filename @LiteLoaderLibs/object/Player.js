@@ -22,6 +22,19 @@ import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
 import { NbtCompound } from '../nbt/NbtCompound.js'
+import { BlockSnow } from 'cn.nukkit.block.BlockSnow'
+import { BlockPowderSnow } from 'cn.nukkit.block.BlockPowderSnow'
+import { BlockWallBase } from 'cn.nukkit.block.BlockWallBase'
+import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
+import { BlockEndPortal } from 'cn.nukkit.block.BlockEndPortal'
+import { BlockNetherPortal } from 'cn.nukkit.block.BlockNetherPortal'
+import { BlockLava } from 'cn.nukkit.block.BlockLava'
+import { BlockWitherRose } from 'cn.nukkit.block.BlockWitherRose'
+import { BlockMagma } from 'cn.nukkit.block.BlockMagma'
+import { BlockFire } from 'cn.nukkit.block.BlockFire'
+import { BlockFireSoul } from 'cn.nukkit.block.BlockFireSoul'
+import { BlockCampfire } from 'cn.nukkit.block.BlockCampfire'
+import { BlockCampfireSoul } from 'cn.nukkit.block.BlockCampfireSoul'
 
 
 const ASType = AdventureSettings.Type;
@@ -166,6 +179,196 @@ export class Player {
     }
 
     /**
+     * @return {Boolean} 玩家是否已经加载
+     */
+    get isLoading() {
+        return this._PNXPlayer.isLoaderActive();
+    }
+
+    /**
+     * todo 未实现
+     * @return {string} 玩家设置的语言的标识符(形如zh_CN)
+     */
+    get langCode() {
+        return "";
+    }
+
+    /**
+     * @returns {boolean} 实体是否在岩浆中
+     */
+    get inLava() {
+        return this._PNXPlayer.isInsideOfLava();
+    }
+
+    /**
+     * todo 未实现
+     * @returns {boolean} 玩家是否在雨中
+     */
+    get inRain() {
+        return false;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在雪中
+     */
+    get inSnow() {
+        return this._checkCollisionBlocks([BlockSnow, BlockPowderSnow]);
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在墙上
+     */
+    get inWall() {
+        return this._checkCollisionBlocks([BlockWallBase]);
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在水中或雨中
+     */
+    get inWaterOrRain() {
+        return this.inWater;
+    }
+
+    /**
+     * todo 不懂什么意思
+     * @returns {boolean} 玩家是否在世界中
+     */
+    get inWorld() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在云端
+     */
+    get inClouds() {
+        return this._PNXPlayer.getY() > 192;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否不可见
+     */
+    get isInvisible() {
+        return this._PNXEntity.getDataPropertyBoolean(PNXEntity.DATA_FLAG_INVISIBLE);
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在门户内
+     */
+    get isInsidePortal() {
+        return this._checkCollisionBlocks([BlockEndPortal, BlockNetherPortal]);
+    }
+
+    /**
+     * @returns {boolean} 玩家是否受伤
+     */
+    get isHurt() {
+        return this._PNXPlayer.getHealth() < this._PNXPlayer.getMaxHealth();
+    }
+
+    /**
+     * @returns {boolean} 玩家是否饿了
+     */
+    get isHungry() {
+        return this._PNXPlayer.getFoodData().getLevel() < this._PNXPlayer.getFoodData().getMaxLevel();
+    }
+
+    /**
+     * todo 弄懂这是啥
+     * @returns {boolean} 玩家是否信任
+     */
+    get isTrusting() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否接触到伤害方块
+     */
+    get isTouchingDamageBlock() {
+        return this._checkCollisionBlocks([BlockLava, BlockWitherRose, BlockMagma, BlockFire, BlockFireSoul, BlockCampfire, BlockCampfireSoul]);
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在地面
+     */
+    get isOnGround() {
+        return !this.inAir;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在热块上
+     */
+    get isOnHotBlock() {
+        return this._checkCollisionBlocks([BlockMagma]);
+    }
+
+    /**
+     * todo pnx未实现检测
+     * @returns {boolean} 玩家是否在交易
+     */
+    get isTrading() {
+        return true;
+    }
+
+    /**
+     * todo pnx未实现检测
+     * @returns {boolean} 玩家是否正在骑行
+     */
+    get isRiding() {
+        return true;
+    }
+
+    /**
+     * todo pnx未实现检测
+     * @returns {boolean} 玩家是否在跳舞
+     */
+    get isDancing() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否在睡觉
+     */
+    get isSleeping() {
+        return this._PNXPlayer.isSleeping();
+    }
+
+    /**
+     * todo pnx未实现检测
+     * @returns {boolean} 玩家是否移动
+     */
+    get isMoving() {
+        return true;
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是冒险模式
+     */
+    get isAdventure() {
+        return this._PNXPlayer.isAdventure();
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是生存模式
+     */
+    get isSurvival() {
+        return this._PNXPlayer.isSurvival();
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是观众模式
+     */
+    get isSpectator() {
+        return this._PNXPlayer.isSpectator();
+    }
+
+    /**
+     * @returns {boolean} 玩家是否是创造模式
+     */
+    get isCreative() {
+        return this._PNXPlayer.isCreative();
+    }
+
+    /**
      * @return {Boolean} 玩家当前是否正在潜行
      */
     get sneaking() {
@@ -191,6 +394,23 @@ export class Player {
      */
     get uniqueId() {
         return this._PNXPlayer.getUniqueId().toString();
+    }
+
+    /**
+     * 按照输入检查玩家碰撞到的方块
+     * @pnxonly
+     * @param blocks {Array} 目标检查的方块数组
+     * @return boolean 玩家是否碰撞到目标方块
+     */
+    _checkCollisionBlocks(blocks) {
+        for (let block of this._PNXPlayer.getCollisionBlocks()) {
+            blocks.map((v, i) => {
+                if (block instanceof v) {
+                    return true;
+                }
+            });
+        }
+        return false
     }
 
     /**
@@ -384,6 +604,7 @@ export class Player {
 
     /**
      * 获取玩家背包对象
+     * @todo 测试
      * @returns {Container} Container对象
      */
     getInventory() {
@@ -392,15 +613,16 @@ export class Player {
 
     /**
      * 获取玩家盔甲栏对象
-     * @todo 需要更多...
+     * @todo 测试
      * @returns {Container} Container对象
      */
     getArmor() {
-        return this._PNXPlayer.getInventory().getArmorContents();// Item[]
+        return new PlayerArmorContainer(this._PNXPlayer.getInventory());
     }
 
     /**
      * 获取玩家末影箱对象
+     * @todo 测试
      * @returns {Container} Container对象
      */
     getEnderChest() {

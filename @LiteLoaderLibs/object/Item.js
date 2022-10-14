@@ -9,14 +9,6 @@ import { ItemRecord } from 'cn.nukkit.item.ItemRecord';
 import { ItemPotion } from 'cn.nukkit.item.ItemPotion';
 import { ItemPotionLingering } from 'cn.nukkit.item.ItemPotionLingering';
 import { ItemPotionSplash } from 'cn.nukkit.item.ItemPotionSplash';
-import { Position } from 'cn.nukkit.level.Position';
-import { Vector3 } from 'cn.nukkit.math.Vector3';
-import { EntityItem } from "cn.nukkit.entity.item.EntityItem";
-import { Entity as PNXEntity } from "cn.nukkit.entity.Entity";
-import { Random } from "java.util.Random";
-import { NBTIO } from "cn.nukkit.nbt.NBTIO";
-import { Entity } from "./Entity.js";
-import { server } from '../utils/Mixins.js'
 import { NbtCompound } from '../nbt/NbtCompound.js'
 
 export class Item {
@@ -336,6 +328,15 @@ export class Item {
     }
 
     toString() {
-        return JSON.stringify({name: this.name, id: this.id, count: this.count, aux: this.aux, type: this.type});
+        return JSON.stringify({
+            name: this.name,
+            type: this.type,
+            id: this.id,
+            count: this.count,
+            aux: this.aux,
+            damage: this.damage,
+            attackDamage: this.attackDamage,
+            maxDamage: this.maxDamage
+        });
     }
 }

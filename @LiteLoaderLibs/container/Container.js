@@ -37,12 +37,12 @@ export class Container {
     addItem(item) {
         if (item instanceof Item) {
             if (this.hasRoomFor(item._PNXItem)) {
-                this._PNXInv.addItem([item._PNXItem]);
+                this._PNXInv.addItem(item._PNXItem);
                 return true;
             }
         } else if (item instanceof PNXItem) {
             if (this.hasRoomFor(item)) {
-                this._PNXInv.addItem([item]);
+                this._PNXInv.addItem(item);
                 return true;
             }
         }
@@ -56,9 +56,6 @@ export class Container {
      */
     addItemToFirstEmptySlot(item) {
         let index = this._PNXInv.firstEmpty();
-        if (index < 0 || index > this.size) {
-            return false;
-        }
         return this.setItem(index, item);
     }
 
@@ -79,15 +76,17 @@ export class Container {
     /**
      * 减少容器中的某个物品对象
      * @param item {Item} 减少的物品对象
+     * @param count {Number} 减少的数量。如果大于等于此格子物品堆叠的数量，则物品堆将被整个清除
      * @returns {boolean}
      */
-    removeItem(item, count) {
-        if (item instanceof Item) {
-            this._PNXInv.remove(item._PNXItem);
-        } else if (item instanceof PNXItem) {
-            this._PNXInv.remove(item);
-        } else {
+    removeItem(index, count) {
+        if (index < 0 || index >= this.size) {
             return false;
+        }
+        let item = this._PNXInv.getItem(index);
+        if (item.getCount() > 0) {
+            item.count -= count;
+            this._PNXInv.setItem(index, item);
         }
         return true;
     }
@@ -98,6 +97,9 @@ export class Container {
      * @returns {Item}
      */
     getItem(index) {
+        if (index < 0 || index >= this.size) {
+            return false;
+        }
         return this._PNXInv.getItem(index);
     }
 
@@ -108,6 +110,9 @@ export class Container {
      * @returns {boolean}
      */
     setItem(index, item) {
+        if (index < 0 || index >= this.size) {
+            return false;
+        }
         if (item instanceof Item) {
             this._PNXInv.setItem(index, item._PNXItem);
         } else if (item instanceof PNXItem) {
