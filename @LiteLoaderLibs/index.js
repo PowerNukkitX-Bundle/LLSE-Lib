@@ -101,4 +101,4 @@ export { NbtShort } from './nbt/NbtShort.js';
 export { NbtString } from './nbt/NbtString.js';
 export { JsonConfigFile } from './config/JsonConfigFile.js';
 export { IniConfigFile } from './config/IniConfigFile.js';
-export { i18n } from './config/i18n.js';
+export { i18n } from './utils/i18n.js';

@@ -3,7 +3,7 @@ import { Player } from '../object/Player.js';
 import { Entity } from '../object/Entity.js';
 import { Block } from '../object/Block.js';
 import { server } from '../utils/Mixins.js'
-import { Player as PnxPlayer } from 'cn.nukkit.Player';
+import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { PlayerInteractEvent } from 'cn.nukkit.event.player.PlayerInteractEvent';
 import { ItemID } from 'cn.nukkit.item.ItemID';
@@ -11,22 +11,20 @@ import { ContainerInventory } from 'cn.nukkit.inventory.ContainerInventory';
 import { PlayerEnderChestInventory } from 'cn.nukkit.inventory.PlayerEnderChestInventory';
 import { PlayerInventory } from 'cn.nukkit.inventory.PlayerInventory';
 import { SlotChangeAction } from 'cn.nukkit.inventory.transaction.action.SlotChangeAction';
+import { BlockPressurePlateBase } from 'cn.nukkit.block.BlockPressurePlateBase';
+import { EntityArrow } from 'cn.nukkit.entity.projectile.EntityArrow';
+import { EntityEgg } from 'cn.nukkit.entity.projectile.EntityEgg';
+import { EntityFishingHook } from 'cn.nukkit.entity.projectile.EntityFishingHook';
+import { EntityEnderPearl } from 'cn.nukkit.entity.projectile.EntityEnderPearl';
+import { EntitySnowball } from 'cn.nukkit.entity.projectile.EntitySnowball';
+import { EntityThrownTrident } from 'cn.nukkit.entity.projectile.EntityThrownTrident';
 import { DamageCause } from '../utils/DamageCause.js';
 import { Item } from '../object/Item.js';
+import { IntPos } from '../object/IntPos.js';
+import { FloatPos } from '../object/FloatPos.js';
 
 const PNXDamageCause = EntityDamageEvent.DamageCause;
 const EventNameMap = {  /* Entity Events */
-    "onMobDie": 33,
-    "onEntityExplode": 35,
-    "onProjectileHitEntity": 36,
-    "onWitherBossDestroy": 37,
-    "onRide": 38,
-    "onStepOnPressurePlate": 39,
-    "onSpawnProjectile": 40,
-    "onProjectileCreated": 41,
-    "onNpcCmd": 42,
-    "onChangeArmorStand": 43,
-    "onEntityTransformation": 44,
     /* Block Events */
     "onBlockInteracted": 10,
     "onBlockChanged": 10,
@@ -118,7 +116,7 @@ const onPlayerDie = {
         let e1 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL, event => {
             if (event.getCause() !== EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 let player = event.getEntity();
-                if (player instanceof PnxPlayer) {
+                if (player instanceof PNXPlayer) {
                     if (player.getHealth() - event.getDamage() <= 0.2) {
                         callback(Player.getPlayer(player), null);
                     }
@@ -127,7 +125,7 @@ const onPlayerDie = {
         });
         let e2 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageByEntityEvent", EventPriority.NORMAL, event => {
             let player = event.getEntity();
-            if (player instanceof PnxPlayer) {
+            if (player instanceof PNXPlayer) {
                 let damager = event.getDamager();
                 if (player.getHealth() - event.getDamage() <= 0.2) {
                     callback(Player.getPlayer(player), damager);
@@ -170,7 +168,7 @@ const onChangeDim = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.entity.EntityLevelChangeEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
-            if (player instanceof PnxPlayer) {
+            if (player instanceof PNXPlayer) {
                 let dimension = event.getTarget.getDimension();
                 callback(Player.getPlayer(player), dimension);
             }
@@ -307,7 +305,7 @@ const onConsumeTotem = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL, event => {
             let player = event.getEntity();
-            if (player instanceof PnxPlayer) {
+            if (player instanceof PNXPlayer) {
                 if (player.getInventory().getItemInHand().getId() === ItemID.TOTEM) {
                     if (player.getHealth() - event.getDamage() <= 0.2) {
                         let cancel = callback(Player.getPlayer(player));
@@ -323,7 +321,7 @@ const onEffectAdded = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.potion.PotionApplyEvent", EventPriority.NORMAL, event => {
             let player = event.getEntity();
-            if (player instanceof PnxPlayer) {
+            if (player instanceof PNXPlayer) {
                 let effect = event.getApplyEffect().getName();
                 let cancel = callback(Player.getPlayer(player), effect);
                 if (cancel === false) event.setCancelled(true);
@@ -336,7 +334,7 @@ const onEffectRemoved = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerEffectRemoveEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
-            if (player instanceof PnxPlayer) {
+            if (player instanceof PNXPlayer) {
                 let effect = event.getRemoveEffect().getName();
                 let cancel = callback(Player.getPlayer(player), effect);
                 if (cancel === false) event.setCancelled(true);
@@ -349,7 +347,7 @@ const onEffectUpdated = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerEffectUpdateEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
-            if (player instanceof PnxPlayer) {
+            if (player instanceof PNXPlayer) {
                 let effect = event.getUpdateEffect().getName();
                 let cancel = callback(Player.getPlayer(player), effect);
                 if (cancel === false) event.setCancelled(true);
@@ -452,16 +450,6 @@ const onInventoryChange = {
     }
 }
 
-const onMove = {
-    run: (callback) => {
-        return pnx.listenEvent("cn.nukkit.event.player.PlayerMoveEvent", EventPriority.NORMAL, event => {
-            let player = event.getPlayer();
-            let floatPos;
-            callback(Player.getPlayer(player), floatPos);
-        });
-    }
-}
-
 const onChangeSprinting = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerToggleSprintEvent", EventPriority.NORMAL, event => {
@@ -476,7 +464,7 @@ const onSetArmor = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.entity.EntityArmorChangeEvent", EventPriority.NORMAL, event => {
             let player = event.getEntity();
-            if (player instanceof PnxPlayer) {
+            if (player instanceof PNXPlayer) {
                 let slotNum = event.getSlot();
                 let item = event.getOldItem();
                 callback(Player.getPlayer(player), slotNum, new Item(item));
@@ -513,7 +501,71 @@ const onOpenContainerScreen = {
         });
     }
 }
+
+/**
+ * @todo 测试
+ */
+const onExperienceAdd = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerExperienceChangeEvent", EventPriority.NORMAL, event => {
+            let oldExp = event.getOldExperience();
+            let newExp = event.getNewExperience();
+            let oldLevel = event.getOldExperienceLevel();
+            let newLevel = event.getNewExperienceLevel();
+            let player = event.getPlayer();
+            if (newLevel === oldLevel) {
+                if (newExp >= oldExp) {
+                    let cancel = callback(Player.getPlayer(player, newExp - oldExp));
+                    if (cancel === false) event.setCancelled(true);
+                }
+            } else if (newLevel > oldLevel) {
+                let add = newExp;
+                for (let i = 0, len = newLevel - oldLevel; i < len; ++i) {
+                    add += PNXPlayer.calculateRequireExperience(newLevel - i);
+                }
+                add += PNXPlayer.calculateRequireExperience(oldLevel) - oldExp;
+                let cancel = callback(Player.getPlayer(player, add));
+                if (cancel === false) event.setCancelled(true);
+            }
+        });
+    }
+}
+/**
+ * @todo 测试
+ */
+const onBedEnter = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerBedEnterEvent", EventPriority.NORMAL, event => {
+            let player = Player.getPlayer(event.getPlayer());
+            let pos = new IntPos(event.getBed());
+            let cancel = callback(player, pos);
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
 /* 实体事件 */
+const onMobDie = {
+    run: (callback) => {
+        let e1 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL, event => {
+            if (event.getCause() !== EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                let entity = event.getEntity();
+                if (entity.getHealth() - event.getDamage() <= 0.2) {
+                    callback(new Entity(entity), null, DamageCause.getCause(event.getCause()));
+                }
+            }
+        });
+        let e2 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageByEntityEvent", EventPriority.NORMAL, event => {
+            let entity = event.getEntity();
+            let damager = event.getDamager();
+            if (entity.getHealth() - event.getDamage() <= 0.2) {
+                callback(new Entity(entity), new Entity(damager), DamageCause.getCause(PNXDamageCause.ENTITY_ATTACK));
+            }
+        });
+        return e1 && e2;
+    }
+}
+
 const onMobHurt = {
     run: (callback) => {
         let e1 = pnx.listenEvent("cn.nukkit.event.entity.EntityDamageEvent", EventPriority.NORMAL, event => {
@@ -529,6 +581,118 @@ const onMobHurt = {
             if (cancel === false) event.setCancelled(true);
         });
         return e1 && e2;
+    }
+}
+
+const onEntityExplode = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.EntityExplodeEvent", EventPriority.NORMAL, event => {
+            let source = new Entity(event.getEntity());
+            let pos = new FloatPos(event.getPosition());
+            let radius = event.getYield();
+            let maxResistance = 999;//pnx没有实现这个事件项
+            let isDestroy = !event.getBlockList().isEmpty();
+            let isFire = !event.getIgnitions().isEmpty();
+            let cancel = callback(source, pos, radius, maxResistance, isDestroy, isFire);
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+const onMobSpawn = {
+    run: (callback) => {
+        //todo pnx暂未实现实体生成
+    }
+}
+
+const onProjectileHitEntity = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.ProjectileHitEvent", EventPriority.NORMAL, event => {
+            let entity = new Entity(event.getMovingObjectPosition().entityHit);
+            let source = new Entity(event.getEntity());
+            callback(entity, source);
+        });
+    }
+}
+
+const onWitherBossDestroy = {
+    run: (callback) => {
+        //todo pnx暂未实现凋零BOSS
+    }
+}
+
+const onRide = {
+    run: (callback) => {
+        //todo pnx暂未实现生物骑乘
+    }
+}
+
+const onStepOnPressurePlate = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.EntityInteractEvent", EventPriority.NORMAL, event => {
+            let block = event.getBlock();
+            if (block instanceof BlockPressurePlateBase) {
+                let entity = new Entity(event.getEntity());
+                let cancel = callback(entity, new Block(block));
+                if (cancel === false) event.setCancelled(true);
+            }
+        });
+    }
+}
+const onSpawnProjectile = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.ProjectileLaunchEvent", EventPriority.NORMAL, event => {
+            let shooter = event.getShooter();
+            let entity = event.getEntity();
+            let type = "";
+            //todo 不完全实现 pnx这个实现也没有监测全部实体
+            if (entity instanceof EntityEgg) {
+                type = "minecraft:egg";
+            } else if (entity instanceof EntityArrow) {
+                type = "minecraft:arrow";
+            } else if (entity instanceof EntityFishingHook) {
+                type = "minecraft:fishing_hook";
+            } else if (entity instanceof EntityEnderPearl) {
+                type = "minecraft:ender_pearl";
+            } else if (entity instanceof EntitySnowball) {
+                type = "minecraft:snowball";
+            } else if (entity instanceof EntityThrownTrident) {
+                type = "minecraft:trident";
+            }
+            let cancel = callback(new Entity(shooter), type);
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+const onProjectileCreated = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.ProjectileLaunchEvent", EventPriority.NORMAL, event => {
+            let shooter = event.getShooter();
+            let entity = event.getEntity();
+            callback(new Entity(shooter), new Entity(entity));
+        });
+    }
+}
+
+const onNpcCmd = {
+    run: (callback) => {
+        //todo 弄懂这个NPC是啥
+    }
+}
+
+const onChangeArmorStand = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.PlayerChangeArmorStandEvent", EventPriority.NORMAL, event => {
+            let cancel = callback(new Entity(event.getArmorStand()), new Player(event.getPlayer()), event.getSlot());
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+const onEntityTransformation = {
+    run: (callback) => {
+        //todo pnx还没实现村民转变
     }
 }
 
@@ -587,14 +751,30 @@ export const Event = {
     onOpenContainer: onOpenContainer,
     onCloseContainer: onCloseContainer,
     onInventoryChange: onInventoryChange,
-    onMove: onMove,
     onChangeSprinting: onChangeSprinting,
     onSetArmor: onSetArmor,
     onUseRespawnAnchor: onUseRespawnAnchor,
     onOpenContainerScreen: onOpenContainerScreen,
+    onExperienceAdd: onExperienceAdd,
+    onBedEnter: onBedEnter,
+
     // 实体事件
+    onMobDie: onMobDie,
     onMobHurt: onMobHurt,
+    onEntityExplode: onEntityExplode,
+    // onMobSpawn: onMobSpawn,
+    onProjectileHitEntity: onProjectileHitEntity,
+    // onWitherBossDestroy: onWitherBossDestroy,
+    // onRide: onRide,
+    onStepOnPressurePlate: onStepOnPressurePlate,
+    onSpawnProjectile: onSpawnProjectile,
+    onProjectileCreated: onProjectileCreated,
+    onNpcCmd: onNpcCmd,
+    onChangeArmorStand: onChangeArmorStand,
+    // onEntityTransformation: onEntityTransformation
+
     // 方块事件
+
     // 其它事件
     onScoreChanged: onScoreChanged,
     onServerStarted: onServerStarted
