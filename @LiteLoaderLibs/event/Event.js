@@ -14,7 +14,7 @@ import { SlotChangeAction } from 'cn.nukkit.inventory.transaction.action.SlotCha
 import { BlockPressurePlateBase } from 'cn.nukkit.block.BlockPressurePlateBase';
 import { EntityArrow } from 'cn.nukkit.entity.projectile.EntityArrow';
 import { EntityEgg } from 'cn.nukkit.entity.projectile.EntityEgg';
-import { EntityFishingHook } from 'cn.nukkit.entity.projectile.EntityFishingHook';
+import { EntityFishingHook } from 'cn.nukkit.entity.item.EntityFishingHook';
 import { EntityEnderPearl } from 'cn.nukkit.entity.projectile.EntityEnderPearl';
 import { EntitySnowball } from 'cn.nukkit.entity.projectile.EntitySnowball';
 import { EntityThrownTrident } from 'cn.nukkit.entity.projectile.EntityThrownTrident';
