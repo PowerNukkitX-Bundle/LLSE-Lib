@@ -67,8 +67,10 @@ export function main() {
         }
     });
     File.writeLine("control.txt", "stop");
+    File.writeLine("control.txt", "stop");
+    File.writeLine("control.txt", "stop");
 }
 
 export function close() {
-    File.delete('./plugins/Test');
+    File.deleteFolder('./plugins/Test');
 }

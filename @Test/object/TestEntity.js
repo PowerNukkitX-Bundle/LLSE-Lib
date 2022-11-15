@@ -29,7 +29,6 @@ export const TestEntity = () => {
             assertThat(entity.inWater).equals(false, "inWater属性读取异常");
             assertThat(entity.speed).equals(0.10000000149011612, "speed属性读取异常");
             assertThat(entity.direction.toString()).equals(`{"pitch":0,"yaw":0,"facing":2}`, "direction属性读取异常");
-            // assertThat(entity.uniqueId).equals(false,"inWater属性读取异常");
             try {
                 UUID.fromString(entity.uniqueId);
             } catch (e) {
@@ -51,7 +50,8 @@ export const TestEntity = () => {
         },
         testNBT: function () {
             let nbt = entity.getNbt();
-            assertThat(nbt.toSNBT()).equals(`{"Motion":[0.0d,0.0d,0.0d],"FallDistance":0.0f,"Pos":[0.0d,300.0d,0.0d],"Health":20.0f,"Fire":0s,"Invulnerable":0b,"Scale":1.0f,"Air":300s,"OnGround":0b,"Rotation":[0.0f,0.0f],"Tags":[]}`, "getNbt异常");
+            console.log(nbt.toSNBT());
+            assertThat(nbt.toSNBT()).equals(`{"Motion":[0.0d,0.0d,0.0d],"FallDistance":0.0f,"Pos":[0.0d,300.0d,0.0d],"Health":10.0f,"Fire":0s,"Invulnerable":0b,"Scale":1.0f,"Air":300s,"OnGround":0b,"Rotation":[0.0f,0.0f],"Tags":[]}`, "getNbt异常");
             let newNBT = nbt.setFloat("Health", 18);
             entity.setNbt(newNBT);
             assertThat(entity.getNbt().toSNBT()).equals(`{"Motion":[0.0d,0.0d,0.0d],"FallDistance":0.0f,"Pos":[0.0d,300.0d,0.0d],"Health":18.0f,"Fire":0s,"Invulnerable":0b,"Scale":1.0f,"Air":300s,"OnGround":0b,"Rotation":[0.0f,0.0f],"Tags":[]}`, "setNbt异常");

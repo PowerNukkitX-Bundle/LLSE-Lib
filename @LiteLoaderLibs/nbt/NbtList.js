@@ -22,7 +22,7 @@ import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
 import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
 import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
 import { NbtCompound } from './NbtCompound.js'
-import { isEmpty } from '../utils/underscore-esm-min.js'
+import { isEmpty, isNumber } from '../utils/underscore-esm-min.js'
 
 
 export class NbtList {
@@ -169,7 +169,7 @@ export class NbtList {
     toArray() {
         const result = [];
         let tag = this.getTag(0);
-        if (!tag) {
+        if (isEmpty(tag)) {
             return [];
         } else if (tag.getType() === 9) {
             for (let nbt of this._pnxNbt.getAll()) result.push(new NbtList(nbt).toArray());
@@ -223,12 +223,17 @@ export class NbtList {
         }
     }
 
-    _evaluate(index, tag) {
-        if (!index || !tag) return false;
-        if (index < 0 || !this.getSize() || index > this.getSize()) {
-            return false;
+    _evaluate(index, tag = null) {
+        if (isNumber(index) && !isEmpty(tag)) {
+            return (index > 0 || index < this.getSize()) && (tag.getType() === this._convertTagType(this._pnxNbt[0]).getType());
         }
-        return tag.getType() === this._pnxNbt[0].getType();
+        if (isNumber(index)) {
+            return index > 0 || index < this.getSize();
+        }
+        if (!isEmpty(tag)) {
+            return tag.getType() === this._convertTagType(this._pnxNbt[0]).getType();
+        }
+        return false;
     }
 
     /**
