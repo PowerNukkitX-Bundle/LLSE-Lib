@@ -22,7 +22,7 @@ import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
 import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
 import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
 import { NbtCompound } from './NbtCompound.js'
-import { isEmpty, isUndefined } from '../utils/underscore-esm-min.js'
+import { isEmpty } from '../utils/underscore-esm-min.js'
 
 
 export class NbtList {
@@ -224,17 +224,11 @@ export class NbtList {
     }
 
     _evaluate(index, tag) {
-        if (index != undefined) {
-            if (index < 0 || !this.getSize() || index > this.getSize()) {
-                return false;
-            }
+        if (!index || !tag) return false;
+        if (index < 0 || !this.getSize() || index > this.getSize()) {
+            return false;
         }
-        if (tag) {
-            if (tag.getType() !== this._pnxNbt[0].getType()) {
-                return false;
-            }
-        }
-        return true;
+        return tag.getType() === this._pnxNbt[0].getType();
     }
 
     /**
