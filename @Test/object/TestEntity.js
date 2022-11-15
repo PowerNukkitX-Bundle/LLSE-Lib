@@ -50,7 +50,6 @@ export const TestEntity = () => {
         },
         testNBT: function () {
             let nbt = entity.getNbt();
-            console.log(nbt.toSNBT());
             assertThat(nbt.toSNBT()).equals(`{"Motion":[0.0d,0.0d,0.0d],"FallDistance":0.0f,"Pos":[0.0d,300.0d,0.0d],"Health":10.0f,"Fire":0s,"Invulnerable":0b,"Scale":1.0f,"Air":300s,"OnGround":0b,"Rotation":[0.0f,0.0f],"Tags":[]}`, "getNbt异常");
             let newNBT = nbt.setFloat("Health", 18);
             entity.setNbt(newNBT);
