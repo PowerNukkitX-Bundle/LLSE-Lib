@@ -169,13 +169,13 @@ export class NbtList {
     toArray() {
         const result = [];
         let tag = this.getTag(0);
-        if (isUndefined(tag)) {
+        if (!tag) {
             return [];
         } else if (tag.getType() === 9) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(new ListTag(nbt).toArray());
+            for (let nbt of this._pnxNbt.getAll()) result.push(new NbtList(nbt).toArray());
             return result;
         } else if (tag.getType() === 10) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(new CompoundTag(nbt).toObject());
+            for (let nbt of this._pnxNbt.getAll()) result.push(new NbtCompound(nbt).toObject());
             return result;
         } else {
             for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt).get());
@@ -199,7 +199,7 @@ export class NbtList {
     _preToArray() {
         const result = [];
         let tag = this.getTag(0);
-        if (isUndefined(tag)) {
+        if (!tag) {
             return {};
         } else if (tag.getType() === 10) {
             for (let nbt of this._pnxNbt.getAll()) result.push(nbt._preToObject());
@@ -224,13 +224,13 @@ export class NbtList {
     }
 
     _evaluate(index, tag) {
-        if (index) {
-            if (index < 0 || index > this.getSize()) {
+        if (index != undefined) {
+            if (index < 0 || !this.getSize() || index > this.getSize()) {
                 return false;
             }
         }
         if (tag) {
-            if (tag.getType() !== this._nbt[0].getType()) {
+            if (tag.getType() !== this._pnxNbt[0].getType()) {
                 return false;
             }
         }
