@@ -8,8 +8,6 @@ import { colorLog, File, log } from "../@LiteLoaderLibs/index.js";
 import { TestDBSession } from './database/TestDBSession.js';
 import { TestPlayer } from './object/TestPlayer.js';
 import { TestJsonConfig } from './config/TestJsonConfig.js';
-import { FileUtils } from 'org.apache.commons.io.FileUtils';
-import { File as JFile } from 'java.io.File';
 import { TestItem } from './object/TestItem.js'
 
 /***
@@ -69,8 +67,10 @@ export function main() {
         }
     });
     File.writeLine("control.txt", "stop");
+    File.writeLine("control.txt", "stop");
+    File.writeLine("control.txt", "stop");
 }
 
 export function close() {
-    FileUtils.deleteDirectory(new JFile('./plugins/Test'));
+    File.deleteFolder('./plugins/Test');
 }

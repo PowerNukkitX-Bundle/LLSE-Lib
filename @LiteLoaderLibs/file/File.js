@@ -3,6 +3,7 @@ import { Job } from ":concurrent";
 import { Paths } from "java.nio.file.Paths";
 import { Files } from "java.nio.file.Files";
 import { Nukkit } from "cn.nukkit.Nukkit";
+import { Comparator } from 'java.util.Comparator'
 
 export class File {
     /**
@@ -86,7 +87,7 @@ export class File {
     }
 
     /**
-     * 删除文件 / 文件夹
+     * 删除文件 / 空的文件夹
      * @param path {string} 路径，相对路径以 PNX 根目录为基准
      * @returns {boolean} 是否成功删除
      */
@@ -94,6 +95,22 @@ export class File {
         const _path = Paths.get(path);
         Files.delete(_path);
         return !Files.exists(_path);
+    }
+
+    /**
+     * 删除文件夹及其下所有文件
+     * @param folder {string} 文件夹的路径
+     * @returns {boolean} 是否成功删除
+     */
+    static deleteFolder(folder) {
+        const _path = Paths.get(folder);
+        let result = true;
+        let walk = Files.walk(_path)
+        walk.sorted(Comparator.reverseOrder()).forEach((p) => {
+            Files.delete(p)
+            result = !Files.exists(p);
+        });
+        return result;
     }
 
     /**

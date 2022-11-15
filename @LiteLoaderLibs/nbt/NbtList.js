@@ -22,7 +22,7 @@ import { LongTag } from 'cn.nukkit.nbt.tag.LongTag'
 import { ShortTag } from 'cn.nukkit.nbt.tag.ShortTag'
 import { StringTag } from 'cn.nukkit.nbt.tag.StringTag'
 import { NbtCompound } from './NbtCompound.js'
-import { isEmpty, isUndefined } from '../utils/underscore-esm-min.js'
+import { isEmpty, isNumber } from '../utils/underscore-esm-min.js'
 
 
 export class NbtList {
@@ -169,13 +169,13 @@ export class NbtList {
     toArray() {
         const result = [];
         let tag = this.getTag(0);
-        if (isUndefined(tag)) {
+        if (isEmpty(tag)) {
             return [];
         } else if (tag.getType() === 9) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(new ListTag(nbt).toArray());
+            for (let nbt of this._pnxNbt.getAll()) result.push(new NbtList(nbt).toArray());
             return result;
         } else if (tag.getType() === 10) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(new CompoundTag(nbt).toObject());
+            for (let nbt of this._pnxNbt.getAll()) result.push(new NbtCompound(nbt).toObject());
             return result;
         } else {
             for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt).get());
@@ -199,13 +199,13 @@ export class NbtList {
     _preToArray() {
         const result = [];
         let tag = this.getTag(0);
-        if (isUndefined(tag)) {
+        if (!tag) {
             return {};
         } else if (tag.getType() === 10) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(nbt._preToObject());
+            for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt)._preToObject());
             return result;
         } else if (tag.getType() === 9) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(nbt._preToArray());
+            for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt)._preToArray());
             return result;
         } else if (tag.getType() === 7) {
             for (let nbt of this._pnxNbt.getAll()) {
@@ -223,18 +223,17 @@ export class NbtList {
         }
     }
 
-    _evaluate(index, tag) {
-        if (index) {
-            if (index < 0 || index > this.getSize()) {
-                return false;
-            }
+    _evaluate(index, tag = null) {
+        if (isNumber(index) && !isEmpty(tag)) {
+            return (index > 0 || index < this.getSize()) && (tag.getType() === this._convertTagType(this._pnxNbt[0]).getType());
         }
-        if (tag) {
-            if (tag.getType() !== this._nbt[0].getType()) {
-                return false;
-            }
+        if (isNumber(index)) {
+            return index > 0 || index < this.getSize();
         }
-        return true;
+        if (!isEmpty(tag)) {
+            return tag.getType() === this._convertTagType(this._pnxNbt[0]).getType();
+        }
+        return false;
     }
 
     /**

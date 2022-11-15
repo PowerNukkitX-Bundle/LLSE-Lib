@@ -557,16 +557,18 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
  * @returns {boolean} 是否成功生成
  */
 function spawnParticle(x, y, z, dimid, type) {
-    /*
-    */
     if (arguments.length === 5) {
         const level = dimToLevel(dimid);
         if (level === null) {
-            return null;
+            return false;
         }
-        return Position.fromObject(new Vector3(x, y, z), level);
+        let pos = Position.fromObject(new Vector3(x, y, z), level);
+        pos.level.addParticleEffect(pos.asVector3f(), type);
+        return true;
     } else if (arguments.length === 2) {
-        return x.position;// Java Position
+        let pos = x.position;// Java Position
+        pos.level.addParticleEffect(pos.asVector3f(), type);
+        return true;
     } else {
         throw 'error arguments: ' + JSON.stringify([...arguments]);
     }
