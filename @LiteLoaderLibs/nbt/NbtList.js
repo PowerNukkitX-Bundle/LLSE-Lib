@@ -202,10 +202,10 @@ export class NbtList {
         if (!tag) {
             return {};
         } else if (tag.getType() === 10) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(nbt._preToObject());
+            for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt)._preToObject());
             return result;
         } else if (tag.getType() === 9) {
-            for (let nbt of this._pnxNbt.getAll()) result.push(nbt._preToArray());
+            for (let nbt of this._pnxNbt.getAll()) result.push(this._convertTagType(nbt)._preToArray());
             return result;
         } else if (tag.getType() === 7) {
             for (let nbt of this._pnxNbt.getAll()) {
