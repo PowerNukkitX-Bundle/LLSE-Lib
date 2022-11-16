@@ -26,7 +26,8 @@ export class i18n {
         if (File.checkIsDir(path)) {
             let dirList = File.getFilesList(path);
             for (let name of dirList) {
-                readConfig(File.readFrom(Paths.get(path, name)));
+                if (File.checkIsDir(Paths.get(path, name).toString())) continue;
+                readConfig(File.readFrom(Paths.get(path, name).toString()), name.split('.')[0]);
             }
         } else {
             readConfig(File.readFrom(path));
@@ -58,10 +59,16 @@ export class i18n {
     */
     static trl(localeName, key, ...args) {
         //console.log(args); // [ 'string0', 1, { named_arg: 114.51419 } ]
+        if (args.length === 1 && args[0].constructor === Array) {
+            // todo: LLSE似乎是这种形式，而非Spread syntax
+            args = args[0];
+        }
         const REG = new RegExp(/(?<=\{).*?(?=\})/, "gim");
         let res = i18n.get(key, localeName);
         let params = res.match(REG);
     
+        if (!params) return res;// 没有匹配到任何文字模板则直接返回
+
         let voidStencil = [].concat(args);// 用于最后的空模板替换
         if ((args[args.length-1]).constructor === Object) {
             voidStencil[args.length-1] = null;
@@ -116,15 +123,20 @@ export class i18n {
 /**
  * 读取配置并与已有的langMap合并
  * @param {string} content 语言配置文件的内容
+ * @param {string} lang 语言地区代号 形如 zh_CN
  */
-function readConfig(content) {
+function readConfig(content, lang) {
     let cfg = JSON.parse(content);
+    if (lang) {
+        langMap.set(lang, Object.assign(langMap.get(lang) || {}, cfg));
+        return;
+    }
     for (let key in cfg) {
         if (!langMap.has(key)) {
             langMap.set(key, cfg[key]);
             continue;
         }
-        langMap.set(key, Object.assign(langMap.get(key), cfg[key]));
+        langMap.set(key, Object.assign(langMap.get(key)|| {}, cfg[key]));
     }
 }
 /**
