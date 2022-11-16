@@ -567,7 +567,7 @@ function spawnParticle(x, y, z, dimid, type) {
         return true;
     } else if (arguments.length === 2) {
         let pos = x.position;// Java Position
-        pos.level.addParticleEffect(pos.asVector3f(), type);
+        pos.level.addParticleEffect(pos.asVector3f(), y);
         return true;
     } else {
         throw 'error arguments: ' + JSON.stringify([...arguments]);
