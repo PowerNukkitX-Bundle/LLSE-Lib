@@ -112,7 +112,7 @@ export class File {
         });
         return result;
     }
-
+    
     /**
      * 判断文件 / 文件夹是否存在
      * @param path {string} 路径，相对路径以 PNX 根目录为基准
@@ -176,7 +176,7 @@ export class File {
      */
     static checkIsDir(path) {
         const _path = Paths.get(path);
-        return _path.getFileName() === null;
+        return Files.isDirectory(_path);
     }
 
     /**
@@ -188,8 +188,9 @@ export class File {
         let arr = [];
         const paths = Files.walk(Paths.get(path));
         paths.forEach((v, i) => {
-            arr.push(v.toString())
+            arr.push(Paths.get(v.toString()).getFileName().toString())
         });
+        arr.shift();// 第一个是当前文件夹的名字
         return arr;
     }
 
