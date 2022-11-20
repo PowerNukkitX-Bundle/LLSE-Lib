@@ -101,6 +101,9 @@ export class NbtCompound {
      * @returns {any} 键对应的值的具体数据
      */
     getData(key) {
+        if (!this._pnxNbt.contains(key)) {
+            return null;
+        }
         const result = this._convertTagType(this._pnxNbt.get(key));
         if (result.getType() === 9 || result.getType() === 10) {
             return result;

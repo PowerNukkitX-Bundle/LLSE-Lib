@@ -563,11 +563,11 @@ function spawnParticle(x, y, z, dimid, type) {
             return false;
         }
         let pos = Position.fromObject(new Vector3(x, y, z), level);
-        pos.level.addParticleEffect(pos.asVector3f(), type);
+        pos.level.addParticleEffect(pos.asVector3f(), type, -1, pos.level.getDimension(), null);
         return true;
     } else if (arguments.length === 2) {
         let pos = x.position;// Java Position
-        pos.level.addParticleEffect(pos.asVector3f(), y);
+        pos.level.addParticleEffect(pos.asVector3f(), y, -1, pos.level.getDimension(), null);
         return true;
     } else {
         throw 'error arguments: ' + JSON.stringify([...arguments]);
