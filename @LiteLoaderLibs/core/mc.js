@@ -171,7 +171,8 @@ function regPlayerCmd(cmd, description, callback, level = 0) {
     const commandBuilder = pnx.commandBuilder();
     commandBuilder.setCommandName(cmd);
     commandBuilder.setDescription(description);
-    commandBuilder.setCallback((sender, args) => {
+    commandBuilder.setCallback((sender, args_) => {
+        let args = Java.from(args_);
         if (ConsoleCommandMap.has(cmd)) {
             ConsoleCommandMap.get(cmd).call(sender, sender, args);// ! Map绑定this给sender
         }
@@ -203,7 +204,8 @@ function regConsoleCmd(cmd, description, callback) {
     const commandBuilder = pnx.commandBuilder();
     commandBuilder.setCommandName(cmd);
     commandBuilder.setDescription(description);
-    commandBuilder.setCallback((sender, args) => {
+    commandBuilder.setCallback((sender, args_) => {
+        let args = Java.from(args_);
         if (PlayerCommandMap.has(cmd)) {
             PlayerCommandMap.get(cmd).call(sender, sender, args);
         }
