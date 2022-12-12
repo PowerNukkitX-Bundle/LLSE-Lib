@@ -9,8 +9,13 @@ import { ScoreObjectives } from '../object/ScoreObjectives.js';
 import { Command } from '../command/Command.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
+import { NBT } from '../nbt/NBT.js';
 import { NbtCompound } from '../nbt/NbtCompound.js';
 import { server } from '../utils/Mixins.js';
+import { NbtByte } from '../nbt/NbtByte.js';
+import { Entity } from '../object/Entity.js';
+import { IntPos } from '../object/IntPos.js';
+import { FloatPos } from '../object/FloatPos.js';
 import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { Explosion } from 'cn.nukkit.level.Explosion';
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
@@ -21,13 +26,10 @@ import { BlockStateRegistry } from 'cn.nukkit.blockstate.BlockStateRegistry';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Permission } from 'cn.nukkit.permission.Permission';
 import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
-import { NbtByte } from "../nbt/NbtByte.js";
-import { EntityItem } from 'cn.nukkit.entity.item.EntityItem'
-import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
-import { Random } from 'java.util.Random'
-import { NBTIO } from 'cn.nukkit.nbt.NBTIO'
-import { Entity } from '../object/Entity.js'
-
+import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
+import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity';
+import { Random } from 'java.util.Random';
+import { NBTIO } from 'cn.nukkit.nbt.NBTIO';
 const PlayerCommandMap = new Map();
 const ConsoleCommandMap = new Map();
 server.getPluginManager().addPermission(new Permission("liteloaderlibs.command.any", "liteloader插件any权限", "true"));
@@ -169,7 +171,8 @@ function regPlayerCmd(cmd, description, callback, level = 0) {
     const commandBuilder = pnx.commandBuilder();
     commandBuilder.setCommandName(cmd);
     commandBuilder.setDescription(description);
-    commandBuilder.setCallback((sender, args) => {
+    commandBuilder.setCallback((sender, args_) => {
+        let args = Java.from(args_);
         if (ConsoleCommandMap.has(cmd)) {
             ConsoleCommandMap.get(cmd).call(sender, sender, args);// ! Map绑定this给sender
         }
@@ -201,7 +204,8 @@ function regConsoleCmd(cmd, description, callback) {
     const commandBuilder = pnx.commandBuilder();
     commandBuilder.setCommandName(cmd);
     commandBuilder.setDescription(description);
-    commandBuilder.setCallback((sender, args) => {
+    commandBuilder.setCallback((sender, args_) => {
+        let args = Java.from(args_);
         if (PlayerCommandMap.has(cmd)) {
             PlayerCommandMap.get(cmd).call(sender, sender, args);
         }
@@ -612,6 +616,140 @@ function getAllScoreObjectives() {
 function getDisplayObjective(slot) {
     return ScoreObjectives.getDisplayObjective(slot);
 }
+/**
+ * 生成一个整数坐标对象
+ * @param x {number} x 坐标
+ * @param y {number} y 坐标
+ * @param z {number} z 坐标
+ * @param dimid {number|string} 维度ID：0 代表主世界，1 代表下界，2 代表末地
+ * @returns {IntPos|null} 错误的世界则返回null
+ */
+function newIntPos(x, y, z, dimid) {
+    let level = dimToLevel(dimid);
+    if (!level) return null;
+    let pos = new Position(x, y, z, level);
+    return new IntPos(pos);
+}
+/**
+ * 生成一个浮点数坐标对象
+ * @param x {number} x 坐标
+ * @param y {number} y 坐标
+ * @param z {number} z 坐标
+ * @param dimid {number|string} 维度ID：0 代表主世界，1 代表下界，2 代表末地
+ * @returns {IntPos|null} 错误的世界则返回null
+ */
+function newFloatPos(x, y, z, dimid) {
+    let level = dimToLevel(dimid);
+    if (!level) return null;
+    let pos = new Position(x, y, z, level);
+    return new FloatPos(pos);
+}
+/**
+ * 获取结构NBT
+ * @todo 未实现实体Entities
+ * @param pos1 {IntPos} 位置1
+ * @param pos2 {IntPos} pos2 位置2
+ * @param ignoreBlocks {boolean} 是否忽略方块(默认false) 
+ * @param ignoreEntities {boolean}  是否忽略实体(默认false)
+ * @returns {NbtCompound} 结构的NBT数据
+ */
+function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) {
+	let minPos = [pos1.x, pos1.y, pos1.z];
+	let maxPos = [pos2.x, pos2.y, pos2.z];
+    if (minPos[0] > maxPos[0]) {
+        maxPos[0] = pos1.x;
+        minPos[0] = pos2.x;
+    }
+    if (minPos[1] > maxPos[1]) {
+        maxPos[1] = pos1.y;
+        minPos[1] = pos2.y;
+    }
+    if (minPos[2] > maxPos[2]) {
+        maxPos[2] = pos1.z;
+        minPos[2] = pos2.z;
+    }
+    const size = [maxPos[0] - minPos[0] + 1, maxPos[1] - minPos[1] + 1, maxPos[2] - minPos[2] + 1];
+    const snbt = {
+        "structure_world_origin": minPos,
+        "format_version": 1,
+        "size": size,
+        "structure": {
+            "entities": [],
+            "palette": {
+                "default": {
+                "block_palette": [{
+                    "name": "minecraft:air",
+                    //"version": 1786555,
+                    "states": {}
+                }],
+                "block_position_data": {}
+                }
+            },
+            "block_indices": [
+                [],
+                []
+            ]
+        }
+    }
+    let paletteMap = [];
+    for (let x = minPos[0]; x<= maxPos[0]; ++x) {
+        if (ignoreBlocks) { // 忽略方块时直接返回
+            break;
+        }
+        for (let y = minPos[1]; y<= maxPos[1]; ++y) {
+            for (let z = minPos[2]; z<= maxPos[2]; ++z) {
+                let block = mc.getBlock(x, y, z, pos1.dim);
+                if (block.type === "minecraft:air") {
+                    snbt.structure.block_indices[0].push(0);
+                    snbt.structure.block_indices[1].push(0);
+                    continue;
+                }
+                const blockSNBT = block.getNbt().toString();
+                let index = paletteMap.indexOf(blockSNBT);
+                if (index === -1) {
+                    paletteMap.push(blockSNBT);
+                    snbt.structure.palette.default.block_palette.push(JSON.parse(blockSNBT));
+                    index = snbt.structure.palette.default.block_palette.length - 1;
+                } else {
+                    index++;
+                }
+                snbt.structure.block_indices[0].push(index);
+                snbt.structure.block_indices[1].push(0);
+            }
+        }
+    }
+    let data = JSON.stringify(snbt).replace(/_bit":0/g, '_bit":0b').replace(/_bit":1/g, '_bit":1b');
+    return NBT.parseSNBT(data);
+}
+/**
+ * 设置结构NBT
+ * @todo 实现镜像与旋转
+ * @param nbt {NbtCompound} 结构的NBT数据
+ * @param pos {IntPos} 放置的位置，向递增坐标的方向构建
+ * @param mirror {number} 镜像 0:None 1:X 2:Z 3:XZ
+ * @param ignoreEntities {number} 旋转 0:None 1:Rotate90 2:Rotate180 3:Rotate270
+ * @returns {boolean} 是否成功
+ */
+function setStructure(nbt, pos, mirror = 0, rotation = 0) {
+    var data = JSON.parse(nbt.toString());
+    if (data.format_version != 1) {
+        console.log("§emcstructure file version("+data.format_version+")");
+    }
+    var size = data.size;
+    var blockPalette = data.structure.palette.default.block_palette;
+    var [paletteList, damageList] = data.structure.block_indices;// ZYX
+    var index = 0;
+    for (let x = 0; x < size[0]; x++) {
+        for (let y = 0; y < size[1]; y++) {
+            for (let z = 0; z < size[2]; z++) {
+                const block = paletteList[index] > -1 ? blockPalette[paletteList[index]] : {name:"minecraft:air", states:{}, "version": 17959425};
+                mc.setBlock(x + pos.x, y + pos.y, z + pos.z, pos.dim, NBT.parseSNBT(JSON.stringify(block).replaceAll('_bit":0', '_bit":0b').replaceAll('_bit":1', '_bit":1b')));
+                index++;
+            }
+        }
+    }
+    return true;
+}
 
 export const mc = {
     //PNX 的API
@@ -642,6 +780,10 @@ export const mc = {
     getBlock,
     setBlock,
     spawnParticle,
+    newIntPos,
+    newFloatPos,
+    getStructure,
+    setStructure,
     //📝 计分板 API
     removeScoreObjective,
     clearDisplayObjective,

@@ -220,11 +220,11 @@ export class File {
      * @returns {boolean} 是否成功
      */
     static writeTo(path, text) {
-        const _path = Paths.get(path);
+        const _path = Paths.get('.', path);
         try {
             if (!Files.exists(_path)) {// 判断是否存在，若不存在则创建
-                if (_path.getParent() && !Files.exists(_path.getParent())) {
-                    Files.createDirectory(_path.getParent());
+                if (!Files.exists(_path.getParent())) {
+                    Files.createDirectories(_path.getParent());
                 }
                 Files.createFile(_path);
             }

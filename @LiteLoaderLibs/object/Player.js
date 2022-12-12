@@ -1059,7 +1059,10 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     setExtraData(name, data) {
-        Player.ExtraDataMap.set(name, data);
+        if (!Player.ExtraDataMap.has(this.realName)) {
+            Player.ExtraDataMap.set(this.realName, new Map());
+        }
+        Player.ExtraDataMap.get(this.realName).set(name, data);
         return true;
     }
 
@@ -1069,7 +1072,10 @@ export class Player {
      * @returns {any} 返回获取的数据
      */
     getExtraData(name) {
-        return Player.ExtraDataMap.get(name);
+        if (!Player.ExtraDataMap.has(this.realName)) {
+            Player.ExtraDataMap.set(this.realName, new Map());
+        }
+        return Player.ExtraDataMap.get(this.realName).get(name);
     }
 
     /**
@@ -1078,8 +1084,11 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     delExtraData(name) {
-        if (Player.ExtraDataMap.has(name)) {
-            Player.ExtraDataMap.delete(name);
+        if (!Player.ExtraDataMap.has(this.realName)) {
+            Player.ExtraDataMap.set(this.realName, new Map());
+        }
+        if (Player.ExtraDataMap.get(this.realName).has(name)) {
+            Player.ExtraDataMap.get(this.realName).delete(name);
             return true;
         } else {
             return false;

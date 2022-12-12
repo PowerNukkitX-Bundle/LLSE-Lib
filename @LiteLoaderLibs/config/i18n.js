@@ -15,8 +15,9 @@ export class i18n {
     static load(path, defaultLocaleName, defaultLangData) {// TODO: 同一个插件应该共享同一个langMap
         if (!File.exists(path)) {
             let filePath = path;
-            if (File.checkIsDir(path)) {
-                filePath = Paths.get(path, 'lang.json');
+            if (File.checkIsDir(path) || path.endsWith("/") || !path.toLocaleLowerCase().endsWith(".json")) {
+                File.createDir(path);
+                filePath = Paths.get(path, defaultLocaleName ? defaultLocaleName+'.json' : 'lang.json').toString();
             }
             File.writeTo(filePath, typeof(defaultLangData) === 'string' ? defaultLangData : JSON.stringify(defaultLangData,null,2));
         }
