@@ -118,13 +118,9 @@ export class NbtCompound {
     toSNBT(space = -1) {
         var snbt;
         if (space === -1) {
-            snbt = this._pnxNbt.toSnbt();
-        } else snbt = this._pnxNbt.toSnbt(space);
-        //做这个处理是为了将格式与LLSE统一,pnx内部根Compound会显示 "":{xxx}
-        //而LLSE会显示 {xxx}
-        if (snbt.substring(0, 2) === `""`) {
-            return snbt.substring(snbt.indexOf("{"), snbt.length);
-        } else return snbt;
+            snbt = this._pnxNbt.toSNBT();
+        } else snbt = this._pnxNbt.toSNBT(space);
+        return snbt;
     }
 
     /**

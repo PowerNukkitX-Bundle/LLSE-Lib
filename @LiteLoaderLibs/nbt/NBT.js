@@ -12,7 +12,7 @@ export class NBT {
      * @returns {NbtCompound} 生成的 NBT 对象
      */
     static parseSNBT(snbt) {
-        return new NbtCompound(SNBTParser.parseSNBT(snbt));
+        return new NbtCompound(SNBTParser.parse(snbt));
     }
 
     /**
