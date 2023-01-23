@@ -1,92 +1,92 @@
-name: package
-on:
-  push:
-  workflow_dispatch:
-
-jobs:
-  check-files:
-    name: 检查仓库文件
-    runs-on: ubuntu-latest
-    outputs:
-      changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
-
-    steps:
-      - name: 检出仓库内容
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: 检查文件改动情况
-        id: check-changed-files
-        uses: tj-actions/changed-files@v11.4
-
-      - name: 输出更改文件列表
-        run: echo ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
-  test:
-    needs: check-files
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout source
-        uses: actions/checkout@v3
-      - name: checkout PNX source
-        uses: actions/checkout@v3
-        with:
-          repository: 'PowerNukkitX/PowerNukkitX'
-          path: 'core'
-      - name: checkout LL-libs runtime
-        uses: actions/checkout@v3
-        with:
-          repository: 'PowerNukkitX/LL-libs-Runtime'
-          path: 'env'
-      - name: setup-graalvm-ce
-        uses: rinx/setup-graalvm-ce@v0.0.5
-        with:
-          graalvm-version: "22.1.0"
-          java-version: "java17"
-          native-image: "false"
-      - name: Cache local Maven repository
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: setup running environment
-        run: |
-          cd env
-          curl https://github.com/PowerNukkitX/PNX-CLI/releases/download/v0.0.6/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
-          unzip -j PNX-CLI-Linux-x86.zip && chmod +x pnx && ./pnx server install --latest
-          cd ../
-          cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
-          cp target/libs -R ../env
-          cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @Test -R env/plugins
-      - name: run test
-        run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
-        id: test-result
-      - name: fail
-        if: ${{ steps.test-result.outputs.success == 'false' }}
-        uses: cutenode/action-always-fail@v1.0.0
-  build:
-    if: github.event_name == 'push' && (!contains(github.ref_name, 'patch'))
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout source
-        uses: actions/checkout@master
-      - name: move
-        run: |
-          mkdir $GITHUB_WORKSPACE/src
-          mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
-      - name: compress
-        uses: nizarmah/auto-minify@v2.1
-        with:
-          overwrite: true
-          directory: ./src/@LiteLoaderLibs
-          js_engine: uglify-js
-      - name: upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: LiteLoaderLibs
-          path: |
-            src
-            !**/jsconfig.json
+#name: package
+#on:
+#  push:
+#  workflow_dispatch:
+#
+#jobs:
+#  check-files:
+#    name: 检查仓库文件
+#    runs-on: ubuntu-latest
+#    outputs:
+#      changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
+#
+#    steps:
+#      - name: 检出仓库内容
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#
+#      - name: 检查文件改动情况
+#        id: check-changed-files
+#        uses: tj-actions/changed-files@v11.4
+#
+#      - name: 输出更改文件列表
+#        run: echo ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
+#  test:
+#    needs: check-files
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: checkout source
+#        uses: actions/checkout@v3
+#      - name: checkout PNX source
+#        uses: actions/checkout@v3
+#        with:
+#          repository: 'PowerNukkitX/PowerNukkitX'
+#          path: 'core'
+#      - name: checkout LL-libs runtime
+#        uses: actions/checkout@v3
+#        with:
+#          repository: 'PowerNukkitX/LL-libs-Runtime'
+#          path: 'env'
+#      - name: setup-graalvm-ce
+#        uses: rinx/setup-graalvm-ce@v0.0.5
+#        with:
+#          graalvm-version: "22.1.0"
+#          java-version: "java17"
+#          native-image: "false"
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#      - name: setup running environment
+#        run: |
+#          cd env
+#          curl https://github.com/PowerNukkitX/PNX-CLI/releases/download/v0.0.6/PNX-CLI-Linux-x86.zip -o PNX-CLI-Linux-x86.zip -L
+#          unzip -j PNX-CLI-Linux-x86.zip && chmod +x pnx && ./pnx server install --latest
+#          cd ../
+#          cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
+#          cp target/libs -R ../env
+#          cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @Test -R env/plugins
+#      - name: run test
+#        run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
+#        id: test-result
+#      - name: fail
+#        if: ${{ steps.test-result.outputs.success == 'false' }}
+#        uses: cutenode/action-always-fail@v1.0.0
+#  build:
+#    if: github.event_name == 'push' && (!contains(github.ref_name, 'patch'))
+#    needs: test
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: checkout source
+#        uses: actions/checkout@master
+#      - name: move
+#        run: |
+#          mkdir $GITHUB_WORKSPACE/src
+#          mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
+#      - name: compress
+#        uses: nizarmah/auto-minify@v2.1
+#        with:
+#          overwrite: true
+#          directory: ./src/@LiteLoaderLibs
+#          js_engine: uglify-js
+#      - name: upload artifact
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: LiteLoaderLibs
+#          path: |
+#            src
+#            !**/jsconfig.json
