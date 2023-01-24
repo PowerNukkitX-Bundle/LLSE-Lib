@@ -30,6 +30,7 @@ import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity';
 import { Random } from 'java.util.Random';
 import { NBTIO } from 'cn.nukkit.nbt.NBTIO';
+
 const PlayerCommandMap = new Map();
 const ConsoleCommandMap = new Map();
 server.getPluginManager().addPermission(new Permission("liteloaderlibs.command.any", "liteloader插件any权限", "true"));
@@ -126,10 +127,11 @@ function runcmdEx(cmd) {
  * @param [alias] {string} 命令别名（默认空值）
  * @returns {Command} 指令对象
  */
-function newCommand(cmd, description, permission = PermType.Any, flag, alias) {
-    let perm = 'liteloaderlibs.command.any';
+function newCommand(cmd, description, permission = PermType.GameMasters, flag, alias) {
+    let perm = 'liteloaderlibs.command.op';
     switch (permission) {
         case PermType.Any:
+            perm = 'liteloaderlibs.command.any';
             break;
         case PermType.GameMasters:
             perm = 'liteloaderlibs.command.op';
@@ -616,6 +618,7 @@ function getAllScoreObjectives() {
 function getDisplayObjective(slot) {
     return ScoreObjectives.getDisplayObjective(slot);
 }
+
 /**
  * 生成一个整数坐标对象
  * @param x {number} x 坐标
@@ -630,6 +633,7 @@ function newIntPos(x, y, z, dimid) {
     let pos = new Position(x, y, z, level);
     return new IntPos(pos);
 }
+
 /**
  * 生成一个浮点数坐标对象
  * @param x {number} x 坐标
@@ -644,18 +648,19 @@ function newFloatPos(x, y, z, dimid) {
     let pos = new Position(x, y, z, level);
     return new FloatPos(pos);
 }
+
 /**
  * 获取结构NBT
  * @todo 未实现实体Entities
  * @param pos1 {IntPos} 位置1
  * @param pos2 {IntPos} pos2 位置2
- * @param ignoreBlocks {boolean} 是否忽略方块(默认false) 
+ * @param ignoreBlocks {boolean} 是否忽略方块(默认false)
  * @param ignoreEntities {boolean}  是否忽略实体(默认false)
  * @returns {NbtCompound} 结构的NBT数据
  */
 function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) {
-	let minPos = [pos1.x, pos1.y, pos1.z];
-	let maxPos = [pos2.x, pos2.y, pos2.z];
+    let minPos = [pos1.x, pos1.y, pos1.z];
+    let maxPos = [pos2.x, pos2.y, pos2.z];
     if (minPos[0] > maxPos[0]) {
         maxPos[0] = pos1.x;
         minPos[0] = pos2.x;
@@ -677,12 +682,12 @@ function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) 
             "entities": [],
             "palette": {
                 "default": {
-                "block_palette": [{
-                    "name": "minecraft:air",
-                    //"version": 1786555,
-                    "states": {}
-                }],
-                "block_position_data": {}
+                    "block_palette": [{
+                        "name": "minecraft:air",
+                        //"version": 1786555,
+                        "states": {}
+                    }],
+                    "block_position_data": {}
                 }
             },
             "block_indices": [
@@ -692,12 +697,12 @@ function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) 
         }
     }
     let paletteMap = [];
-    for (let x = minPos[0]; x<= maxPos[0]; ++x) {
+    for (let x = minPos[0]; x <= maxPos[0]; ++x) {
         if (ignoreBlocks) { // 忽略方块时直接返回
             break;
         }
-        for (let y = minPos[1]; y<= maxPos[1]; ++y) {
-            for (let z = minPos[2]; z<= maxPos[2]; ++z) {
+        for (let y = minPos[1]; y <= maxPos[1]; ++y) {
+            for (let z = minPos[2]; z <= maxPos[2]; ++z) {
                 let block = mc.getBlock(x, y, z, pos1.dim);
                 if (block.type === "minecraft:air") {
                     snbt.structure.block_indices[0].push(0);
@@ -721,6 +726,7 @@ function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) 
     let data = JSON.stringify(snbt).replace(/_bit":0/g, '_bit":0b').replace(/_bit":1/g, '_bit":1b');
     return NBT.parseSNBT(data);
 }
+
 /**
  * 设置结构NBT
  * @todo 实现镜像与旋转
@@ -733,7 +739,7 @@ function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) 
 function setStructure(nbt, pos, mirror = 0, rotation = 0) {
     var data = JSON.parse(nbt.toString());
     if (data.format_version != 1) {
-        console.log("§emcstructure file version("+data.format_version+")");
+        console.log("§emcstructure file version(" + data.format_version + ")");
     }
     var size = data.size;
     var blockPalette = data.structure.palette.default.block_palette;
@@ -742,7 +748,11 @@ function setStructure(nbt, pos, mirror = 0, rotation = 0) {
     for (let x = 0; x < size[0]; x++) {
         for (let y = 0; y < size[1]; y++) {
             for (let z = 0; z < size[2]; z++) {
-                const block = paletteList[index] > -1 ? blockPalette[paletteList[index]] : {name:"minecraft:air", states:{}, "version": 17959425};
+                const block = paletteList[index] > -1 ? blockPalette[paletteList[index]] : {
+                    name: "minecraft:air",
+                    states: {},
+                    "version": 17959425
+                };
                 mc.setBlock(x + pos.x, y + pos.y, z + pos.z, pos.dim, NBT.parseSNBT(JSON.stringify(block).replaceAll('_bit":0', '_bit":0b').replaceAll('_bit":1', '_bit":1b')));
                 index++;
             }

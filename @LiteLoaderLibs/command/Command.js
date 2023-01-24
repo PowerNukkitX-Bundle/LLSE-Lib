@@ -7,8 +7,11 @@ import { Entity } from '../object/Entity.js';
 import { CommandEnum } from 'cn.nukkit.command.data.CommandEnum';
 import { CommandParamOption } from 'cn.nukkit.command.data.CommandParamOption';
 import { CommandParamType } from 'cn.nukkit.command.data.CommandParamType';
+import { ConsoleCommandSender } from 'cn.nukkit.command.ConsoleCommandSender';
 import { PlayersNode } from 'cn.nukkit.command.tree.node.PlayersNode';
 import { isArray, isNumber, isString, isUndefined } from '../utils/underscore-esm-min.js';
+import { Item } from "../object/Item";
+import { Block } from "../object/Block";
 
 /**@typedef ParamType number*/
 export class Command {
@@ -48,8 +51,8 @@ export class Command {
      * @param {string} [alias]  命令别名
      * @returns {Command} 指令对象
      */
-    constructor(cmd, description, permission = 'liteloaderlibs.command.any', flag, alias) {
-        this._permission = permission;
+    constructor(cmd, description, permission = 'liteloaderlibs.command.op', flag, alias) {
+        this._permission = permission//保留NK内部权限以待后续扩展，先暂时使用简易判断
         this._flag = flag;//暂时忽略
         this._commandBuilder = pnx.commandBuilder();
         this._commandBuilder.setCommandName(cmd);
@@ -67,6 +70,16 @@ export class Command {
      */
     setCallback(callback) {
         this._commandBuilder.setCallback((sender, result, log) => {
+            switch (this._permission) {
+                case 'liteloaderlibs.command.any':
+                    break;
+                case'liteloaderlibs.command.op':
+                    if (!sender.isOp()) return 0;
+                    break;
+                case 'liteloaderlibs.command.console':
+                    if (!(sender instanceof ConsoleCommandSender)) return 0;
+                    break;
+            }
             let origin = {
                 type: {},// todo: 指令执行主体类型	OriginType int
                 name: sender.getName(),// 指令执行主体的名称	String
@@ -92,10 +105,30 @@ export class Command {
             let params = this._pnxCmd.getCommandParameters(overloadName);
             let i = 0;
             for (const param of params) {
-                if (param.type === CommandParamType.RAWTEXT) {//RawText适应性改变
-                    if (list.hasResult(i)) {
-                        r[param.name] = list.getResult(i).toString();
-                    } else r[param.name] = null;
+                if (!list.hasResult(i)) r[param.name] = null;
+                else if (param.type === CommandParamType.RAWTEXT) {//RawText适应性改变
+                    r[param.name] = list.getResult(i).toString();
+                } else if (param.type === CommandParamType.POSITION) {
+                    r[param.name] = new FloatPos(list.getResult(i));
+                } else if (param.type === CommandParamType.BLOCK_POSITION) {
+                    r[param.name] = new IntPos(list.getResult(i));
+                } else if (param.type === CommandParamType.TARGET) {
+                    let targets = list.getResult(i);
+                    let result = [];
+                    if (targets[0].isPlayer()) {
+                        targets.forEach((v, i, array) => {
+                            result.push(new Player(v));
+                        });
+                    } else {
+                        targets.forEach((v, i, array) => {
+                            result.push(new Entity(v));
+                        });
+                    }
+                    r[param.name] = result;
+                } else if (param.enumData === CommandEnum.ENUM_ITEM) {
+                    r[param.name] = new Item(list.getResult(i));
+                } else if (param.enumData === CommandEnum.ENUM_BLOCK) {
+                    r[param.name] = new Block(list.getResult(i));
                 } else r[param.name] = list.get(i).get();
                 i++;
             }
