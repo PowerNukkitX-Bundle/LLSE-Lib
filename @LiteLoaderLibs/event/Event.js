@@ -696,6 +696,21 @@ const onEntityTransformation = {
     }
 }
 
+/* 方块事件 */
+const onBlockInteracted = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerInteractEvent", EventPriority.NORMAL, event => {
+            let b = event.getBlock();
+            if (b.getId() !== 0 && b.canBeActivated()) {
+                let player = Player.getPlayer(event.getPlayer());
+                let block = new Block(b);
+                let cancel = callback(player, block);
+                if (cancel === false) event.setCancelled(true);
+            }
+        });
+    }
+}
+
 /* 其他事件 */
 /**
  * @todo 测试
