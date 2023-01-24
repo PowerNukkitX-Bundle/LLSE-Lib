@@ -230,13 +230,13 @@ const onAttackBlock = {
 }
 
 /**
- * @todo 测试
+ * @todo LLSE只有在Click Air的时候才会触发
  */
 const onUseItem = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.player.PlayerInteractEvent", EventPriority.NORMAL, event => {
             let player = event.getPlayer();
-            if (event.getAction() === PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.getAction() === PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+            if (event.getAction() === PlayerInteractEvent.Action.RIGHT_CLICK_AIR) {
                 let item = event.getItem();
                 let cancel = callback(Player.getPlayer(player), new Item(item));
                 if (cancel === false) event.setCancelled(true);

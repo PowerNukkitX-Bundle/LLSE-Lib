@@ -3,6 +3,7 @@ import { Job } from ":concurrent";
 import { Paths } from "java.nio.file.Paths";
 import { Files } from "java.nio.file.Files";
 import { Nukkit } from "cn.nukkit.Nukkit";
+import { Comparator } from 'java.util.Comparator'
 
 export class File {
     /**
@@ -86,7 +87,7 @@ export class File {
     }
 
     /**
-     * 删除文件 / 文件夹
+     * 删除文件 / 空的文件夹
      * @param path {string} 路径，相对路径以 PNX 根目录为基准
      * @returns {boolean} 是否成功删除
      */
@@ -96,6 +97,22 @@ export class File {
         return !Files.exists(_path);
     }
 
+    /**
+     * 删除文件夹及其下所有文件
+     * @param folder {string} 文件夹的路径
+     * @returns {boolean} 是否成功删除
+     */
+    static deleteFolder(folder) {
+        const _path = Paths.get(folder);
+        let result = true;
+        let walk = Files.walk(_path)
+        walk.sorted(Comparator.reverseOrder()).forEach((p) => {
+            Files.delete(p)
+            result = !Files.exists(p);
+        });
+        return result;
+    }
+    
     /**
      * 判断文件 / 文件夹是否存在
      * @param path {string} 路径，相对路径以 PNX 根目录为基准
@@ -159,7 +176,7 @@ export class File {
      */
     static checkIsDir(path) {
         const _path = Paths.get(path);
-        return _path.getFileName() === null;
+        return Files.isDirectory(_path);
     }
 
     /**
@@ -171,8 +188,9 @@ export class File {
         let arr = [];
         const paths = Files.walk(Paths.get(path));
         paths.forEach((v, i) => {
-            arr.push(v.toString())
+            arr.push(Paths.get(v.toString()).getFileName().toString())
         });
+        arr.shift();// 第一个是当前文件夹的名字
         return arr;
     }
 
@@ -202,11 +220,11 @@ export class File {
      * @returns {boolean} 是否成功
      */
     static writeTo(path, text) {
-        const _path = Paths.get(path);
+        const _path = Paths.get('.', path);
         try {
             if (!Files.exists(_path)) {// 判断是否存在，若不存在则创建
-                if (_path.getParent() && !Files.exists(_path.getParent())) {
-                    Files.createDirectory(_path.getParent());
+                if (!Files.exists(_path.getParent())) {
+                    Files.createDirectories(_path.getParent());
                 }
                 Files.createFile(_path);
             }

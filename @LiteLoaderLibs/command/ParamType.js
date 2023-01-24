@@ -1,118 +1,156 @@
 import { CommandParamType } from 'cn.nukkit.command.data.CommandParamType';
+import { CommandEnum } from 'cn.nukkit.command.data.CommandEnum';
 
 /**
- * 枚举 命令参数类型 和 数据值类型 的对应关系如下
+ * 枚举 命令参数类型和数据值类型的对应关系如下
  */
 export class ParamType {
     /**
      * 布尔值
-     * @type {boolean}
+     * 数据值 {boolean}
      */
     static Bool = 0;
     /**
      * 整数
-     * @type {number}
+     * 数据值 {number}
      */
-    static Int = CommandParamType.INT;
+    static Int = 1;
     /**
      * 浮点数
-     * @type {number}
+     * 数据值 {number}
      */
-    static Float = CommandParamType.FLOAT;
+    static Float = 2;
     /**
      * 字符串
-     * @type {string}
+     * 数据值 {string}
      */
-    static String = CommandParamType.STRING;
+    static String = 3;
     /**
      * 实体目标选择器 选中的实体
-     * @type {Array<Actor,...>}
+     * 数据值 {Array<Actor,...>}
      */
-    static Actor = CommandParamType.TARGET;
+    static Actor = 4;
     /**
      * 玩家目标选择器 选中的实体
-     * @type {Array<Player,...>}
+     * 数据值 {Array<Player,...>}
      */
-    static Player = CommandParamType.TARGET;
+    static Player = 5;
     /**
      * 整数坐标对象
-     * @type {IntPos}
+     * 数据值 {IntPos}
      */
-    static BlockPos = CommandParamType.BLOCK_POSITION;
+    static BlockPos = 6;
     /**
      * 浮点数坐标对象
-     * @type {FloatPos}
+     * 数据值 {FloatPos}
      */
-    static Vec3 = CommandParamType.POSITION;
+    static Vec3 = 7;
     /**
      * 原始字符串（可包含特殊字符，如逗号空格）
-     * @type {string}
+     * 数据值 {string}
      */
-    static RawText = CommandParamType.TEXT;
+    static RawText = 8;
     /**
      * 消息类型字符串（同 /say 指令参数，会自动展开目标选择器等）
-     * @type {string}
+     * 数据值 {string}
      */
-    static Message = CommandParamType.MESSAGE;
+    static Message = 9;
     /**
      * Json字符串
-     * @type {string}
+     * 数据值 {string}
      */
-    static JsonValue = CommandParamType.JSON;
+    static JsonValue = 10;
     /**
      * 物品类型
-     * @type {Item}
+     * 数据值 {Item}
      */
     static Item = 11;
     /**
      * 方块类型
-     * @type {Block}
+     * 数据值 {Block}
      */
     static Block = 12;
     /**
      * 效果类型字符串
-     * @type {string}
+     * 数据值 {string}
      */
     static Effect = 13;
     /**
      * 枚举字符串
-     * @type {string}
+     * 数据值{string}
      */
     static Enum = 14;
     /**
      * 可变枚举字符串
      * @todo
-     * @type {string}
+     * 数据值 {string}
      */
     static SoftEnum = 15;
     /**
      * 实体类型字符串
-     * @type {string}
+     * 数据值 {string}
      */
     static ActorType = 16;
     /**
      * 游戏模式类型字符串
      * @pnxonly
-     * @type {string}
+     * 数据值 {string}
      */
     static GameMode = 17;
     /**
      * 指令名称（仅供测试）
      * @todo
-     * @type {string}
+     * 数据值 {string}
      */
     static Command = 18;
-
 }
 
 /**
  * 将ParamType转为js的值，方便用于比较
  * @param arg {ParamType} 命令参数类型
- * @returns {string|number}
+ * @returns {Object | number}
  */
-export function Type2Value(arg) {
-    if (typeof (arg) != 'number') {
-        return arg.getName();
+export function typeToObject(arg) {
+    switch (arg) {
+        case 0:
+            return CommandEnum.ENUM_BOOLEAN;
+        case 1:
+            return CommandParamType.INT;
+        case 2:
+            return CommandParamType.FLOAT;
+        case 3:
+            return CommandParamType.STRING;
+        case 4:
+            return CommandParamType.Actor;
+        case 5:
+            return CommandParamType.Actor;
+        case 6:
+            return CommandParamType.BLOCK_POSITION;
+        case 7:
+            return CommandParamType.POSITION;
+        case 8:
+            return CommandParamType.RAWTEXT;
+        case 9:
+            return CommandParamType.MESSAGE;
+        case 10:
+            return CommandParamType.JSON;
+        case 11:
+            return CommandEnum.ENUM_ITEM;
+        case 12:
+            return CommandEnum.ENUM_BLOCK;
+        case 13:
+            return CommandEnum.ENUM_EFFECT;
+        case 14:
+            return 14;
+        case 15:
+            return 15;
+        case 16:
+            return CommandEnum.ENUM_ENTITY;
+        case 17:
+            return CommandEnum.ENUM_GAMEMODE;
+        case 18:
+            return CommandParamType.COMMAND;
+        default:
+            return undefined;
     }
-    return arg;
 }
