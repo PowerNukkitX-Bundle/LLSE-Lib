@@ -1,7 +1,7 @@
 name: package
 on:
-#  push:
-#  workflow_dispatch:
+  push:
+  workflow_dispatch:
 
 jobs:
   check-files:
@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
+    if: github.repository == 'ban/ban'
 
     steps:
       - name: 检出仓库内容
