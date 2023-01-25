@@ -26,24 +26,6 @@ import { FloatPos } from '../object/FloatPos.js';
 
 const PNXDamageCause = EntityDamageEvent.DamageCause;
 const EventNameMap = {  /* Entity Events */
-    /* Block Events */
-    "onBlockInteracted": 10,
-    "onBlockChanged": 10,
-    "onBlockExplode": 10,
-    "onRespawnAnchorExplode": 10,
-    "onBlockExploded": 10,
-    "onFireSpread": 10,
-    "onCmdBlockExecute": 10,
-    "onContainerChange": 10,
-    "onProjectileHitBlock": 10,
-    "onRedStoneUpdate": 10,
-    "onHopperSearchItem": 10,
-    "onHopperPushOut": 10,
-    "onPistonTryPush": 10,
-    "onPistonPush": 10,
-    "onFarmLandDecay": 10,
-    "onUseFrameBlock": 10,
-    "onLiquidFlow": 10,
     /* Other Events */
     "onTick": 10,
     "onConsoleCmd": 10,
@@ -848,6 +830,52 @@ const onHopperPushOut = {
     }
 }
 
+const onPistonTryPush = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockPistonEvent", EventPriority.NORMAL, event => {
+            let block = event.getBlock();
+            let target = event.getBlocks().get(0);
+            let cancel = callback(new FloatPos(block), new Block(target));
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+const onPistonPush = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockPistonEvent", EventPriority.NORMAL, event => {
+            let block = event.getBlock();
+            let target = event.getBlocks().get(0);
+            callback(new FloatPos(block), new Block(target));
+        });
+    }
+}
+
+const onFarmLandDecay = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockPistonEvent", EventPriority.NORMAL, event => {
+        });
+    }
+}
+
+const onUseFrameBlock = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockPistonEvent", EventPriority.NORMAL, event => {
+        });
+    }
+}
+
+const onLiquidFlow = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.LiquidFlowEvent", EventPriority.NORMAL, event => {
+            let from = event.getSource();
+            let to = event.getTo();
+            let cancel = callback(new Block(from), new IntPos(to));
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
 /* 其他事件 */
 /**
  * @todo 测试
@@ -875,7 +903,7 @@ const onServerStarted = {
     }
 }
 export const Event = {
-    // 玩家事件
+    /*玩家事件*/
     onPreJoin: onPreJoin,//count=0
     onJoin: onJoin,
     onLeft: onLeft,
@@ -910,7 +938,7 @@ export const Event = {
     onExperienceAdd: onExperienceAdd,
     onBedEnter: onBedEnter,
 
-    // 实体事件
+    /*实体事件*/
     onMobDie: onMobDie,
     onMobHurt: onMobHurt,
     onEntityExplode: onEntityExplode,
@@ -925,8 +953,24 @@ export const Event = {
     onChangeArmorStand: onChangeArmorStand,
     // onEntityTransformation: onEntityTransformation
 
-    // 方块事件
-
+    /*方块事件*/
+    onBlockInteracted: onBlockInteracted,
+    // onBlockChanged: onBlockChanged,
+    onBlockExplode: onBlockExplode,
+    // onRespawnAnchorExplode: onRespawnAnchorExplode,
+    onBlockExploded: onBlockExploded,
+    onFireSpread: onFireSpread,
+    onCmdBlockExecute: onCmdBlockExecute,
+    onContainerChange: onContainerChange,
+    onProjectileHitBlock: onProjectileHitBlock,
+    // onRedStoneUpdate: onRedStoneUpdate,
+    // onHopperSearchItem: onHopperSearchItem,
+    onHopperPushOut: onHopperPushOut,
+    onPistonTryPush: onPistonTryPush,
+    onPistonPush: onPistonPush,
+    // onFarmLandDecay: onFarmLandDecay,
+    // onUseFrameBlock: onUseFrameBlock,
+    onLiquidFlow: onLiquidFlow,
     // 其它事件
     onScoreChanged: onScoreChanged,
     onServerStarted: onServerStarted
