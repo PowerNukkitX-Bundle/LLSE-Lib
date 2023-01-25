@@ -921,6 +921,26 @@ const onServerStarted = {
         });
     }
 }
+
+const onConsoleCmd = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.server.ServerCommandEvent", EventPriority.NORMAL, event => {
+            let cancel = callback(event.getCommand());
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+const onConsoleOutput = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.server.ConsoleCommandOutputEvent", EventPriority.NORMAL, event => {
+            let cancel = callback(event.getMessage());
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+
 export const Event = {
     /*玩家事件*/
     onPreJoin: onPreJoin,//count=0
@@ -992,6 +1012,8 @@ export const Event = {
     onLiquidFlow: onLiquidFlow,
     // 其它事件
     onScoreChanged: onScoreChanged,
-    onServerStarted: onServerStarted
+    onServerStarted: onServerStarted,
+    onConsoleCmd: onConsoleCmd,
+    onConsoleOutput: onConsoleOutput
     // 经济事件
 }
