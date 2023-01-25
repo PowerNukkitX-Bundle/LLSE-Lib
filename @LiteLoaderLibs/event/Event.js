@@ -18,6 +18,7 @@ import { EntityFishingHook } from 'cn.nukkit.entity.item.EntityFishingHook';
 import { EntityEnderPearl } from 'cn.nukkit.entity.projectile.EntityEnderPearl';
 import { EntitySnowball } from 'cn.nukkit.entity.projectile.EntitySnowball';
 import { EntityThrownTrident } from 'cn.nukkit.entity.projectile.EntityThrownTrident';
+import { BlockTNT } from 'cn.nukkit.block.BlockTNT';
 import { DamageCause } from '../utils/DamageCause.js';
 import { Item } from '../object/Item.js';
 import { IntPos } from '../object/IntPos.js';
@@ -415,7 +416,7 @@ const onOpenContainer = {
 const onCloseContainer = {
     run: (callback) => {
         var map = new Map();
-        let e1 = pnx.listenEvent("cn.nukkit.event.inventory.InventoryOpenEvent", EventPriority.NORMAL, event => {
+        let e1 = pnx.listenEvent("cn.nukkit.event.inventory.InventoryOpenEvent", EventPriority.LOWEST, event => {
             if (event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory) {
                 let player = event.getPlayer();
                 map.set(player, player.getTargetBlock(player.getViewDistance()));
@@ -424,7 +425,7 @@ const onCloseContainer = {
         let e2 = pnx.listenEvent("cn.nukkit.event.inventory.InventoryCloseEvent", EventPriority.NORMAL, event => {
             if (event.getInventory() instanceof ContainerInventory || event.getInventory() instanceof PlayerEnderChestInventory) {
                 let player = event.getPlayer();
-                let cancel = callback(Player.getPlayer(player), map.get(player));
+                let cancel = callback(Player.getPlayer(player), new Block(map.get(player)));
                 if (cancel === false) event.setCancelled(true);
             }
         });
@@ -706,6 +707,142 @@ const onBlockInteracted = {
                 let block = new Block(b);
                 let cancel = callback(player, block);
                 if (cancel === false) event.setCancelled(true);
+            }
+        });
+    }
+}
+
+const onBlockChanged = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerInteractEvent", EventPriority.NORMAL, event => {
+
+        });
+    }
+}
+const onBlockExplode = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockExplodeEvent", EventPriority.NORMAL, event => {
+            let block = event.getBlock();
+            if (block instanceof BlockTNT) {
+                let pos = event.getPosition();
+                let affects = event.getAffectedBlocks();
+                let ignitions = event.getIgnitions();
+                let isDestroy = false;
+                let isFire = false;
+                if (!affects.isEmpty()) isDestroy = true;
+                if (!ignitions.isEmpty()) isFire = true;
+                let radius = event.getYield();
+                let cancel = callback(block, pos, radius, 999, isDestroy, isFire);
+                if (cancel === false) event.setCancelled(true);
+            }
+        });
+    }
+}
+
+const onRespawnAnchorExplode = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.PlayerInteractEvent", EventPriority.NORMAL, event => {
+            //todo
+        });
+    }
+}
+
+const onBlockExploded = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.EntityExplodeEvent", EventPriority.NORMAL, event => {
+            let entity = event.getEntity();
+            let blocks = event.getBlockList();
+            for (let block of blocks) {
+                callback(new Block(block), new Entity(entity));
+            }
+        });
+    }
+}
+
+const onFireSpread = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockIgniteEvent", EventPriority.NORMAL, event => {
+            let block = event.getBlock();
+            let cancel = callback(new IntPos(block));
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+const onCmdBlockExecute = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.command.CommandBlockExecuteEvent", EventPriority.NORMAL, event => {
+            let block = event.getBlock();
+            let cmd = event.getCommand();
+            let cancel = callback(cmd, new IntPos(block), false);//暂时还没有命令方块矿车，所以是false
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+
+const onContainerChange = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.inventory.InventoryTransactionEvent", EventPriority.NORMAL, event => {
+            let transaction = event.getTransaction();
+            let player = transaction.getSource();
+            let actionList = transaction.getActionList();
+            for (let action of actionList) {
+                if (action instanceof SlotChangeAction && action.getInventory() instanceof ContainerInventory) {
+                    let inv = action.getInventory();
+                    let container = new Block(inv.getHolder().getBlock());
+                    let slot = action.getSlot();
+                    let oldItem = action.getSourceItem();
+                    let newItem = action.getTargetItem();
+                    callback(player, container, slot, oldItem, newItem);
+                }
+            }
+        });
+    }
+}
+
+const onProjectileHitBlock = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.entity.ProjectileHitEvent", EventPriority.NORMAL, event => {
+            let hit = event.getMovingObjectPosition();
+            if (hit.typeOfHit === 0) {
+                let entity = event.getEntity();
+                let block = entity.getLevel().getBlock(hit.blockX, hit.blockY, hit.blockZ);
+                callback(new Block(block), new Entity(entity));
+            }
+        });
+    }
+}
+
+const onRedStoneUpdate = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockRedstoneEvent", EventPriority.NORMAL, event => {
+            let level = event.getNewPower();
+            let isActive = level === 0;
+            let block = event.getBlock();
+            let cancel = callback(new Block(block), level, isActive);
+            // if (cancel === false) event.setCancelled(true);//todo
+        });
+    }
+}
+
+const onHopperSearchItem = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.block.BlockRedstoneEvent", EventPriority.NORMAL, event => {
+            //todo
+        });
+    }
+}
+
+const onHopperPushOut = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.nukkit.event.inventory.InventoryMoveItemEvent", EventPriority.NORMAL, event => {
+            let source = event.getSource();
+            if (event.getAction().ordinal() === 0 && event.getTargetInventory() !== source.getInventory()) {
+                if (source instanceof BlockEntityHopper || source instanceof EntityMinecartHopper) {
+                    let pos = source.getPosition();
+                    let cancel = callback(new FloatPos(pos));
+                    if (cancel === false) event.setCancelled(true);
+                }
             }
         });
     }
