@@ -723,8 +723,15 @@ const onBlockExplode = {
 
 const onRespawnAnchorExplode = {
     run: (callback) => {
-        return pnx.listenEvent("cn.nukkit.event.block.PlayerInteractEvent", EventPriority.NORMAL, event => {
-            //todo
+        return pnx.listenEvent("cn.nukkit.event.block.BlockExplosionPrimeEvent", EventPriority.NORMAL, event => {
+            let player = event.getPlayer();
+            if (player != null) {
+                let block = event.getBlock();
+                if (block.getId() === 527) {
+                    let cancel = callback(new IntPos(block), Player.getPlayer(player));
+                    if (cancel === false) event.setCancelled(true);
+                }
+            }
         });
     }
 }
@@ -809,8 +816,11 @@ const onRedStoneUpdate = {
 
 const onHopperSearchItem = {
     run: (callback) => {
-        return pnx.listenEvent("cn.nukkit.event.block.BlockRedstoneEvent", EventPriority.NORMAL, event => {
-            //todo
+        return pnx.listenEvent("cn.nukkit.event.block.HopperSearchItemEvent", EventPriority.NORMAL, event => {
+            let pos = event.getHopper().getPosition();
+            let isMinecart = event.isMinecart();
+            let cancel = callback(new Block(block), level, isActive);
+            if (cancel === false) event.setCancelled(true);
         });
     }
 }
@@ -853,14 +863,23 @@ const onPistonPush = {
 
 const onFarmLandDecay = {
     run: (callback) => {
-        return pnx.listenEvent("cn.nukkit.event.block.BlockPistonEvent", EventPriority.NORMAL, event => {
+        return pnx.listenEvent("cn.nukkit.event.block.FarmLandDecayEvent", EventPriority.NORMAL, event => {
+            if (event.getEntity() !== null) {
+                let block = evnet.getBlock();
+                let cancel = callback(new FloatPos(block), new Entity(event.getEntity()));
+                if (cancel === false) event.setCancelled(true);
+            }
         });
     }
 }
 
 const onUseFrameBlock = {
     run: (callback) => {
-        return pnx.listenEvent("cn.nukkit.event.block.BlockPistonEvent", EventPriority.NORMAL, event => {
+        return pnx.listenEvent("cn.nukkit.event.player.PlayerUseItemFrameEvent", EventPriority.NORMAL, event => {
+            let player = event.getPlayer();
+            let block = event.getBlock();
+            let cancel = callback(new Player(player), new Block(block));
+            if (cancel === false) event.setCancelled(true);
         });
     }
 }
@@ -957,19 +976,19 @@ export const Event = {
     onBlockInteracted: onBlockInteracted,
     // onBlockChanged: onBlockChanged,
     onBlockExplode: onBlockExplode,
-    // onRespawnAnchorExplode: onRespawnAnchorExplode,
+    onRespawnAnchorExplode: onRespawnAnchorExplode,
     onBlockExploded: onBlockExploded,
     onFireSpread: onFireSpread,
     onCmdBlockExecute: onCmdBlockExecute,
     onContainerChange: onContainerChange,
     onProjectileHitBlock: onProjectileHitBlock,
-    // onRedStoneUpdate: onRedStoneUpdate,
-    // onHopperSearchItem: onHopperSearchItem,
+    onRedStoneUpdate: onRedStoneUpdate,
+    onHopperSearchItem: onHopperSearchItem,
     onHopperPushOut: onHopperPushOut,
     onPistonTryPush: onPistonTryPush,
     onPistonPush: onPistonPush,
-    // onFarmLandDecay: onFarmLandDecay,
-    // onUseFrameBlock: onUseFrameBlock,
+    onFarmLandDecay: onFarmLandDecay,
+    onUseFrameBlock: onUseFrameBlock,
     onLiquidFlow: onLiquidFlow,
     // 其它事件
     onScoreChanged: onScoreChanged,
