@@ -102,7 +102,7 @@ function setMaxPlayers(num) {
  * @returns {boolean} 是否成功
  */
 function runcmd(cmd) {
-    return server.dispatchCommand(server.getConsoleSender(), cmd);
+    return server.executeCommand(server.getConsoleSender(), cmd) > 0;
 }
 
 /**
@@ -113,7 +113,7 @@ function runcmd(cmd) {
  */
 function runcmdEx(cmd) {
     let rconSender = new RemoteConsoleCommandSender();
-    let succ = server.dispatchCommand(rconSender, cmd);
+    let succ = server.executeCommand(rconSender, cmd) > 0;
     return {success: succ, output: rconSender.getMessages()};
 }
 
@@ -180,7 +180,7 @@ function regPlayerCmd(cmd, description, callback, level = 0) {
         }
         PlayerCommandMap.get(cmd).call(sender, sender, args);
     });
-    commandBuilder.register();
+    commandBuilder.registerOld();
     return true;
 }
 
@@ -213,7 +213,17 @@ function regConsoleCmd(cmd, description, callback) {
         }
         ConsoleCommandMap.get(cmd).call(sender, sender, args);
     });
-    commandBuilder.register();
+    commandBuilder.registerOld();
+}
+
+/**
+ * 模拟产生一个控制台命令输出
+ * @param {string} output  模拟产生的命令输出
+ * @returns {boolean} 是否成功执行
+ */
+function sendCmdOutput(output) {
+    server.getConsoleSender().sendMessage(output);
+    return true;
 }
 
 /**
@@ -738,7 +748,7 @@ function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) 
  */
 function setStructure(nbt, pos, mirror = 0, rotation = 0) {
     var data = JSON.parse(nbt.toString());
-    if (data.format_version != 1) {
+    if (data.format_version !== 1) {
         console.log("§emcstructure file version(" + data.format_version + ")");
     }
     var size = data.size;
@@ -775,6 +785,7 @@ export const mc = {
     newCommand,
     regPlayerCmd,
     regConsoleCmd,
+    sendCmdOutput,
     listen,
     getPlayer,
     getOnlinePlayers,
