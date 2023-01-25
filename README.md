@@ -1,6 +1,6 @@
 # LiteLoader-Libs
 
-实现LiteLoader所有方法的库
+实现LLSE所有方法的库
 
 ## Tips
 
@@ -20,6 +20,8 @@ import {
     Format,
     PermType,
     system,
+    data,
+    i18n,
     logger,
     File,
     JsonConfigFile,
