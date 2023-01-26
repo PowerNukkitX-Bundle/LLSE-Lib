@@ -922,6 +922,12 @@ const onServerStarted = {
     }
 }
 
+const onTick = {
+    run: (callback) => {
+        setInterval(callback, 50);
+    }
+}
+
 const onConsoleCmd = {
     run: (callback) => {
         return pnx.listenEvent("cn.nukkit.event.server.ServerCommandEvent", EventPriority.NORMAL, event => {
