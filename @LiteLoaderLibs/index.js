@@ -1,4 +1,3 @@
-import { economyDB } from "./money/money.js";
 import { DBSessionMap } from "./database/DBSession.js";
 
 export function main() {
@@ -7,8 +6,7 @@ export function main() {
 
 export function close() {
     print("LiteLoader-Libs close");
-    economyDB.close();
-    DBSessionMap.forEach((v, k) => {
+    DBSessionMap.forEach((v, k) => {//统一关闭数据库
         v.close();
     });
 }

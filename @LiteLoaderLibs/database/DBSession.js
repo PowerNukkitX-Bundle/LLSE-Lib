@@ -12,21 +12,18 @@ var SQLiteConfig;
 if (!contain('DBSession')) exposeObject('DBSession', new Map());
 export const DBSessionMap = contain('DBSession');
 
-function downloadSqlite() {
+function downloadSqlite(folder, fileName) {
     // origin: https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.39.2.0/sqlite-jdbc-3.39.2.0.jar
-    const fileName = "sqlite-jdbc-3.39.2.0.jar";
     const url = new JURL('https://res.nullatom.com/file/maven/' + fileName);
-    const folder = new JFile("libs");
+    const file = new JFile(folder, fileName);
     if (folder.mkdirs()) {
         console.info("Created " + folder.getPath() + '.');
     }
-    const file = new JFile(folder, fileName);
     if (!file.isFile()) {
         try {
             console.info("Get library from: " + url);
             Files.copy(url.openStream(), file.toPath());
             console.info("Get library " + fileName + " done!");
-            loadJar(file.getPath());
         } catch (e) {
             console.error("下载sqlite驱动失败,具体异常:" + e);
             return false;
@@ -442,7 +439,11 @@ class DBStmt {
 }
 
 onlyOnceExecute(() => {
-    if (downloadSqlite()) {
+    const fileName = "sqlite-jdbc-3.39.2.0.jar";
+    const folder = new JFile("libs");
+    const file = new JFile(folder, fileName);
+    if (downloadSqlite(folder, fileName)) {
+        loadJar(file.getPath());
         try {
             SQLiteConfig = Java.type('org.sqlite.SQLiteConfig');
         } catch (err) {

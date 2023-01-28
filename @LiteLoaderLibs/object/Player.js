@@ -10,7 +10,7 @@ import { ModalForm } from '../gui/ModalForm.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
 import { isNumber } from '../utils/underscore-esm-min.js';
-import { getLevels, server } from '../utils/Mixins.js';
+import { getLevels, onlyOnceExecute, server } from '../utils/Mixins.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
 import { PlayerChatEvent } from 'cn.nukkit.event.player.PlayerChatEvent';
@@ -22,22 +22,24 @@ import { Item as JItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
-import { NbtCompound } from '../nbt/NbtCompound.js'
-import { BlockSnow } from 'cn.nukkit.block.BlockSnow'
-import { BlockPowderSnow } from 'cn.nukkit.block.BlockPowderSnow'
-import { BlockWallBase } from 'cn.nukkit.block.BlockWallBase'
-import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity'
-import { BlockEndPortal } from 'cn.nukkit.block.BlockEndPortal'
-import { BlockNetherPortal } from 'cn.nukkit.block.BlockNetherPortal'
-import { BlockLava } from 'cn.nukkit.block.BlockLava'
-import { BlockWitherRose } from 'cn.nukkit.block.BlockWitherRose'
-import { BlockMagma } from 'cn.nukkit.block.BlockMagma'
-import { BlockFire } from 'cn.nukkit.block.BlockFire'
-import { BlockFireSoul } from 'cn.nukkit.block.BlockFireSoul'
-import { BlockCampfire } from 'cn.nukkit.block.BlockCampfire'
-import { BlockCampfireSoul } from 'cn.nukkit.block.BlockCampfireSoul'
+import { NbtCompound } from '../nbt/NbtCompound.js';
+import { BlockSnow } from 'cn.nukkit.block.BlockSnow';
+import { BlockPowderSnow } from 'cn.nukkit.block.BlockPowderSnow';
+import { BlockWallBase } from 'cn.nukkit.block.BlockWallBase';
+import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity';
+import { BlockEndPortal } from 'cn.nukkit.block.BlockEndPortal';
+import { BlockNetherPortal } from 'cn.nukkit.block.BlockNetherPortal';
+import { BlockLava } from 'cn.nukkit.block.BlockLava';
+import { BlockWitherRose } from 'cn.nukkit.block.BlockWitherRose';
+import { BlockMagma } from 'cn.nukkit.block.BlockMagma';
+import { BlockFire } from 'cn.nukkit.block.BlockFire';
+import { BlockFireSoul } from 'cn.nukkit.block.BlockFireSoul';
+import { BlockCampfire } from 'cn.nukkit.block.BlockCampfire';
+import { BlockCampfireSoul } from 'cn.nukkit.block.BlockCampfireSoul';
+import { Level } from 'cn.nukkit.level.Level';
+import { Entity } from "./Entity.js";
 
-
+const PlayerDB = contain('PlayerDB');
 const ASType = AdventureSettings.Type;
 const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHandler')))({
     handle: function (player, formID) {
@@ -50,18 +52,8 @@ const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHand
     }
 });
 
-if (!contain('PlayerDB')) {// 防止重复database
-    exposeObject('PlayerDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/PlayerDB.db'}));
-}
-const PlayerDB = contain('PlayerDB');
-if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) PlayerDB.exec(`CREATE TABLE player
-                                                                                                                       (
-                                                                                                                           NAME TEXT PRIMARY KEY NOT NULL,
-                                                                                                                           XUID TEXT             NOT NULL,
-                                                                                                                           UUID TEXT             NOT NULL
-                                                                                                                       ) WITHOUT ROWID;`);
-
 export class Player {
+    static id = "7D623B95-3173-1F92-6B96-33C9C6CB99AC";
     static BossBarIdMap = new Map();// '玩家名': Map
 
     static PlayerMap = new Map();
@@ -71,32 +63,50 @@ export class Player {
     static FormCallbackMap = new Map();// 'formId': function(){}
 
     /**
-     * @param Player {PNXPlayer}
+     * @type PNXPlayer
      */
-    constructor(Player) {
-        this._PNXPlayer = Player;
-        this.DirectionAngle = new DirectionAngle(Player);
+    _PNXPlayer;
+    /**
+     * @type DirectionAngle
+     */
+    directionAngle;
+    /**
+     用来存放其他LLSE插件对该玩家物品的操作信息，refreshItems函数利用这个执行,refreshItems之后清空
+     <p>
+     [pnxItem, type: [hand, offhand], slot: number]
+     */
+    itemChangeList;
+
+    /**
+     * @param player {PNXPlayer}
+     */
+    constructor(player) {
+        this._PNXPlayer = player;
+        this.directionAngle = new DirectionAngle(player);
         this.levels = getLevels();
-        /*用来存放其他LLSE插件对该玩家物品的操作信息，refreshItems函数利用这个执行,refreshItems之后清空<p>[pnxItem, type: [hand, offhand], slot: number]*/
         this.itemChangeList = [];
     }
 
-    static getPlayer(PNXPlayer) {
-        if (!Player.PlayerMap.has(PNXPlayer.name) || !Player.PlayerMap.get(PNXPlayer.name)._PNXPlayer.isOnline()) {
-            Player.BossBarIdMap.set(PNXPlayer.name, new Map());
-            Player.PlayerMap.set(PNXPlayer.name, new Player(PNXPlayer));
-            let uuid = String(PNXPlayer.getLoginChainData().getClientUUID()).toLowerCase();
-            let xuid = String(PNXPlayer.getLoginChainData().getXUID()).toLowerCase();
+    /**
+     * @param player {PNXPlayer}
+     */
+    static getPlayer(player) {
+        if (!Player.PlayerMap.has(player.name) || !Player.PlayerMap.get(player.name)._PNXPlayer.isOnline()) {
+            Player.BossBarIdMap.set(player.name, new Map());
+            Player.PlayerMap.set(player.name, new Player(player));
+            let uuid = String(player.getLoginChainData().getClientUUID()).toLowerCase();
+            let xuid = String(player.getLoginChainData().getXUID()).toLowerCase();
             PlayerDB.exec(`INSERT INTO player (NAME, XUID, UUID)
-                           VALUES ('${PNXPlayer.name.toLowerCase()}', '${xuid}', '${uuid}') ON CONFLICT (NAME) DO
+                           VALUES ('${player.name.toLowerCase()}', '${xuid}', '${uuid}') ON CONFLICT (NAME) DO
             UPDATE
-                SET XUID='${xuid}', UUID='${uuid}';`);
+                SET XUID='${xuid}',
+                UUID='${uuid}';`);
         }
-        return Player.PlayerMap.get(PNXPlayer.name);
+        return Player.PlayerMap.get(player.name);
     }
 
     /**
-     * @return {String} 返回玩家名
+     * @return {string} 返回玩家名
      */
     get name() {//
         return this._PNXPlayer.getDisplayName();
@@ -117,42 +127,100 @@ export class Player {
     }
 
     /**
-     * @return {String} 返回玩家的真实名字
+     * @return {string} 返回玩家的真实名字
      */
     get realName() {
         return this._PNXPlayer.getName();
     }
 
     /**
-     * @return {String} 返回玩家Xuid字符串
+     * @return {string} 返回玩家Xuid字符串
      */
     get xuid() {
         return this._PNXPlayer.getLoginChainData().getXUID();
     }
 
     /**
-     * @return {String} 返回玩家Uuid字符串
+     * @return {string} 返回玩家Uuid字符串
      */
     get uuid() {
         return this._PNXPlayer.getLoginChainData().getClientUUID();
     }
 
     /**
-     * @return {Integer} 返回玩家的操作权限等级(0-4)
+     * @return {number} 返回玩家的操作权限等级(0-4)
      */
     get permLevel() {
         return this._PNXPlayer.isOp() ? 1 : 0;
     }
 
     /**
-     * @return {Integer} 返回玩家的游戏模式(0-3)
+     * @return {number} 返回玩家的游戏模式(0-3)
      */
     get gameMode() {
         return this._PNXPlayer.getGamemode();
     }
 
     /**
-     * @return {Integer} 返回玩家最大生命值
+     * @return {boolean} 玩家是否可以飞行
+     */
+    get canFly() {
+        return this._PNXPlayer.getAdventureSettings().get(Type.ALLOW_FLIGHT);
+    }
+
+    /**
+     * @return {boolean} 玩家是否可以睡觉
+     */
+    get canSleep() {
+        let time = this._PNXPlayer.getLevel().getTime() % Level.TIME_FULL;
+        return time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE;
+    }
+
+    /**
+     * @return {boolean} 玩家是否可以在地图上看到
+     */
+    get canBeSeenOnMap() {
+        return true;
+    }
+
+    /**
+     * @return {boolean} 玩家是否可以冻结
+     */
+    get canFreeze() {
+        return this._PNXPlayer.getFreezingEffectStrength() > 0;
+    }
+
+    /**
+     * @return {boolean} 玩家是否能看到日光
+     */
+    get canSeeDaylight() {
+        return true;
+    }
+
+    /**
+     * @return {boolean} 玩家是否可以显示姓名标签
+     */
+    get canShowNameTag() {
+        return this._PNXPlayer.isNameTagVisible();
+    }
+
+    /**
+     * @return {boolean} 玩家是否可以开始在床上睡觉
+     */
+    get canStartSleepInBed() {
+        let time = this._PNXPlayer.getLevel().getTime() % Level.TIME_FULL;
+        return time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE;
+    }
+
+    /**
+     * @return {boolean} 玩家是否可以拾取物品
+     */
+    get canPickupItems() {
+        return true;
+    }
+
+    /**
+     * @return {number} 返回玩家最大生命值
      */
     get maxHealth() {
         return this._PNXPlayer.getMaxHealth();
@@ -337,7 +405,7 @@ export class Player {
      * @returns {boolean} 玩家是否移动
      */
     get isMoving() {
-        return true;
+        return this._PNXPlayer.positionChanged;
     }
 
     /**
@@ -397,6 +465,13 @@ export class Player {
     }
 
     /**
+     * @return {String} 返回玩家(实体的)唯一标识符
+     */
+    get ip() {
+        return this._PNXPlayer.getRawAddress();
+    }
+
+    /**
      * 按照输入检查玩家碰撞到的方块
      * @pnxonly
      * @param blocks {Array} 目标检查的方块数组
@@ -444,7 +519,7 @@ export class Player {
      * @returns {boolean} 是否成功发送
      */
     tell(msg, type = 0) {
-        if (!sendText(server.getConsoleSender(), this._PNXPlayer, msg, type)) {
+        if (!sendMessage(server.getConsoleSender(), this._PNXPlayer, msg, type)) {
             return false;
         }
         return true;
@@ -489,7 +564,7 @@ export class Player {
         args2: text
         */
         if (arguments.length === 2) {
-            return sendText(this._PNXPlayer, target._PNXPlayer, text, 1);
+            return sendMessage(this._PNXPlayer, target._PNXPlayer, text, 1);
         } else if (arguments.length === 1) {
             var event = new PlayerChatEvent(this._PNXPlayer, target);
             server.getPluginManager().callEvent(event);
@@ -500,6 +575,40 @@ export class Player {
         } else {
             throw 'Wrong number of parameters.';
         }
+    }
+
+    /**
+     * 获取玩家到坐标的距离
+     * @param {Entity | Player | IntPos | FloatPos}  pos 目标位置
+     * @returns {number} 到坐标的距离(方块)
+     */
+    distanceTo(pos) {
+        let target;
+        if (pos instanceof Entity) {
+            target = pos._PNXEntity;
+        } else if (pos instanceof Entity) {
+            target = pos._PNXPlayer;
+        } else {
+            target = pos.position;
+        }
+        return this._PNXPlayer.distanceSquared(target);
+    }
+
+    /**
+     * 获取玩家到坐标的距离
+     * @param {Entity | Player | IntPos | FloatPos}  pos 目标位置
+     * @returns {number} 到坐标的距离(方块)
+     */
+    distanceToSqr(pos) {
+        let target;
+        if (pos instanceof Entity) {
+            target = pos._PNXEntity;
+        } else if (pos instanceof Entity) {
+            target = pos._PNXPlayer;
+        } else {
+            target = pos.position;
+        }
+        return this._PNXPlayer.distance(target);
     }
 
     /**
@@ -542,13 +651,143 @@ export class Player {
     }
 
     /**
+     * 治疗玩家
+     * @param {number} health 治疗的心数
+     * @returns {boolean}  治疗是否成功
+     */
+    heal(health) {
+        return this._PNXPlayer.heal(Math.floor(health) * 2);
+    }
+
+    /**
+     * 设置玩家的生命值
+     * @param {number} health 生命值数
+     * @returns {boolean}  是否成功
+     */
+    setHealth(health) {
+        return this._PNXPlayer.setHealth(Math.floor(health));
+    }
+
+    /**
+     * 为玩家设置伤害吸收属性
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    setAbsorption(value) {
+        return this._PNXPlayer.setAbsorption(Math.floor(value));
+    }
+
+    /**
+     * todo 为玩家设置攻击伤害属性
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    /*setMaxAttackDamage(value) {
+    }*/
+
+    /**
+     * todo为玩家设置跟随范围
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    /*setFollowRange(value) {
+    }*/
+
+    /**
+     * todo 为玩家设置击退抵抗属性
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    /*setKnockbackResistance(value) {
+    }*/
+
+    /**
+     * todo 为玩家设置幸运属性
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+
+    /*setLuck(value) {
+    }*/
+
+    /**
+     * 为玩家设置移动速度属性
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    setMovementSpeed(value) {
+        this._PNXPlayer.setMovementSpeed(value);
+        return true;
+    }
+
+    /**
+     * todo 为玩家设置水下移动速度属性
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    /*setUnderwaterMovementSpeed(value) {
+    }*/
+    /**
+     * todo 为玩家设置岩浆上移动速度属性
+     * @param {number} value  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+
+    /*setLavaMovementSpeed(value) {
+    }*/
+
+    /**
+     * 设置玩家最大生命值
+     * @param {number} health    饥饿值数
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    setMaxHealth(health) {
+        this._PNXPlayer.setMaxHealth(value);
+        return true;
+    }
+
+    /**
+     * 设置玩家饥饿值
+     * @param {number} hunger  新的值
+     * @returns {boolean}  为玩家设置属性值是否成功
+     */
+    setHungry(hunger) {
+        let data = this._PNXPlayer.getFoodData();
+        if (data !== null) {
+            data.setLevel(hunger);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 使指定玩家着火
-     * @param time {Integer} 着火时长，单位秒
+     * @param {number} time 着火时长，单位秒
      * @returns {boolean} 是否成功着火
      */
     setOnFire(time) {
         this._PNXPlayer.setOnFire(time);
         return this._PNXPlayer.isOnFire();
+    }
+
+    /**
+     * 熄灭玩家
+     * @returns {boolean} 是否已被熄灭
+     */
+    stopFire() {
+        this._PNXPlayer.setOnFire(0);
+        return true;
+    }
+
+    /**
+     * 缩放玩家
+     * @param {number} scale 新的玩家体积
+     * @returns {boolean} 玩家是否成功地被缩放
+     */
+    setScale(scale) {
+        this._PNXPlayer.setScale(scale);
+        return true;
     }
 
     /**
@@ -633,7 +872,7 @@ export class Player {
      * @returns {IntPos} IntPos对象
      */
     getRespawnPosition() {
-        return new IntPos(this._PNXPlayer.spawnPosition);
+        return new IntPos(this._PNXPlayer.getSpawn());
     }
 
     /**
@@ -677,8 +916,6 @@ export class Player {
 
     /**
      * 清除玩家背包中所有指定类型的物品
-     * @todo 待实现LLSE类型的 Item
-     * @todo 类型未知
      * @param type {string} 要清除的物品对象类型名
      * @returns {number} 清除的物品个数
      */
@@ -688,7 +925,7 @@ export class Player {
         let inv = this._PNXPlayer.getInventory()
         let limit = inv.getSize() + 4
         for (let i = 0; i < limit; i++) {
-            if (inv.getItem(i).getNamespaceId() == type) {
+            if (inv.getItem(i).getNamespaceId() === type) {
                 inv.clear(i);
                 num++
             }
@@ -1221,7 +1458,7 @@ export class Player {
     }
 }
 
-export function sendText(sender = '', receiver, msg, type) {
+export function sendMessage(sender = '', receiver, msg, type) {
     switch (type) {
         case 0: {
             receiver.sendMessage(msg);
@@ -1244,3 +1481,19 @@ export function sendText(sender = '', receiver, msg, type) {
     }
     return true;
 }
+
+onlyOnceExecute(() => {
+    if (!contain('PlayerDB')) {// 防止重复database
+        exposeObject('PlayerDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/PlayerDB.db'}));
+    }
+    // noinspection SqlNoDataSourceInspection
+    if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) {
+        // noinspection SqlNoDataSourceInspection
+        PlayerDB.exec(`CREATE TABLE player
+                       (
+                           NAME TEXT PRIMARY KEY NOT NULL,
+                           XUID TEXT             NOT NULL,
+                           UUID TEXT             NOT NULL
+                       ) WITHOUT ROWID;`);
+    }
+}, Player.id);

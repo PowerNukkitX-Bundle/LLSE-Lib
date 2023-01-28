@@ -10,8 +10,8 @@ import { CommandParamType } from 'cn.nukkit.command.data.CommandParamType';
 import { ConsoleCommandSender } from 'cn.nukkit.command.ConsoleCommandSender';
 import { PlayersNode } from 'cn.nukkit.command.tree.node.PlayersNode';
 import { isArray, isNumber, isString, isUndefined } from '../utils/underscore-esm-min.js';
-import { Item } from "../object/Item";
-import { Block } from "../object/Block";
+import { Item } from "../object/Item.js";
+import { Block } from "../object/Block.js";
 
 /**@typedef ParamType number*/
 export class Command {

@@ -4,13 +4,18 @@
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { Server } from 'cn.nukkit.Server';
 import { UUID } from 'java.util.UUID';
+import { Level } from 'cn.nukkit.level.Level';
 
 //一个全局Map 用于存储只执行一次的函数 使用UUID唯一标识
 if (!contain('funMap')) {
     exposeObject('funMap', new Map());
 }
+
 export const funMap = contain('funMap');
 
+/**
+ * @return {Level[]}
+ */
 export const getLevels = function getLevels() {
     return [
         EnumLevel.OVERWORLD.getLevel(),

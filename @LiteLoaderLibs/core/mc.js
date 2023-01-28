@@ -1,6 +1,6 @@
 import { PowerNukkitX as pnx } from ':powernukkitx';
 import { PermType } from '../utils/PermType.js';
-import { Player, sendText } from '../object/Player.js';
+import { Player, sendMessage } from '../object/Player.js';
 import { Event } from '../event/Event.js';
 import { Item } from '../object/Item.js';
 import { Item as PNXItem } from 'cn.nukkit.item.Item';
@@ -119,7 +119,6 @@ function runcmdEx(cmd) {
 
 /**
  * 注册一条顶层命令
- * @todo 未实现
  * @param cmd {string} 命令
  * @param description {string} 描述文本
  * @param [permission=0] {number} 执行所需权限0~2（默认0）
@@ -295,7 +294,7 @@ function getOnlinePlayers() {
  */
 function broadcast(msg, type = 0) {
     for (const player of server.getOnlinePlayers().values()) {
-        sendText(server.getConsoleSender(), player, msg, type);
+        sendMessage(server.getConsoleSender(), player, msg, type);
     }
     return true;
 }
