@@ -4,12 +4,13 @@ import { Locale } from 'java.util.Locale';
 
 const Alphabet = 'abcdefghijklnmopqrstuvwxyz'.split('');
 const langMap = new Map();
+
 export class i18n {
     /**
      * 加载翻译数据
      * @param path {string} 配置文件所在路径，以 PNX 根目录为基准
      * @param defaultLocaleName {string} 默认的语言名称，形如zh_CN或en（如果没有提供目标语言给i18n.tr或i18n.get的翻译，这个参数将被使用）
-        若传入空字符串，则默认跟随系统语言
+     若传入空字符串，则默认跟随系统语言
      * @param defaultLangData {string|object} 该参数将用于补全或创建翻译文件
      */
     static load(path, defaultLocaleName, defaultLangData) {// TODO: 同一个插件应该共享同一个langMap
@@ -34,13 +35,14 @@ export class i18n {
             readConfig(File.readFrom(path));
         }
     }
+
     /**
      * 加载翻译数据
      * @param key {string} 文本或ID
      * @param localeName {string} 目标语言，默认为i18n.load时传入的defaultLocaleName
-        若传入空字符串，则默认跟随系统语言
+     若传入空字符串，则默认跟随系统语言
      * @returns {string} 翻译内容（若经过多次回落仍未找到翻译，则返回key）
-    */
+     */
     static get(key, localeName) {
         let localeCode = localeName || langMap.get('');
         if (!localeCode) throw 'plase use i18n#load befor.';
@@ -48,16 +50,19 @@ export class i18n {
         if (!langData) {
             langData = langMap.get(localeCode.split('_')[0]);
         }
-        if (!langData) { return key; }
+        if (!langData) {
+            return key;
+        }
         return langData[key] || key;
     }
+
     /**
      * 使用指定语言翻译文本并格式化
      * @param localeName {string} 目标语言
      * @param key {string} 文本或ID
      * @param args[] {any} 格式化参数
      * @returns {string} 翻译并格式化后的文本
-    */
+     */
     static trl(localeName, key, ...args) {
         //console.log(args); // [ 'string0', 1, { named_arg: 114.51419 } ]
         if (args.length === 1 && args[0].constructor === Array) {
@@ -80,7 +85,9 @@ export class i18n {
             const index = i.indexOf(':');
             if (index > -1) {// 先检查是否有 {name:.2f} 类型的模板文字
                 let argsObj = args[args.length - 1];
-                if ((argsObj).constructor != Object) { continue; }
+                if ((argsObj).constructor != Object) {
+                    continue;
+                }
                 let argsKey = i.substring(0, index);
                 // TODO: 实现值的二次解析（需要更多信息）。例: .2f 将 114.51419 解析为 114.51
                 let argsKeyType = i.substring(index + 1);// .2f
@@ -111,16 +118,18 @@ export class i18n {
         res = res.replace(/ \{.*?(\})/gim, '');// 删除所有没有匹配到的模板文字
         return res;
     }
+
     /**
      * 使用默认语言翻译文本并格式化
      * @param key {string} 文本或ID
      * @param args[] {any} 格式化参数
      * @returns {string} 翻译并格式化后的文本
-    */
+     */
     static tr(key, ...args) {
         return i18n.trl('', key, ...args);
     }
 }
+
 /**
  * 读取配置并与已有的langMap合并
  * @param {string} content 语言配置文件的内容
@@ -140,6 +149,7 @@ function readConfig(content, lang) {
         langMap.set(key, Object.assign(langMap.get(key) || {}, cfg[key]));
     }
 }
+
 /**
  * 将数组指定值设置为null
  * @param {array} arr 数组

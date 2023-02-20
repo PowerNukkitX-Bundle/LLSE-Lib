@@ -40,9 +40,10 @@ export class Entity {
         this._PNXEntity = Entity;
         this.DirectionAngle = new DirectionAngle(this._PNXEntity);
     }
+
     /**
      * 实体名称
-     * 
+     *
      * @returns {string}
      */
     get name() {
@@ -51,7 +52,7 @@ export class Entity {
 
     /**
      * 实体标准类型名
-     * 
+     *
      * @returns {string}
      */
     get type() {
@@ -60,7 +61,7 @@ export class Entity {
 
     /**
      * 实体的游戏内id
-     * 
+     *
      * @returns {number}
      */
     get id() {
@@ -69,7 +70,7 @@ export class Entity {
 
     /**
      * 实体所在坐标
-     * 
+     *
      * @returns {FloatPos}
      */
     get pos() {
@@ -78,7 +79,7 @@ export class Entity {
 
     /**
      * 实体所在的方块坐标
-     * 
+     *
      * @returns {IntPos}
      */
     get blockPos() {
@@ -87,7 +88,7 @@ export class Entity {
 
     /**
      * 实体最大生命值
-     * 
+     *
      * @returns {number}
      */
     get maxHealth() {
@@ -96,7 +97,7 @@ export class Entity {
 
     /**
      * 实体当前生命值
-     * 
+     *
      * @returns {number}
      */
     get health() {
@@ -105,7 +106,7 @@ export class Entity {
 
     /**
      * 实体是否能飞行
-     * 
+     *
      * @returns {boolean}
      */
     get canFly() {
@@ -114,7 +115,7 @@ export class Entity {
 
     /**
      * 实体是否能被冻结
-     * 
+     *
      * @returns {boolean}
      */
     get canFreeze() {
@@ -123,7 +124,7 @@ export class Entity {
 
     /**
      * 实体当前是否悬空
-     * 
+     *
      * @returns {boolean}
      */
     get inAir() {
@@ -132,7 +133,7 @@ export class Entity {
 
     /**
      * 实体当前是否在水中
-     * 
+     *
      * @returns {boolean}
      */
     get inWater() {
@@ -141,7 +142,7 @@ export class Entity {
 
     /**
      * 实体是否在岩浆中
-     * 
+     *
      * @returns {boolean}
      */
     get inLava() {
@@ -150,7 +151,7 @@ export class Entity {
 
     /**
      * 实体是否在雨中
-     * 
+     *
      * todo 未实现
      * @returns {boolean}
      */
@@ -160,8 +161,8 @@ export class Entity {
 
     /**
      * 实体是否在雪中
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get inSnow() {
         return this._checkCollisionBlocks([BlockSnow, BlockPowderSnow]);
@@ -169,8 +170,8 @@ export class Entity {
 
     /**
      * 实体是否在墙上
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get inWall() {
         return this._checkCollisionBlocks([BlockWallBase]);
@@ -178,8 +179,8 @@ export class Entity {
 
     /**
      * 实体是否在水中或雨中
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get inWaterOrRain() {
         return this.inWater;
@@ -187,9 +188,9 @@ export class Entity {
 
     /**
      * 实体是否在世界中
-     * 
+     *
      * todo 不懂什么意思
-     * @returns {boolean} 
+     * @returns {boolean}
      */
     get inWorld() {
         return true;
@@ -197,8 +198,8 @@ export class Entity {
 
     /**
      * 实体当前速度
-     * 
-     * @returns {number} 
+     *
+     * @returns {number}
      */
     get speed() {
         return this._PNXEntity.getMovementSpeed();
@@ -206,8 +207,8 @@ export class Entity {
 
     /**
      * 实体当前朝向
-     * 
-     * @returns {DirectionAngle} 
+     *
+     * @returns {DirectionAngle}
      */
     get direction() {
         return this.DirectionAngle;
@@ -215,8 +216,8 @@ export class Entity {
 
     /**
      * 实体唯一标识符
-     * 
-     * @returns {string} 
+     *
+     * @returns {string}
      */
     get uniqueId() {
         return this._PNXEntity.getUniqueId().toString();
@@ -224,8 +225,8 @@ export class Entity {
 
     /**
      * 实体是否不可见
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isInvisible() {
         return this._PNXEntity.getDataPropertyBoolean(PNXEntity.DATA_FLAG_INVISIBLE);
@@ -233,8 +234,8 @@ export class Entity {
 
     /**
      * 实体是否在门户内
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isInsidePortal() {
         return this._checkCollisionBlocks([BlockEndPortal, BlockNetherPortal]);
@@ -242,9 +243,9 @@ export class Entity {
 
     /**
      * 实体是否信任
-     * 
+     *
      * todo 不知道啥意思
-     * @returns {boolean} 
+     * @returns {boolean}
      */
     get isTrusting() {
         return true;
@@ -252,8 +253,8 @@ export class Entity {
 
     /**
      * 实体是否接触到伤害方块
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isTouchingDamageBlock() {
         return this._checkCollisionBlocks([BlockLava, BlockWitherRose, BlockMagma, BlockFire, BlockFireSoul, BlockCampfire, BlockCampfireSoul]);
@@ -261,8 +262,8 @@ export class Entity {
 
     /**
      * 实体是否在地面
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isOnGround() {
         return !this.inAir;
@@ -270,8 +271,8 @@ export class Entity {
 
     /**
      * 实体是否在岩浆块上
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isOnHotBlock() {
         return this._checkCollisionBlocks([BlockMagma]);
@@ -279,9 +280,9 @@ export class Entity {
 
     /**
      * 实体是否在交易
-     * 
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 
+     * @returns {boolean}
      */
     get isTrading() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -292,9 +293,9 @@ export class Entity {
 
     /**
      * 实体是否正在骑行
-     * 
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 
+     * @returns {boolean}
      */
     get isRiding() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -305,9 +306,9 @@ export class Entity {
 
     /**
      * 实体是否在跳舞
-     * 
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 
+     * @returns {boolean}
      */
     get isDancing() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -318,8 +319,8 @@ export class Entity {
 
     /**
      * 实体是否在睡觉
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isSleeping() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -330,8 +331,8 @@ export class Entity {
 
     /**
      * 实体是否生气
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isAngry() {
         if (this._PNXEntity instanceof EntityWolf) {
@@ -342,8 +343,8 @@ export class Entity {
 
     /**
      * 实体是否为幼体
-     * 
-     * @returns {boolean} 
+     *
+     * @returns {boolean}
      */
     get isBaby() {
         if (this._PNXEntity instanceof EntityAgeable) {
@@ -351,12 +352,12 @@ export class Entity {
         }
         return false;
     }
-    
+
     /**
      * 实体是否移动
-     * 
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 
+     * @returns {boolean}
      */
     get isMoving() {
         return true;

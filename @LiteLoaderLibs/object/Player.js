@@ -40,6 +40,7 @@ import { Level } from 'cn.nukkit.level.Level';
 import { Entity } from "./Entity.js";
 import { Player as PNXPlayer } from "cn.nukkit.Player";
 
+const type = PNXPlayer;
 const PlayerDB = contain('PlayerDB');
 const ASType = AdventureSettings.Type;
 const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHandler')))({
@@ -97,7 +98,7 @@ export class Player {
     itemChangeList;
 
     /**
-     * @param {PNXPlayer} player 
+     * @param {PNXPlayer} player
      * @returns {Player}
      */
     constructor(player) {
@@ -109,7 +110,7 @@ export class Player {
 
     /**
      * @pnxonly
-     * @param {PNXPlayer} player 
+     * @param {PNXPlayer} player
      * @returns {Player}
      */
     static getPlayer(player) {
