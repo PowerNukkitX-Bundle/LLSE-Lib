@@ -16,6 +16,7 @@ import { BlockGrass } from 'cn.nukkit.block.BlockGrass';
 import { BlockFlower } from 'cn.nukkit.block.BlockFlower';
 import { BlockSlab } from 'cn.nukkit.block.BlockSlab';
 import { BlockTransparentMeta } from 'cn.nukkit.block.BlockTransparentMeta';
+import { BlockEntity } from "./BlockEntity.js";
 
 const type = PNXBlock;
 
@@ -293,6 +294,17 @@ export class Block {
             return new Container(this._PNXBlock.getLevelBlockEntity().getInventory());
         }
         return null
+    }
+
+    /**
+     * 获取一个方块实体对象
+     *
+     * @returns {BlockEntity} 如返回值为 Null 则表示获取方块实体对象失败，或者此方块没有对应的实体对象
+     */
+    getBlockEntity() {
+        let entity = this._PNXBlock.getLevelBlockEntity();
+        if (entity == null) return null;
+        else return new BlockEntity(entity);
     }
 
     toString() {

@@ -6,7 +6,7 @@ import { Block } from "./Block.js";
 
 const type = PNXBlockEntity;
 
-class BlockEntity {
+export class BlockEntity {
 
     constructor(PNXBlockEntity) {
         this._PNXBlockEntity = PNXBlockEntity;
