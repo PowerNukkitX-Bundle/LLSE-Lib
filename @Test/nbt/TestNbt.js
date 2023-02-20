@@ -48,7 +48,7 @@ export const TestNbt = () => {
         name2: "test",
         name3: [4, 6],
         name4: 66666,
-        name5: {k3: 5, k4: 2, k5: array, k6: null, k7: 8, k8: {m1: 3, m2: 3}}
+        name5: { k3: 5, k4: 2, k5: array, k6: null, k7: 8, k8: { m1: 3, m2: 3 } }
     };
     //注册测试套件
     JSAssert.addTestSuite("Test NBT", {

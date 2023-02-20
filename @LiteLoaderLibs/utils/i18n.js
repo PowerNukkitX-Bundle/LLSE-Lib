@@ -2,7 +2,7 @@ import { File } from '../file/File.js';
 import { Paths } from 'java.nio.file.Paths';
 import { Locale } from 'java.util.Locale';
 
-const Alphabet ='abcdefghijklnmopqrstuvwxyz'.split('');
+const Alphabet = 'abcdefghijklnmopqrstuvwxyz'.split('');
 const langMap = new Map();
 export class i18n {
     /**
@@ -17,12 +17,12 @@ export class i18n {
             let filePath = path;
             if (File.checkIsDir(path) || path.endsWith("/") || !path.toLocaleLowerCase().endsWith(".json")) {
                 File.createDir(path);
-                filePath = Paths.get(path, defaultLocaleName ? defaultLocaleName+'.json' : 'lang.json').toString();
+                filePath = Paths.get(path, defaultLocaleName ? defaultLocaleName + '.json' : 'lang.json').toString();
             }
-            File.writeTo(filePath, typeof(defaultLangData) === 'string' ? defaultLangData : JSON.stringify(defaultLangData,null,2));
+            File.writeTo(filePath, typeof (defaultLangData) === 'string' ? defaultLangData : JSON.stringify(defaultLangData, null, 2));
         }
         const locale = Locale.getDefault();
-        const localeCode = locale.getLanguage()+'_'+locale.getCountry();
+        const localeCode = locale.getLanguage() + '_' + locale.getCountry();
         langMap.set('', defaultLocaleName || localeCode);
         if (File.checkIsDir(path)) {
             let dirList = File.getFilesList(path);
@@ -67,38 +67,38 @@ export class i18n {
         const REG = new RegExp(/(?<=\{).*?(?=\})/, "gim");
         let res = i18n.get(key, localeName);
         let params = res.match(REG);
-    
+
         if (!params) return res;// 没有匹配到任何文字模板则直接返回
 
         let voidStencil = [].concat(args);// 用于最后的空模板替换
-        if ((args[args.length-1]).constructor === Object) {
-            voidStencil[args.length-1] = null;
+        if ((args[args.length - 1]).constructor === Object) {
+            voidStencil[args.length - 1] = null;
         }
-    
+
         //console.log(params); // [ '', '1', '0', 'named_arg:.2f' ]
         for (let i of params) {
             const index = i.indexOf(':');
             if (index > -1) {// 先检查是否有 {name:.2f} 类型的模板文字
-                let argsObj = args[args.length-1];
+                let argsObj = args[args.length - 1];
                 if ((argsObj).constructor != Object) { continue; }
                 let argsKey = i.substring(0, index);
                 // TODO: 实现值的二次解析（需要更多信息）。例: .2f 将 114.51419 解析为 114.51
                 let argsKeyType = i.substring(index + 1);// .2f
                 let argsValue = argsObj[argsKey];
-                res = res.replace("{"+i+"}", argsKey+": "+String(argsValue));
+                res = res.replace("{" + i + "}", argsKey + ": " + String(argsValue));
                 params = spliteArray(params, i);
-            } else if(i.length) {// 其次检查是否有 {a} 类型
+            } else if (i.length) {// 其次检查是否有 {a} 类型
                 if (isNaN(i)) {
                     key = Alphabet.indexOf(i.toLowerCase());
                 } else {
                     key = parseInt(i);
                 }
                 let argsValue = args[key];
-                if (!argsValue || typeof(argsValue)==='object') {
+                if (!argsValue || typeof (argsValue) === 'object') {
                     continue;
                 }
                 voidStencil[key] = null;
-                res = res.replace("{"+i+"}", String(argsValue));
+                res = res.replace("{" + i + "}", String(argsValue));
                 params = spliteArray(params, i);
             }
         }
@@ -137,7 +137,7 @@ function readConfig(content, lang) {
             langMap.set(key, cfg[key]);
             continue;
         }
-        langMap.set(key, Object.assign(langMap.get(key)|| {}, cfg[key]));
+        langMap.set(key, Object.assign(langMap.get(key) || {}, cfg[key]));
     }
 }
 /**

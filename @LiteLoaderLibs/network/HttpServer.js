@@ -219,7 +219,7 @@ function httpPost(url, ...arg) {
     res.thenApply((res) => callback(res.statusCode(), res.body()));
 }
 
-export let network = {httpGet, httpPost}
+export let network = { httpGet, httpPost }
 
 
 

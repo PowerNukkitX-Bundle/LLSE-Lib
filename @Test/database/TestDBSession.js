@@ -6,7 +6,7 @@ import { DBSession } from "../../@LiteLoaderLibs/database/DBSession.js";
  */
 export const TestDBSession = () => {
     //测试环境配置
-    var db = new DBSession("sqlite3", {path: "./plugins/Test/sqlite.db"});
+    var db = new DBSession("sqlite3", { path: "./plugins/Test/sqlite.db" });
     //注册测试套件
     JSAssert.addTestSuite("Test DBSession", {
         testMethods: function () {
@@ -34,7 +34,7 @@ export const TestDBSession = () => {
 
             //测试用预准备SQL插入一条数据
             let st2 = db.prepare("INSERT INTO Persons (LastName, FirstName, Address, Nation) VALUES (?,?10,:address,:nation);");
-            st2.bind({address: "nanjing", nation: "CN"});
+            st2.bind({ address: "nanjing", nation: "CN" });
             st2.bind("Guan");
             st2.bind("JianZi", 9);
             st2.execute();

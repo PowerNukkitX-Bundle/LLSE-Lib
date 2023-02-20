@@ -236,7 +236,7 @@ export class Block {
                 states[key] = new NbtString(value);
             }
         }
-        let result = {name: new NbtString(property[0]), states: new NbtCompound(states)};
+        let result = { name: new NbtString(property[0]), states: new NbtCompound(states) };
         return new NbtCompound(result);
     }
 

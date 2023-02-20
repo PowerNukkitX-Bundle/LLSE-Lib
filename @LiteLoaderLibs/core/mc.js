@@ -114,7 +114,7 @@ function runcmd(cmd) {
 function runcmdEx(cmd) {
     let rconSender = new RemoteConsoleCommandSender();
     let succ = server.executeCommand(rconSender, cmd) > 0;
-    return {success: succ, output: rconSender.getMessages()};
+    return { success: succ, output: rconSender.getMessages() };
 }
 
 /**

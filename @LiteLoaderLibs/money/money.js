@@ -6,7 +6,7 @@ import { onlyOnceExecute } from '../utils/Mixins.js';
 
 const _API = {};
 if (!contain('economyDB')) {// 防止重复database
-    exposeObject('economyDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/economy.db'}));
+    exposeObject('economyDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/economy.db' }));
 }
 export var economyDB = contain('economyDB');
 
@@ -169,12 +169,12 @@ export class money {
 
 onlyOnceExecute(() => {
     import('me.onebone.economyapi.EconomyAPI').then(s => {
-        let {EconomyAPI} = s;
+        let { EconomyAPI } = s;
         _API.EconomyAPI = EconomyAPI.getInstance();
         console.log("成功载入EconomyAPI");
     }, e => {
         import('net.lldv.llamaeconomy.LlamaEconomy').then(s => {
-            let {LlamaEconomy} = s;
+            let { LlamaEconomy } = s;
             _API.LlamaEconomy = LlamaEconomy.getAPI();
             console.log("成功载入LlamaEconomy");
         }, e => {

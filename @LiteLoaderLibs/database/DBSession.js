@@ -123,7 +123,7 @@ export class DBSession {
 }
 
 class Sqlite {
-    constructor({path = "-", create = true, readonly = false, readwrite = true}) {
+    constructor({ path = "-", create = true, readonly = false, readwrite = true }) {
         // Class.forName("org.sqlite.JDBC");//加载sqlite驱动
         let mode = 0;
         if (readonly === true && readwrite === false) mode = 1;

@@ -1,12 +1,12 @@
 // github link: https://github.com/npm/ini/blob/main/lib/ini.js
 
-const {hasOwnProperty} = Object.prototype;
+const { hasOwnProperty } = Object.prototype;
 
 /* istanbul ignore next */
 //console.log(System.getProperty("os.name").toLowerCase());
 const process = undefined;
 const eol = typeof process !== 'undefined' &&
-process.platform === 'win32' ? '\r\n' : '\n'
+    process.platform === 'win32' ? '\r\n' : '\n'
 
 const encode = (obj, opt) => {
     const children = []
@@ -44,7 +44,7 @@ const encode = (obj, opt) => {
     for (const k of children) {
         const nk = dotSplit(k).join('\\.')
         const section = (opt.section ? opt.section + '.' : '') + nk
-        const {whitespace} = opt
+        const { whitespace } = opt
         const child = encode(obj[k], {
             section,
             whitespace,
@@ -102,8 +102,8 @@ const decode = str => {
         }
         const valueRaw = match[3] ? unsafe(match[4]) : true
         const value = valueRaw === 'true' ||
-        valueRaw === 'false' ||
-        valueRaw === 'null' ? JSON.parse(valueRaw)
+            valueRaw === 'false' ||
+            valueRaw === 'null' ? JSON.parse(valueRaw)
             : valueRaw
 
         // Convert keys with '[]' suffix to an array

@@ -73,7 +73,7 @@ export class Command {
             switch (this._permission) {
                 case 'liteloaderlibs.command.any':
                     break;
-                case'liteloaderlibs.command.op':
+                case 'liteloaderlibs.command.op':
                     if (!sender.isOp()) return 0;
                     break;
                 case 'liteloaderlibs.command.console':

@@ -28,18 +28,18 @@ export function main() {
     TestItem();
     //执行测试,传入配置参数
     JSAssert.execute({
-        onSuiteStarted: function ({name, id}) {
+        onSuiteStarted: function ({ name, id }) {
             colorLog("yellow", "━".repeat(28));
             colorLog("blue", `${id + 1}号套件${name}测试开始`);
             log('');
         },
-        onSuiteEnded: function ({id, name, passed, failed, duration}) {
+        onSuiteEnded: function ({ id, name, passed, failed, duration }) {
             log('');
             colorLog("blue", `${id + 1}号套件${name}测试结束`);
             log(`§b成功测试单元:§a${passed}个§b,失败测试单元:§c${failed}个`);
             colorLog("blue", "该套件测试用时" + duration + "ms");
         },
-        onTestEnded: function ({id, name, success, error, duration}) {
+        onTestEnded: function ({ id, name, success, error, duration }) {
             colorLog("blue", `${id}号单元${name}测试完成`);
             if (success) {
                 log("§a测试成功");
@@ -48,7 +48,7 @@ export function main() {
             }
             colorLog("blue", "该单元测试用时" + duration + "ms");
         },
-        onFinished: function ({passed, failed, duration}) {
+        onFinished: function ({ passed, failed, duration }) {
             colorLog("yellow", "━".repeat(28));
             log('');
             colorLog("blue", "━".repeat(28));

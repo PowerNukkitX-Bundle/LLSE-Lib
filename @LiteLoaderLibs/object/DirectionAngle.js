@@ -38,6 +38,6 @@ export class DirectionAngle {
     }
 
     toString() {
-        return JSON.stringify({pitch: this.pitch, yaw: this.yaw, facing: this.toFacing()});
+        return JSON.stringify({ pitch: this.pitch, yaw: this.yaw, facing: this.toFacing() });
     }
 }

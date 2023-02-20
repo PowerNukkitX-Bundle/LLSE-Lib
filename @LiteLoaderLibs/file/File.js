@@ -112,7 +112,7 @@ export class File {
         });
         return result;
     }
-    
+
     /**
      * 判断文件 / 文件夹是否存在
      * @param path {string} 路径，相对路径以 PNX 根目录为基准

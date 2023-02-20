@@ -1454,7 +1454,7 @@ export class Player {
     }
 
     toString() {
-        return JSON.stringify({realName: this.realName});
+        return JSON.stringify({ realName: this.realName });
     }
 }
 
@@ -1484,7 +1484,7 @@ export function sendMessage(sender = '', receiver, msg, type) {
 
 onlyOnceExecute(() => {
     if (!contain('PlayerDB')) {// 防止重复database
-        exposeObject('PlayerDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/PlayerDB.db'}));
+        exposeObject('PlayerDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/PlayerDB.db' }));
     }
     // noinspection SqlNoDataSourceInspection
     if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) {

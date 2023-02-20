@@ -87,7 +87,7 @@ const cb_utob = (c) => {
         var cc = c.charCodeAt(0);
         return cc < 0x80 ? c
             : cc < 0x800 ? (_fromCC(0xc0 | (cc >>> 6))
-                    + _fromCC(0x80 | (cc & 0x3f)))
+                + _fromCC(0x80 | (cc & 0x3f)))
                 : (_fromCC(0xe0 | ((cc >>> 12) & 0x0f))
                     + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
                     + _fromCC(0x80 | (cc & 0x3f)));
