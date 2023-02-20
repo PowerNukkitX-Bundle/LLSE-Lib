@@ -26,10 +26,6 @@ import { FloatPos } from '../object/FloatPos.js';
 
 const PNXDamageCause = EntityDamageEvent.DamageCause;
 const EventNameMap = {  /* Entity Events */
-    /* Other Events */
-    "onTick": 10,
-    "onConsoleCmd": 10,
-    "onConsoleOutput": 10,
     /* Economic Events */
     "onMoneyAdd": 10,
     "onMoneyReduce": 10,
@@ -982,7 +978,6 @@ export const Event = {
     onOpenContainerScreen: onOpenContainerScreen,
     onExperienceAdd: onExperienceAdd,
     onBedEnter: onBedEnter,
-
     /*实体事件*/
     onMobDie: onMobDie,
     onMobHurt: onMobHurt,
@@ -997,7 +992,6 @@ export const Event = {
     onNpcCmd: onNpcCmd,
     onChangeArmorStand: onChangeArmorStand,
     // onEntityTransformation: onEntityTransformation
-
     /*方块事件*/
     onBlockInteracted: onBlockInteracted,
     // onBlockChanged: onBlockChanged,

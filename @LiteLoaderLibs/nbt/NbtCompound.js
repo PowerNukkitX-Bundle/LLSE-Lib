@@ -33,7 +33,7 @@ export class NbtCompound {
         if (isEmpty(obj)) {
             this._pnxNbt = new CompoundTag("");
         } else if (obj instanceof CompoundTag) {
-            this._pnxNbt = obj;
+            this._pnxNbt = obj.clone();
         } else if (this._evaluate(obj)) {
             this._pnxNbt = new CompoundTag("");//PNX的CompoundTag
             for (let key in obj) {

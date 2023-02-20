@@ -18,7 +18,7 @@ import { Position } from 'cn.nukkit.level.Position';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { EntityDamageByEntityEvent } from 'cn.nukkit.event.entity.EntityDamageByEntityEvent';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
-import { Item as JItem } from 'cn.nukkit.item.Item';
+import { Item as PNXItem } from 'cn.nukkit.item.Item';
 import { Attribute } from 'cn.nukkit.entity.Attribute';
 import { BossBarColor } from 'cn.nukkit.utils.BossBarColor';
 import { AdventureSettings } from 'cn.nukkit.AdventureSettings';
@@ -38,7 +38,9 @@ import { BlockCampfire } from 'cn.nukkit.block.BlockCampfire';
 import { BlockCampfireSoul } from 'cn.nukkit.block.BlockCampfireSoul';
 import { Level } from 'cn.nukkit.level.Level';
 import { Entity } from "./Entity.js";
+import { Player as PNXPlayer } from "cn.nukkit.Player";
 
+const type = PNXPlayer;
 const PlayerDB = contain('PlayerDB');
 const ASType = AdventureSettings.Type;
 const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHandler')))({
@@ -53,32 +55,51 @@ const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHand
 });
 
 export class Player {
+    /**
+     * @type {string}
+     */
     static id = "7D623B95-3173-1F92-6B96-33C9C6CB99AC";
-    static BossBarIdMap = new Map();// '玩家名': Map
-
-    static PlayerMap = new Map();
-
-    static ExtraDataMap = new Map();// '玩家名': {}
-
-    static FormCallbackMap = new Map();// 'formId': function(){}
 
     /**
+     * @type {Map<string,Map>} '玩家名': Map
+     */
+    static BossBarIdMap = new Map();
+
+    /**
+     * @type {Map<string,Player>} '玩家名': Player
+     */
+    static PlayerMap = new Map();
+
+    /**
+     * @type {Map<string,Object>} '玩家名': {}
+     */
+    static ExtraDataMap = new Map();
+
+    /**
+     * @type {Map<number,function>} 'formId': function(){}
+     */
+    static FormCallbackMap = new Map();
+
+    /**
+     * @private
      * @type PNXPlayer
      */
     _PNXPlayer;
+
     /**
      * @type DirectionAngle
      */
     directionAngle;
+
     /**
-     用来存放其他LLSE插件对该玩家物品的操作信息，refreshItems函数利用这个执行,refreshItems之后清空
-     <p>
-     [pnxItem, type: [hand, offhand], slot: number]
+     * 用来存放其他LLSE插件对该玩家物品的操作信息，refreshItems函数利用这个执行,refreshItems之后清空
+     * @type {Array<PNXItem|string|number>} [pnxItem, type: [hand, offhand], slot: number]
      */
     itemChangeList;
 
     /**
-     * @param player {PNXPlayer}
+     * @param {PNXPlayer} player
+     * @returns {Player}
      */
     constructor(player) {
         this._PNXPlayer = player;
@@ -88,7 +109,9 @@ export class Player {
     }
 
     /**
-     * @param player {PNXPlayer}
+     * @pnxonly
+     * @param {PNXPlayer} player
+     * @returns {Player}
      */
     static getPlayer(player) {
         if (!Player.PlayerMap.has(player.name) || !Player.PlayerMap.get(player.name)._PNXPlayer.isOnline()) {
@@ -906,7 +929,7 @@ export class Player {
     giveItem(item) {
         if (item instanceof Item) {
             this._PNXPlayer.giveItem(item._PNXItem);
-        } else if (item instanceof JItem) {
+        } else if (item instanceof PNXItem) {
             this._PNXPlayer.giveItem(item);
         } else {
             return false;
@@ -940,7 +963,6 @@ export class Player {
     refreshItems() {
         if (this.itemChangeList.length === 0) return false;
         for (let array of this.itemChangeList) {
-            //todo 支持物品栏 盔甲栏刷新
             switch (array[1]) {
                 case 'hand': {
                     this._PNXPlayer.getInventory().setItem(array[2], array[0], true);

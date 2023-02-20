@@ -41,132 +41,248 @@ export class Entity {
         this.DirectionAngle = new DirectionAngle(this._PNXEntity);
     }
 
-    get name() {// 实体名称	String
+    /**
+     * 实体名称
+     *
+     * @returns {string}
+     */
+    get name() {
         return this._PNXEntity.getName();
     }
 
-    get type() {// 实体标准类型名	String
+    /**
+     * 实体标准类型名
+     *
+     * @returns {string}
+     */
+    get type() {
         return this._PNXEntity.getOriginalName();
     }
 
-    get id() {// 实体的游戏内 id	Integer
+    /**
+     * 实体的游戏内id
+     *
+     * @returns {number}
+     */
+    get id() {
         return this._PNXEntity.getId();
     }
 
-    get pos() {// 实体所在坐标  FloatPos
+    /**
+     * 实体所在坐标
+     *
+     * @returns {FloatPos}
+     */
+    get pos() {
         return new FloatPos(this._PNXEntity.getPosition());
     }
 
-    get blockPos() {// 实体所在的方块坐标	IntPos
+    /**
+     * 实体所在的方块坐标
+     *
+     * @returns {IntPos}
+     */
+    get blockPos() {
         return new IntPos(this._PNXEntity.getPosition());
     }
 
-    get maxHealth() {// 实体最大生命值	Integer
+    /**
+     * 实体最大生命值
+     *
+     * @returns {number}
+     */
+    get maxHealth() {
         return this._PNXEntity.getMaxHealth();
     }
 
-    get health() {// 实体当前生命值  Integer
+    /**
+     * 实体当前生命值
+     *
+     * @returns {number}
+     */
+    get health() {
         return this._PNXEntity.getHealth();
     }
 
-    get inAir() {// 实体当前是否悬空  Boolean
+    /**
+     * 实体是否能飞行
+     *
+     * @returns {boolean}
+     */
+    get canFly() {
+        return this._PNXEntity.getHealth();
+    }
+
+    /**
+     * 实体是否能被冻结
+     *
+     * @returns {boolean}
+     */
+    get canFreeze() {
+        return this._PNXEntity.getHealth();
+    }
+
+    /**
+     * 实体当前是否悬空
+     *
+     * @returns {boolean}
+     */
+    get inAir() {
         return this._PNXEntity.getAirTicks() > 0;
     }
 
-    get inWater() {// 实体当前是否在水中		Boolean
+    /**
+     * 实体当前是否在水中
+     *
+     * @returns {boolean}
+     */
+    get inWater() {
         return this._PNXEntity.isSwimming();
     }
 
     /**
-     * @returns {boolean} 实体是否在岩浆中
+     * 实体是否在岩浆中
+     *
+     * @returns {boolean}
      */
     get inLava() {
         return this._PNXEntity.isInsideOfLava();
     }
 
     /**
+     * 实体是否在雨中
+     *
      * todo 未实现
-     * @returns {boolean} 实体是否在雨中
+     * @returns {boolean}
      */
     get inRain() {
         return false;
     }
 
     /**
-     * @returns {boolean} 实体是否在雪中
+     * 实体是否在雪中
+     *
+     * @returns {boolean}
      */
     get inSnow() {
         return this._checkCollisionBlocks([BlockSnow, BlockPowderSnow]);
     }
 
     /**
-     * @returns {boolean} 实体是否在墙上
+     * 实体是否在墙上
+     *
+     * @returns {boolean}
      */
     get inWall() {
         return this._checkCollisionBlocks([BlockWallBase]);
     }
 
     /**
-     * @returns {boolean} 实体是否在水中或雨中
+     * 实体是否在水中或雨中
+     *
+     * @returns {boolean}
      */
     get inWaterOrRain() {
         return this.inWater;
     }
 
     /**
+     * 实体是否在世界中
+     *
      * todo 不懂什么意思
-     * @returns {boolean} 实体是否在世界中
+     * @returns {boolean}
      */
     get inWorld() {
         return true;
     }
 
     /**
-     * @returns {boolean} 实体是否不可见
+     * 实体当前速度
+     *
+     * @returns {number}
+     */
+    get speed() {
+        return this._PNXEntity.getMovementSpeed();
+    }
+
+    /**
+     * 实体当前朝向
+     *
+     * @returns {DirectionAngle}
+     */
+    get direction() {
+        return this.DirectionAngle;
+    }
+
+    /**
+     * 实体唯一标识符
+     *
+     * @returns {string}
+     */
+    get uniqueId() {
+        return this._PNXEntity.getUniqueId().toString();
+    }
+
+    /**
+     * 实体是否不可见
+     *
+     * @returns {boolean}
      */
     get isInvisible() {
         return this._PNXEntity.getDataPropertyBoolean(PNXEntity.DATA_FLAG_INVISIBLE);
     }
 
     /**
-     * @returns {boolean} 实体是否在门户内
+     * 实体是否在门户内
+     *
+     * @returns {boolean}
      */
     get isInsidePortal() {
         return this._checkCollisionBlocks([BlockEndPortal, BlockNetherPortal]);
     }
 
     /**
+     * 实体是否信任
+     *
      * todo 不知道啥意思
-     * @returns {boolean} 实体是否信任
+     * @returns {boolean}
      */
     get isTrusting() {
         return true;
     }
 
     /**
-     * @returns {boolean} 实体是否接触到伤害方块
+     * 实体是否接触到伤害方块
+     *
+     * @returns {boolean}
      */
     get isTouchingDamageBlock() {
         return this._checkCollisionBlocks([BlockLava, BlockWitherRose, BlockMagma, BlockFire, BlockFireSoul, BlockCampfire, BlockCampfireSoul]);
     }
 
     /**
-     * @returns {boolean} 实体是否在地面
+     * 实体是否在地面
+     *
+     * @returns {boolean}
      */
     get isOnGround() {
         return !this.inAir;
     }
 
     /**
-     * @returns {boolean} 实体是否在岩浆块上
+     * 实体是否在岩浆块上
+     *
+     * @returns {boolean}
      */
     get isOnHotBlock() {
         return this._checkCollisionBlocks([BlockMagma]);
     }
 
     /**
+     * 实体是否在交易
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 实体是否在交易
+     * @returns {boolean}
      */
     get isTrading() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -176,8 +292,10 @@ export class Entity {
     }
 
     /**
+     * 实体是否正在骑行
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 实体是否正在骑行
+     * @returns {boolean}
      */
     get isRiding() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -187,8 +305,10 @@ export class Entity {
     }
 
     /**
+     * 实体是否在跳舞
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 实体是否在跳舞
+     * @returns {boolean}
      */
     get isDancing() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -198,7 +318,9 @@ export class Entity {
     }
 
     /**
-     * @returns {boolean} 实体是否在睡觉
+     * 实体是否在睡觉
+     *
+     * @returns {boolean}
      */
     get isSleeping() {
         if (this._PNXEntity instanceof PNXPlayer) {
@@ -208,7 +330,9 @@ export class Entity {
     }
 
     /**
-     * @returns {boolean} 实体是否生气
+     * 实体是否生气
+     *
+     * @returns {boolean}
      */
     get isAngry() {
         if (this._PNXEntity instanceof EntityWolf) {
@@ -218,7 +342,9 @@ export class Entity {
     }
 
     /**
-     * @returns {boolean} 实体是否为幼体
+     * 实体是否为幼体
+     *
+     * @returns {boolean}
      */
     get isBaby() {
         if (this._PNXEntity instanceof EntityAgeable) {
@@ -228,23 +354,13 @@ export class Entity {
     }
 
     /**
+     * 实体是否移动
+     *
      * todo pnx未实现检测
-     * @returns {boolean} 实体是否移动
+     * @returns {boolean}
      */
     get isMoving() {
         return true;
-    }
-
-    get speed() {// 实体当前速度	Float
-        return this._PNXEntity.getMovementSpeed();
-    }
-
-    get direction() {// 实体当前朝向	Boolean
-        return this.DirectionAngle;
-    }
-
-    get uniqueId() {// 实体唯一标识符	String
-        return this._PNXEntity.getUniqueId().toString();
     }
 
     /**

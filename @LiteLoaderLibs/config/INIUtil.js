@@ -6,7 +6,7 @@ const { hasOwnProperty } = Object.prototype;
 //console.log(System.getProperty("os.name").toLowerCase());
 const process = undefined;
 const eol = typeof process !== 'undefined' &&
-    process.platform === 'win32' ? '\r\n' : '\n'
+process.platform === 'win32' ? '\r\n' : '\n'
 
 const encode = (obj, opt) => {
     const children = []
@@ -102,8 +102,8 @@ const decode = str => {
         }
         const valueRaw = match[3] ? unsafe(match[4]) : true
         const value = valueRaw === 'true' ||
-            valueRaw === 'false' ||
-            valueRaw === 'null' ? JSON.parse(valueRaw)
+        valueRaw === 'false' ||
+        valueRaw === 'null' ? JSON.parse(valueRaw)
             : valueRaw
 
         // Convert keys with '[]' suffix to an array

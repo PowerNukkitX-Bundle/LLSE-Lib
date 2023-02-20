@@ -1,4 +1,4 @@
-import { Block as JBlock } from 'cn.nukkit.block.Block';
+import { Block as PNXBlock } from 'cn.nukkit.block.Block';
 import { BlockButton } from 'cn.nukkit.block.BlockButton';
 import { BlockCrops } from 'cn.nukkit.block.BlockCrops';
 import { BlockDoor } from 'cn.nukkit.block.BlockDoor';
@@ -16,14 +16,17 @@ import { BlockGrass } from 'cn.nukkit.block.BlockGrass';
 import { BlockFlower } from 'cn.nukkit.block.BlockFlower';
 import { BlockSlab } from 'cn.nukkit.block.BlockSlab';
 import { BlockTransparentMeta } from 'cn.nukkit.block.BlockTransparentMeta';
+import { BlockEntity } from "./BlockEntity.js";
+
+const type = PNXBlock;
 
 export class Block {
     /**
      * 生产新的 Block 方法对象
-     * @returns {Block} 物品对象 如返回值为 Null 则表示生成失败
+     * @returns {PNXBlock} 物品对象 如返回值为 Null 则表示生成失败
      */
     constructor(block) {
-        this._PNXBlock = block instanceof JBlock ? block : null;
+        this._PNXBlock = block;
     }
 
     /**
@@ -291,6 +294,17 @@ export class Block {
             return new Container(this._PNXBlock.getLevelBlockEntity().getInventory());
         }
         return null
+    }
+
+    /**
+     * 获取一个方块实体对象
+     *
+     * @returns {BlockEntity} 如返回值为 Null 则表示获取方块实体对象失败，或者此方块没有对应的实体对象
+     */
+    getBlockEntity() {
+        let entity = this._PNXBlock.getLevelBlockEntity();
+        if (entity == null) return null;
+        else return new BlockEntity(entity);
     }
 
     toString() {
