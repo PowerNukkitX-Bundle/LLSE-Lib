@@ -11,25 +11,25 @@ export class IntPos {
      * @returns {number} x
      */
     get x() {
-        return parseInt(this.position.x);
+        return this.position.getFloorX();
     }
 
     /**
      * @returns {number} y
      */
     get y() {
-        return parseInt(this.position.y);
+        return this.position.getFloorY();
     }
 
     /**
      * @returns {number} z
      */
     get z() {
-        return parseInt(this.position.z);
+        return this.position.getFloorZ();
     }
 
     /**
-     * @returns {number} 世界名
+     * @returns {string} 世界名
      */
     get dim() {
         return this.position.getLevel().getName();
@@ -42,6 +42,9 @@ export class IntPos {
         return this.position.getLevel().getDimension();
     }
 
+    /**
+     * @returns {string}
+     */
     toString() {
         return JSON.stringify({ x: this.x, y: this.y, z: this.z, dim: this.dim, dimid: this.dimid });
     }
