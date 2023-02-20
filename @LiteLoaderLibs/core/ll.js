@@ -1,15 +1,16 @@
 import { server } from '../utils/Mixins.js';
+import { Plugin } from "../object/Plugin.js";
 
 /**
  * 向加载器提供一些插件相关的信息
- * @todo 待实现
+ *
  * @param name {string} 插件名字
  * @param introduction {string} 对插件的简短介绍 Null
  * @param version {Array<number,number,number>} 插件的版本信息
  * @param other {Object} 其他你愿意提供的的附加信息（如许可证、开源地址等）传入键值对
  */
 function registerPlugin(name, introduction, version, other) {
-    // 用于更新 plugin.yml 信息
+    //不实现，仅保留维持兼容性
 }
 
 /**
@@ -39,6 +40,18 @@ function funcImport(namespace, name) {
 }
 
 /**
+ * 判断远程函数是否已导出
+ * @todo 测试
+ * @param namespace {string} 函数的命名空间名
+ * @param name {string} 要导入的函数使用的导出名称
+ * @returns {boolean} 函数是否已导出
+ */
+function hasExported(namespace, name) {
+    let key = namespace + ":" + name;
+    return Boolean(contain(key));
+}
+
+/**
  * 获取插件列表
  * @returns {Array<string,...>} 返回数组，包含插件名
  */
@@ -51,9 +64,82 @@ function listPlugins() {
     return list;
 }
 
+function require() {
+    //不实现，仅保留维持兼容性
+}
+
+/**
+ * 检查 LiteLoaderBDS 版本
+ *
+ * @param {int} major 检查当前已安装LiteLoaderBDS的主版本号是否 >= 此值
+ * @param {?int} minor 检查当前已安装LiteLoaderBDS的次版本号是否 >= 此值
+ * @param {?int} revision 检查当前已安装LiteLoaderBDS的修订版本号是否 >= 此值
+ * @returns {boolean} 检查结果
+ */
+function requireVersion(major, minor = -1, revision = -1) {
+    if (this.major < major) return false;
+    if (this.minor < minor) return false;
+    return this.revision >= revision;
+}
+
+/**
+ * 获取有关插件的信息
+ *
+ * @param {string} name 插件名称
+ * @returns {Plugin}  插件对象
+ */
+function getPluginInfo(name) {
+    let p = server.getPluginManager().getPlugin(name);
+    if (p === null) return p;
+    return new Plugin(p);
+}
+
+/**
+ * 列出所有加载的插件信息
+ *
+ * @returns {Plugin[]}  插件对象
+ */
+function getAllPluginInfo(name) {
+    let p = server.getPluginManager().getPlugins().values();
+    let result = [];
+    for (let plugin of p) {
+        result.push(new Plugin(plugin));
+    }
+    return result;
+}
+
+/**
+ * 将字符串作为脚本代码执行
+ *
+ * @param {string} str 要作为脚本代码执行的字符串
+ * @returns {any}  执行结果
+ */
+function llEval(str) {
+    return eval(str);
+}
+
+
 export const ll = {
-    registerPlugin,
+    language: server.getLanguageCode().toString(),
+    major: 2,
+    minor: 10,
+    revision: 1,
+    status: 2,
+    scriptEngineVersion: "",
+    isWine: false,
+    isDebugMode: false,
+    isBeta: false,
+    isDev: false,
+    isRelease: true,
+    versionString: "" + this.major + this.minor + this.revision,
+    requireVersion: requireVersion,
+    registerPlugin: registerPlugin,
+    getPluginInfo: getPluginInfo,
+    getAllPluginInfo: getAllPluginInfo,
     export: funcExport,
     import: funcImport,
-    listPlugins
+    require: require,
+    hasExported: hasExported,
+    listPlugins: listPlugins,
+    eval: llEval
 }
