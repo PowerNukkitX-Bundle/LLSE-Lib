@@ -477,7 +477,7 @@ export class Player {
      * @return {DirectionAngle} 返回玩家当前朝向
      */
     get direction() {
-        return this.DirectionAngle;
+        return this.directionAngle;
     }
 
     /**

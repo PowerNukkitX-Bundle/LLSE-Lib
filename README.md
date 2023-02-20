@@ -1,4 +1,4 @@
-# LiteLoader-Libs
+# LLSE-Lib
 
 实现LLSE所有方法的库
 
@@ -6,7 +6,7 @@
 
 ```git
 //clone此厂库请使用下命令
-git clone --recursive https://github.com/PowerNukkitX/LiteLoader-Libs
+git clone --recursive https://github.com/PowerNukkitX/LLSE-Lib
 //更新.header
 git submodule update --remote
 ```
@@ -25,6 +25,7 @@ import {
     logger,
     File,
     JsonConfigFile,
+    BinaryStream,
     colorLog,
     log,
     NbtEnd,
@@ -40,10 +41,6 @@ import {
     NbtString,
     NBT
 } from '@LiteLoaderLibs/index.js'
-
-export function main() {
-	mc.runcmd('say hello!');
-}
 ```
 
 ## Docs
@@ -52,4 +49,4 @@ export function main() {
 
 [PowerNukkitX JS开发文档](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)
 
-[LiteLoader开发文档](https://docs.litebds.com/#/zh_CN/Development/)
+[LLSE开发文档](https://docs.litebds.com/#/zh_CN/Development/)

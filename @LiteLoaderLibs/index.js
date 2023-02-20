@@ -5,15 +5,12 @@ export function main() {
 }
 
 export function close() {
-    print("LiteLoader-Libs close");
-    DBSessionMap.forEach((v, k) => {//统一关闭数据库
+    console.log("LiteLoader-Libs close");
+    DBSessionMap.forEach((v) => {//统一关闭数据库
         v.close();
     });
 }
 
-/**
- * @deprecated since version LLSE-v0.0.7
- */
 export const log = function () {
     console.log.apply(this, arguments);
 }
@@ -68,7 +65,7 @@ export const colorLog = function (color, ...args) {
 
 /**
  * 异步输出（无返回值）
- * @param ...args {any} 待输出的变量或者函数，可以多个参数。
+ * @param {any} args 待输出的变量或者函数，可以多个参数。
  */
 export const fastLog = async function (...args) {
     console.log(...args);
@@ -100,3 +97,4 @@ export { NbtString } from './nbt/NbtString.js';
 export { JsonConfigFile } from './config/JsonConfigFile.js';
 export { IniConfigFile } from './config/IniConfigFile.js';
 export { i18n } from './utils/i18n.js';
+export { BinaryStream } from './object/BinaryStream.js';

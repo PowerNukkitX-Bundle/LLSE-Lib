@@ -60,7 +60,7 @@ export class NbtByteArray extends CommonNbt {
     }
 
     _evaluate(data) {
-        if (data instanceof Int8Array) {
+        if (data instanceof Int8Array || data instanceof Int16Array) {
             var suc = true;
             data.forEach(elem => {
                 if (Byte.MIN_VALUE > elem || elem > Byte.MAX_VALUE) {

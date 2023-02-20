@@ -8,10 +8,13 @@ import { UUID } from 'java.util.UUID';
 import { Iq80DBFactory } from 'org.iq80.leveldb.impl.Iq80DBFactory';
 import { Long } from 'java.lang.Long';
 import { Player } from "../../@LiteLoaderLibs/object/Player.js";
+import { DelegatePlayer } from "org.powernukkit.tests.mocks.DelegatePlayer";
 import { Player as PNXPlayer } from "cn.nukkit.Player";
 import { isEmpty } from '../../@LiteLoaderLibs/utils/underscore-esm-min.js'
+import { loadJar } from ':jvm';
 
 export const TestPlayer = () => {
+    loadJar("./libs/PowerNukkitX-JUnit5-Framework-0.0.2.jar");
     //测试环境配置
     try {
         var completeLoginSequence = PNXPlayer.class.getDeclaredMethod("completeLoginSequence");
@@ -34,7 +37,7 @@ export const TestPlayer = () => {
     let clientIp = "1.2.3.4";
     let clientPort = 3232;
     let sourceInterface = server.getNetwork().getInterfaces().toArray()[0];
-    let _player = new PNXPlayer(sourceInterface, clientId, clientIp, clientPort);
+    let _player = new DelegatePlayer(sourceInterface, clientId, clientIp, clientPort);
     let loginPacket = new LoginPacket();
     loginPacket.username = "TestPlayer";
     loginPacket.protocol = ProtocolInfo.CURRENT_PROTOCOL;
@@ -69,7 +72,7 @@ export const TestPlayer = () => {
             assertThat(player.sneaking).equals(false, "sneaking属性读取异常");
             assertThat(player.speed).equals(0.10000000149011612, "speed属性读取异常");
             assertThat(player.direction.toString()).equals(`{"pitch":0,"yaw":0,"facing":2}`, "direction属性读取异常");
-            assertThat(player.uniqueId.toString()).equals("00000000-0000-0003-0000-000000000003", "uniqueId属性读取异常");
+            assertThat(player.uniqueId).equals("00000000-0000-0003-0000-000000000003", "uniqueId属性读取异常");
         }
     });
 };

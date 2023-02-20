@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
-    if: github.repository == 'ban/ban'
-
     steps:
       - name: 检出仓库内容
         uses: actions/checkout@v3
@@ -23,6 +21,7 @@ jobs:
 
       - name: 输出更改文件列表
         run: echo ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
+
   test:
     needs: check-files
     runs-on: ubuntu-latest
@@ -67,6 +66,7 @@ jobs:
       - name: fail
         if: ${{ steps.test-result.outputs.success == 'false' }}
         uses: cutenode/action-always-fail@v1.0.0
+
   build:
     if: github.event_name == 'push' && (!contains(github.ref_name, 'patch'))
     needs: test

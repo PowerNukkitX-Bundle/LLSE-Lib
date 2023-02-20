@@ -131,7 +131,7 @@ export const ll = {
     isBeta: false,
     isDev: false,
     isRelease: true,
-    versionString: "" + this.major + this.minor + this.revision,
+    versionString: "2.10.1",
     requireVersion: requireVersion,
     registerPlugin: registerPlugin,
     getPluginInfo: getPluginInfo,

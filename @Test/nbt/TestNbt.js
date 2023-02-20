@@ -53,12 +53,12 @@ export const TestNbt = () => {
     //注册测试套件
     JSAssert.addTestSuite("Test NBT", {
         testNBTOutput: function () {
-            assertThat(oldNBT.toSNBT()).equals(`{"name5":{"k3":5.0d,"k4":2b,"k5":[B;5,5,5,5,5],"k6":,"k7":8s,"k8":{"m1":3,"m2":3}},"name4":66666L,"name3":[4.0f,6.0f],"name2":"test","name1":3}`, "toSNBT异常");
+            assertThat(oldNBT.toSNBT()).equals(`{"name5":{"k3":5.0d,"k4":2b,"k5":[B;5b,5b,5b,5b,5b],"k6":,"k7":8s,"k8":{"m1":3,"m2":3}},"name4":66666L,"name3":[4.0f,6.0f],"name2":"test","name1":3}`, "toSNBT异常");
             assertThat(oldNBT.toObject()).equals(object, "toObject异常");
             assertThat(oldNBT.toString()).equals(`{"name5":{"k3":5,"k4":2,"k5":"NTU1NTU=","k6":null,"k7":8,"k8":{"m1":3,"m2":3}},"name4":66666,"name3":[4,6],"name2":"test","name1":3}`, "toString异常");
         },
         testDeserialization: function () {
-            let oldSNBT = oldNBT.toSNBT()
+            let oldSNBT = oldNBT.toSNBT();
             let newNBT = NBT.parseSNBT(oldSNBT);
             let newSNBT = newNBT.toSNBT();
             assertThat(newSNBT).equals(oldSNBT, "新旧SNBT不等");
@@ -80,7 +80,7 @@ export const TestNbt = () => {
                     p1: new NbtString("hahaha"),
                     p2: new NbtString("lalala")
                 }));
-            assertThat(nbt.toSNBT()).equals(`{"name6":"test1","name5":128s,"name4":1b,"name3":2.32342d,"name9":,"name8":[B;5,5,5,5,5],"name7":99999L,"name2":1.0f,"name1":2,"s1":[1,2],"s2":{"p1":"hahaha","p2":"lalala"}}`, "创建Compound异常");
+            assertThat(nbt.toSNBT()).equals(`{"name6":"test1","name5":128s,"name4":1b,"name3":2.32342d,"name9":,"name8":[B;5b,5b,5b,5b,5b],"name7":99999L,"name2":1.0f,"name1":2,"s1":[1,2],"s2":{"p1":"hahaha","p2":"lalala"}}`, "创建Compound异常");
         },
         testFunctionCompound: function () {
             assertThat(oldNBT.getKeys()).equals(["name5", "name4", "name3", "name2", "name1"], "getKeys方法异常");
