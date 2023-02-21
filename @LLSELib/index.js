@@ -74,6 +74,7 @@ export const fastLog = async function (...args) {
 export { data } from './utils/data.js';
 export { Format } from './utils/Format.js';
 export { PermType } from './utils/PermType.js';
+export { ParamType } from './command/ParamType.js';
 export { system } from './utils/system.js';
 export { logger } from './utils/logger.js';
 export { money } from './money/money.js';

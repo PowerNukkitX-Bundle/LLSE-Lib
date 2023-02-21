@@ -19,6 +19,7 @@ import {
     mc,
     Format,
     PermType,
+    ParamType,
     system,
     data,
     i18n,
@@ -40,7 +41,11 @@ import {
     NbtByteArray,
     NbtString,
     NBT
-} from '@LLSELib/index.js'
+} from '@LLSELib/index.js';
+
+export function main() {
+    //do something
+}
 ```
 
 ## Docs
