@@ -33,7 +33,7 @@ jobs:
         with:
           repository: 'PowerNukkitX/PowerNukkitX'
           path: 'core'
-      - name: checkout LL-libs runtime
+      - name: checkout LLSE Lib TestRuntime
         uses: actions/checkout@v3
         with:
           repository: 'PowerNukkitX/LLSE-Lib-TestRuntime'
