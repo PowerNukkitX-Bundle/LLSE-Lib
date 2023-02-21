@@ -59,7 +59,7 @@ jobs:
           cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
           cp target/libs -R ../env
-          cd ../ && mkdir env/plugins && cp @LiteLoaderLibs @Test -R env/plugins
+          cd ../ && mkdir env/plugins && cp @LLSELib @Test -R env/plugins
       - name: run test
         run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
         id: test-result
@@ -77,17 +77,17 @@ jobs:
       - name: move
         run: |
           mkdir $GITHUB_WORKSPACE/src
-          mv $GITHUB_WORKSPACE/@LiteLoaderLibs $GITHUB_WORKSPACE/src/@LiteLoaderLibs
+          mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
       - name: compress
         uses: nizarmah/auto-minify@v2.1
         with:
           overwrite: true
-          directory: ./src/@LiteLoaderLibs
+          directory: ./src/@LLSELib
           js_engine: uglify-js
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: LiteLoaderLibs
+          name: LLSELib
           path: |
             src
             !**/jsconfig.json
