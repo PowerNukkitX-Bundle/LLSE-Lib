@@ -1,4 +1,4 @@
-import { server } from "../utils/Mixins.js";
+import { server } from "../utils/util.js";
 
 export class Packet {
 

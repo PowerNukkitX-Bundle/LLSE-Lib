@@ -10,7 +10,7 @@ import { ModalForm } from '../gui/ModalForm.js';
 import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
 import { isNumber } from '../utils/underscore-esm-min.js';
-import { getLevels, onlyOnceExecute, server } from '../utils/Mixins.js';
+import { getLevels, onlyOnceExecute, server } from '../utils/util.js';
 import { InetSocketAddress } from 'java.net.InetSocketAddress';
 import { Collectors } from 'java.util.stream.Collectors';
 import { PlayerChatEvent } from 'cn.nukkit.event.player.PlayerChatEvent';

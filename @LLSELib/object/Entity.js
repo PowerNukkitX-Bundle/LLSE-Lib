@@ -9,7 +9,7 @@ import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Position } from 'cn.nukkit.level.Position';
-import { getLevels } from '../utils/Mixins.js';
+import { getLevels } from '../utils/util.js';
 import { Vector3 } from 'cn.nukkit.math.Vector3';
 import { Collectors } from "java.util.stream.Collectors";
 import { EntityMob } from "cn.nukkit.entity.mob.EntityMob";

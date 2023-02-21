@@ -2,14 +2,38 @@ import { UUID } from 'java.util.UUID';
 import { system } from '../utils/system.js';
 import { data } from '../utils/data.js';
 import { DBSession } from '../database/DBSession.js';
-import { onlyOnceExecute } from '../utils/Mixins.js';
-
+import { download, onlyOnceExecute, server } from '../utils/util.js';
+import { File as JFile } from "java.io.File";
+import { MoneyAddEvent } from "cn.coolloong.economyevent.MoneyAddEvent";
+import { MoneyReduceEvent } from "cn.coolloong.economyevent.MoneyReduceEvent";
+import { MoneySetEvent } from "cn.coolloong.economyevent.MoneySetEvent";
+import { MoneyTransEvent } from "cn.coolloong.economyevent.MoneyTransEvent";
+import { BeforeMoneyAddEvent } from "cn.coolloong.economyevent.BeforeMoneyAddEvent";
+import { BeforeMoneyReduceEvent } from "cn.coolloong.economyevent.BeforeMoneyReduceEvent";
+import { BeforeMoneySetEvent } from "cn.coolloong.economyevent.BeforeMoneySetEvent";
+import { BeforeMoneyTransEvent } from "cn.coolloong.economyevent.BeforeMoneyTransEvent";
 
 if (!contain('economyDB')) {// 防止重复database
     exposeObject('economyDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/economy.db' }));
 }
 export const economyDB = contain('economyDB');
 
+import("cn.coolloong.economyevent.Main").then(() => {
+}, e => {
+    onlyOnceExecute(() => {
+        console.log("没有找到经济事件前置，正在为你自动下载 EconomyEvent...");
+        const fileName = "EconomyEvent-1.0.jar";
+        const folder = "plugins";
+        download("https://cloudburstmc.org/resources/economyapi.14/download", folder, fileName, () => {
+            const file = new JFile(folder, fileName);
+            server.getPluginManager().loadPlugin(file);
+        });
+    }, "64D1B2FC-E3BA-44A8-DCD4-91F117D6397D");
+})
+
+/**
+ * @type {Object}
+ */
 let _API;
 import('me.onebone.economyapi.EconomyAPI').then(s => {
     let { EconomyAPI } = s;
@@ -26,7 +50,13 @@ import('me.onebone.economyapi.EconomyAPI').then(s => {
         }, "E32378ED-4045-C616-A1DA-430A2E0821A1");
     }, e => {
         onlyOnceExecute(() => {
-            console.log("没有找到经济插件 money API 已失效，请加载 EconomyAPI / LlamaEconomy 后重载...");
+            console.log("没有找到经济插件，正在为你自动下载 EconomyAPI...");
+            const fileName = "EconomyAPI.jar";
+            const folder = "plugins";
+            download("https://cloudburstmc.org/resources/economyapi.14/download", folder, fileName, () => {
+                const file = new JFile(folder, fileName);
+                server.getPluginManager().loadPlugin(file);
+            });
         }, "7A5E903B-C70B-4546-8AE2-6AA7C9D5B574");
     });
 });
@@ -44,6 +74,12 @@ export class money {
      * @returns {boolean} 是否成功
      */
     static set(xuid, money) {
+        let ev1 = new BeforeMoneySetEvent(xuid, money);
+        server.getPluginManager().callEvent(ev1);
+        if (ev1.isCancelled()) {
+            return false;
+        }
+
         if (_API.EconomyAPI) {
             _API.EconomyAPI.setMoney(data.str2name(xuid), money);
         } else if (_API.LlamaEconomy) {
@@ -55,6 +91,9 @@ export class money {
                         VALUES ('${data.name2xuid(data.str2name(xuid1))}', '${money}') ON CONFLICT (XUID) DO
         UPDATE
             SET Money=${money}`);
+
+        let ev2 = new MoneySetEvent(xuid, money);
+        server.getPluginManager().callEvent(ev2);
         return true;
     }
 
@@ -80,39 +119,55 @@ export class money {
     /**
      * 增加玩家的存款金额
      * @param xuid {string|UUID} 要操作的玩家的Xuid/Uuid/name标识符
-     * @param money {number} 要增加的金额
+     * @param _money {number} 要增加的金额
      * @returns {boolean} 是否成功
      */
     static add(xuid, _money) {
+        let ev1 = new BeforeMoneyAddEvent(xuid, _money);
+        server.getPluginManager().callEvent(ev1);
+        if (ev1.isCancelled()) {
+            return false;
+        }
+
         if (_API.EconomyAPI) {
             _API.EconomyAPI.addMoney(data.str2name(xuid), _money);
         } else if (_API.LlamaEconomy) {
             _API.LlamaEconomy.addMoney(data.str2name(xuid), _money);
-        } else {
-            return false;
         }
         money.get(data.str2name(xuid));// 更新数据库
+
+        let ev2 = new MoneyAddEvent(xuid, _money);
+        server.getPluginManager().callEvent(ev2);
         return true;
     }
 
     /**
      * 减少玩家的存款
      * @param xuid {string|UUID} 要操作的玩家的Xuid/Uuid/name标识符
-     * @param money {number} 要减少的金额
+     * @param _money {number} 要减少的金额
      * @returns {boolean} 是否成功
      */
-    static reduce(xuid, money_) {
-        if (money.get(data.str2name(xuid)) < money_) {
+    static reduce(xuid, _money) {
+        let ev1 = new BeforeMoneyReduceEvent(xuid, _money);
+        server.getPluginManager().callEvent(ev1);
+        if (ev1.isCancelled()) {
+            return false;
+        }
+
+        if (money.get(data.str2name(xuid)) < _money) {
             return false;
         }
         if (_API.EconomyAPI) {
-            _API.EconomyAPI.reduceMoney(data.str2name(xuid), money_);
+            _API.EconomyAPI.reduceMoney(data.str2name(xuid), _money);
         } else if (_API.LlamaEconomy) {
-            _API.LlamaEconomy.reduceMoney(data.str2name(xuid), money_);
+            _API.LlamaEconomy.reduceMoney(data.str2name(xuid), _money);
         } else {
             return false;
         }
         money.get(data.str2name(xuid));// 更新数据库
+
+        let ev2 = new MoneyReduceEvent(xuid, _money);
+        server.getPluginManager().callEvent(ev2);
         return true;
     }
 
@@ -120,11 +175,17 @@ export class money {
      * 进行一笔转账
      * @param xuid1 {string|UUID} 要操作的玩家的Xuid/Uuid/name标识符
      * @param xuid2 {string|UUID} 要操作的玩家的Xuid/Uuid/name标识符
-     * @param money {number} 要支付的金额
+     * @param money_ {number} 要支付的金额
      * @param [note] {string} 备注
      * @returns {boolean} 是否成功
      */
     static trans(xuid1, xuid2, money_, note = '') {
+        let ev1 = new BeforeMoneyTransEvent(xuid1, xuid2, money_);
+        server.getPluginManager().callEvent(ev1);
+        if (ev1.isCancelled()) {
+            return false;
+        }
+
         if (money.reduce(data.str2name(xuid1), money_)) {
             money.add(data.str2name(xuid2), money_);
             economyDB.exec(`INSERT INTO mtrans (tFrom, tTo, Money, Time, Note)
@@ -132,6 +193,9 @@ export class money {
                                     ', '${money_}', '${~~(new Date().getTime() / 1e3)}', '${String(note)}');`);
             money.get(data.str2name(xuid1));// 更新数据库
             money.get(data.str2name(xuid2));
+
+            let ev2 = new MoneyTransEvent(xuid1, xuid2, money_);
+            server.getPluginManager().callEvent(ev2);
             return true;
         }
         return false;

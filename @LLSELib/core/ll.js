@@ -1,4 +1,4 @@
-import { server } from '../utils/Mixins.js';
+import { server } from '../utils/util.js';
 import { Plugin } from "../object/Plugin.js";
 
 /**

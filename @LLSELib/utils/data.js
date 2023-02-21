@@ -3,7 +3,7 @@ import { BigInteger } from 'java.math.BigInteger';
 import { String as JString } from "java.lang.String";
 import { strToUtf8Bytes } from '../file/IO.js';
 import { Base64 } from './Base64.js';
-import { server } from '../utils/Mixins.js';
+import { server } from '../utils/util.js';
 import { DBSession } from '../database/DBSession.js';
 
 const CharArray = Java.type("char[]");

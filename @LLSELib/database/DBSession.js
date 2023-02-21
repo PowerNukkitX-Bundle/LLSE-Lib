@@ -1,35 +1,14 @@
 import { File as JFile } from "java.io.File";
-import { URL as JURL } from "java.net.URL";
 import { Paths } from "java.nio.file.Paths";
 import { Files } from "java.nio.file.Files";
 import { isEmpty, isNull, isNumber, isString, isUndefined } from '../utils/underscore-esm-min.js';
 import { IllegalArgumentError } from '../error/IllegalArgumentError.js';
 import { Connection } from 'java.sql.Connection';
-import { onlyOnceExecute } from '../utils/Mixins.js';
+import { download, onlyOnceExecute } from '../utils/util.js';
 import { loadJar } from ':jvm';
 
 if (!contain('DBSession')) exposeObject('DBSession', new Map());
 export const DBSessionMap = contain('DBSession');
-
-function downloadSqlite(folder, fileName) {
-    // origin: https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.39.2.0/sqlite-jdbc-3.39.2.0.jar
-    const url = new JURL('https://res.nullatom.com/file/maven/' + fileName);
-    const file = new JFile(folder, fileName);
-    if (folder.mkdirs()) {
-        console.info("Created " + folder.getPath() + '.');
-    }
-    if (!file.isFile()) {
-        try {
-            console.info("Get library from: " + url);
-            Files.copy(url.openStream(), file.toPath());
-            console.info("Get library " + fileName + " done!");
-        } catch (e) {
-            console.error("下载sqlite驱动失败,具体异常:" + e);
-            return false;
-        }
-    }
-    return true;
-}
 
 export class DBSession {
     static id = "3ADD4ABD-A7F3-B60C-F9AD-97445917339A";
@@ -441,11 +420,10 @@ class DBStmt {
 }
 
 const fileName = "sqlite-jdbc-3.39.2.0.jar";
-const folder = new JFile("libs");
+const folder = "libs";
 const file = new JFile(folder, fileName);
-
 onlyOnceExecute(() => {
-    downloadSqlite(folder, fileName);
+    download("https://res.nullatom.com/file/maven/" + fileName, folder, fileName);
 }, DBSession.id);
 
 let SQLiteConfig;

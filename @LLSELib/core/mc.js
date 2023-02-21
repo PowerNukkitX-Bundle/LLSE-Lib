@@ -11,7 +11,7 @@ import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
 import { NBT } from '../nbt/NBT.js';
 import { NbtCompound } from '../nbt/NbtCompound.js';
-import { server } from '../utils/Mixins.js';
+import { server } from '../utils/util.js';
 import { NbtByte } from '../nbt/NbtByte.js';
 import { Entity } from '../object/Entity.js';
 import { IntPos } from '../object/IntPos.js';

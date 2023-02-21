@@ -11,6 +11,7 @@ authors: # 此项可以不存在
 description: LLSE API的实现库
 website: https://mc.xz.cn/list/Minecraft
 softdepend: # 插件的软依赖项
+  - EconomyEvent
   - LlamaEconomy
   - EconomyAPI
 features:

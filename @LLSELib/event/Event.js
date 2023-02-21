@@ -2,7 +2,7 @@ import { EventPriority, PowerNukkitX as pnx } from ':powernukkitx';
 import { Player } from '../object/Player.js';
 import { Entity } from '../object/Entity.js';
 import { Block } from '../object/Block.js';
-import { server } from '../utils/Mixins.js'
+import { server } from '../utils/util.js'
 import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { EntityDamageEvent } from 'cn.nukkit.event.entity.EntityDamageEvent';
 import { PlayerInteractEvent } from 'cn.nukkit.event.player.PlayerInteractEvent';
@@ -26,15 +26,6 @@ import { FloatPos } from '../object/FloatPos.js';
 
 const PNXDamageCause = EntityDamageEvent.DamageCause;
 const EventNameMap = {  /* Entity Events */
-    /* Economic Events */
-    "onMoneyAdd": 10,
-    "onMoneyReduce": 10,
-    "onMoneyTrans": 10,
-    'onMoneySet': 10,
-    "beforeMoneyAdd": 10,
-    "beforeMoneyReduce": 10,
-    "beforeMoneyTrans": 10,
-    "beforeMoneySet": 10,
     /* Outdated Events */
     "onAttack": 10,
     "onExplode": 10,
@@ -942,6 +933,66 @@ const onConsoleOutput = {
     }
 }
 
+const onMoneyAdd = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.MoneyAddEvent", EventPriority.NORMAL, event => {
+            callback(event.getXuid(), event.getAmount());
+        });
+    }
+}
+const onMoneyReduce = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.MoneyReduceEvent", EventPriority.NORMAL, event => {
+            callback(event.getXuid(), event.getAmount());
+        });
+    }
+}
+const onMoneySet = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.MoneySetEvent", EventPriority.NORMAL, event => {
+            callback(event.getXuid(), event.getAmount());
+        });
+    }
+}
+const onMoneyTrans = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.MoneyTransEvent", EventPriority.NORMAL, event => {
+            callback(event.getFromXuid(), event.getToXuid(), event.getAmount());
+        });
+    }
+}
+const beforeMoneyAdd = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.BeforeMoneyAddEvent", EventPriority.NORMAL, event => {
+            let cancel = callback(event.getXuid(), event.getAmount());
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+const beforeMoneyReduce = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.BeforeMoneyReduceEvent", EventPriority.NORMAL, event => {
+            let cancel = callback(event.getXuid(), event.getAmount());
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+const beforeMoneySet = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.BeforeMoneySetEvent", EventPriority.NORMAL, event => {
+            let cancel = callback(event.getXuid(), event.getAmount());
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
+const beforeMoneyTrans = {
+    run: (callback) => {
+        return pnx.listenEvent("cn.coolloong.economyevent.BeforeMoneyTransEvent", EventPriority.NORMAL, event => {
+            let cancel = callback(event.getFromXuid(), event.getToXuid(), event.getAmount());
+            if (cancel === false) event.setCancelled(true);
+        });
+    }
+}
 
 export const Event = {
     /*玩家事件*/
@@ -1014,6 +1065,14 @@ export const Event = {
     onScoreChanged: onScoreChanged,
     onServerStarted: onServerStarted,
     onConsoleCmd: onConsoleCmd,
-    onConsoleOutput: onConsoleOutput
+    onConsoleOutput: onConsoleOutput,
     // 经济事件
+    onMoneyAdd: onMoneyAdd,
+    onMoneyReduce: onMoneyReduce,
+    onMoneyTrans: onMoneyTrans,
+    onMoneySet: onMoneySet,
+    beforeMoneyAdd: beforeMoneyAdd,
+    beforeMoneyReduce: beforeMoneyReduce,
+    beforeMoneyTrans: beforeMoneyTrans,
+    beforeMoneySet
 }
