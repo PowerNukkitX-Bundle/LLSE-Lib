@@ -40,7 +40,7 @@ import {
     NbtByteArray,
     NbtString,
     NBT
-} from '@LiteLoaderLibs/index.js'
+} from '@LLSELib/index.js'
 ```
 
 ## Docs
