@@ -39,6 +39,9 @@ import { BlockCampfireSoul } from 'cn.nukkit.block.BlockCampfireSoul';
 import { Level } from 'cn.nukkit.level.Level';
 import { Entity } from "./Entity.js";
 import { Player as PNXPlayer } from "cn.nukkit.Player";
+import { Scoreboard as PNXScoreboard } from "cn.nukkit.scoreboard.scoreboard.Scoreboard";
+import { SortOrder } from "cn.nukkit.scoreboard.data.SortOrder";
+import { DisplaySlot } from "cn.nukkit.scoreboard.data.DisplaySlot";
 
 const type = PNXPlayer;
 const PlayerDB = contain('PlayerDB');
@@ -1085,26 +1088,36 @@ export class Player {
 
     /**
      * 设置玩家自定义侧边栏
-     * @todo 待实现
+     *
      * @param title {string} 侧边栏标题
      * @param data {object} 侧边栏对象内容对象
      * @param [sortOrder=1] {number} 侧边栏内容的排序顺序。（0为升序，1为降序）
      * @returns {boolean} 是否成功
      */
     setSidebar(title, data, sortOrder = 1) {
-        //scoreborad.setSort(SortOrder.values()[sortOrder]);
-        //server.getScoreboardManager().setDisplay(DisplaySlot.SIDEBAR, )
+        let score;
+        if (sortOrder === 1) {
+            score = new PNXScoreboard(title, title, "dummy", SortOrder.DESCENDING);
+        } else if (sortOrder === 0) {
+            score = new PNXScoreboard(title, title, "dummy", SortOrder.ASCENDING);
+        }
+        for (let key in data) {
+            if (isNaN(data[key])) return false;
+            score.addLine(key, data[key]);
+        }
+        score.addViewer(this._PNXPlayer, DisplaySlot.SIDEBAR);
         return true;
     }
 
     /**
      * 移除玩家自定义侧边栏
-     * @todo 待实现
+     *
      * @returns {boolean} 是否成功
      */
     removeSidebar() {
-        //server.getScoreboardManager().removeDisplay(DisplaySlot.SIDEBAR);
-        return true;
+        let score = server.getScoreboardManager().getDisplaySlot(DisplaySlot.SIDEBAR);
+        if (score === null) return false;
+        return server.getScoreboardManager().removeScoreboard(score);
     }
 
     /**
@@ -1131,7 +1144,7 @@ export class Player {
             this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
         } else {
             mapData.set(uid, this._PNXPlayer.createBossBar(title, percent));
-            if (color != 2) {
+            if (color !== 2) {
                 this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
             }
         }
@@ -1155,6 +1168,17 @@ export class Player {
         mapData.delete(uid);
         return true;
     }
+
+    /**
+     * 向玩家发送数据包
+     *
+     * @param {Packet} packet 数据包
+     * @returns {boolean} 是否成功，如果pl不存在，返回Null
+     */
+    sendPacket(packet) {
+        return this._PNXPlayer.dataPacket(packet.dataPacket);
+    }
+
 
     /**
      * 获取玩家对应的 NBT 对象

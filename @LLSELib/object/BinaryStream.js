@@ -3,9 +3,10 @@ import { Integer } from "java.lang.Integer";
 import { Byte } from "java.lang.Byte";
 import { Long } from "java.lang.Long";
 import { Short } from "java.lang.Short";
-import { isBoolean, isNumber } from "../utils/underscore-esm-min.js";
+import { isBoolean, isNumber, isString } from "../utils/underscore-esm-min.js";
 import { FloatPos } from "./FloatPos.js";
 import { NbtCompound } from "../nbt/NbtCompound.js";
+import { Packet } from "./Packet.js";
 
 export class BinaryStream {
 
@@ -137,7 +138,7 @@ export class BinaryStream {
      * @returns {boolean} 是否成功
      */
     writeString(value) {
-        if (!isNumber(value)) return false;
+        if (!isString(value)) return false;
         this._PNXBinaryStream.putString(value);
         return true;
     }

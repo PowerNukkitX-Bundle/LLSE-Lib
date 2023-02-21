@@ -1,6 +1,6 @@
 import { server } from "../utils/Mixins.js";
 
-class Packet {
+export class Packet {
 
     /**
      * 构建指定id的数据包
@@ -12,7 +12,8 @@ class Packet {
     constructor(id, buffer) {
         this.dataPacket = server.getNetwork().getPacket(id);
         this.dataPacket.reset();
-        this.dataPacket.setBuffer(buffer);
+        this.dataPacket.put(buffer);
+        this.dataPacket.isEncoded = true;
     }
 
     /**
