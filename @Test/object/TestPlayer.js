@@ -1,4 +1,4 @@
-import { getLevels, server } from '@LLSELib/utils/Mixins.js';
+import { getLevels, server } from '@LLSELib/utils/util.js';
 import { assertThat, JSAssert } from '../assert/Assert.js';
 import { Skin } from 'cn.nukkit.entity.data.Skin';
 import { BufferedImage } from 'java.awt.image.BufferedImage';

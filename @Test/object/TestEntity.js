@@ -1,5 +1,5 @@
 import { assertThat, JSAssert } from '../assert/Assert.js';
-import { getLevels } from "@LLSELib/utils/Mixins.js";
+import { getLevels } from "@LLSELib/utils/util.js";
 import { Entity as JEntity } from 'cn.nukkit.entity.Entity'
 import { Entity } from '@LLSELib/object/Entity.js'
 import { Vector3 } from 'cn.nukkit.math.Vector3';
