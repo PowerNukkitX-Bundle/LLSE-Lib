@@ -1,5 +1,5 @@
 import { assertThat, JSAssert } from '../assert/Assert.js';
-import { JsonConfigFile } from "../../@LiteLoaderLibs/index.js";
+import { JsonConfigFile } from "@LLSELib/index.js";
 
 /**
  * Test suite for the object assertions of jsassert framework.

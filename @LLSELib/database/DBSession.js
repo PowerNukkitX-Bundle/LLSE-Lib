@@ -8,7 +8,6 @@ import { Connection } from 'java.sql.Connection';
 import { onlyOnceExecute } from '../utils/Mixins.js';
 import { loadJar } from ':jvm';
 
-var SQLiteConfig;
 if (!contain('DBSession')) exposeObject('DBSession', new Map());
 export const DBSessionMap = contain('DBSession');
 
@@ -30,19 +29,6 @@ function downloadSqlite(folder, fileName) {
         }
     }
     return true;
-}
-
-function createSqlite(url, mode) {
-    if (isEmpty(url)) throw new IllegalArgumentError("指定的数据库路径不能为空!");
-    let sqlConfig = new SQLiteConfig();
-    if (mode === 1) {
-        sqlConfig.setReadOnly(true);
-    }
-    try {
-        return sqlConfig.createConnection("jdbc:sqlite:" + url);//sample.db
-    } catch (e) {
-        console.error("创建或加载sqlite数据库时出错,具体异常:" + e);
-    }
 }
 
 export class DBSession {
@@ -132,19 +118,35 @@ class Sqlite {
         if (create) {
             Files.createDirectories(Paths.get(path).getParent());// 创建目录
             if (!DBSessionMap.has(this._path)) {
-                DBSessionMap.set(this._path, createSqlite(path, mode));
+                DBSessionMap.set(this._path, this.createSqlite(path, mode));
             }
             this.connection = DBSessionMap.get(this._path);
         } else {
             if (db.exists()) {
                 if (!DBSessionMap.has(this._path)) {
-                    DBSessionMap.set(this._path, createSqlite(path, mode));
+                    DBSessionMap.set(this._path, this.createSqlite(path, mode));
                 }
                 this.connection = DBSessionMap.get(this._path);
             } else {
                 console.error("指定的sqlite数据库不存在!");
                 return {};
             }
+        }
+    }
+
+    /**
+     * @private
+     */
+    createSqlite(url, mode) {
+        if (isEmpty(url)) throw new IllegalArgumentError("指定的数据库路径不能为空!");
+        let sqlConfig = new SQLiteConfig();
+        if (mode === 1) {
+            sqlConfig.setReadOnly(true);
+        }
+        try {
+            return sqlConfig.createConnection("jdbc:sqlite:" + url);//sample.db
+        } catch (e) {
+            console.error("创建或加载sqlite数据库时出错,具体异常:" + e);
         }
     }
 
@@ -438,16 +440,20 @@ class DBStmt {
     }
 }
 
+const fileName = "sqlite-jdbc-3.39.2.0.jar";
+const folder = new JFile("libs");
+const file = new JFile(folder, fileName);
+
 onlyOnceExecute(() => {
-    const fileName = "sqlite-jdbc-3.39.2.0.jar";
-    const folder = new JFile("libs");
-    const file = new JFile(folder, fileName);
-    if (downloadSqlite(folder, fileName)) {
-        loadJar(file.getPath());
-        try {
-            SQLiteConfig = Java.type('org.sqlite.SQLiteConfig');
-        } catch (err) {
-            console.error("载入sqlite依赖库失败,具体异常:" + err)
-        }
-    }
+    downloadSqlite(folder, fileName);
 }, DBSession.id);
+
+let SQLiteConfig;
+loadJar(file.getPath());
+try {
+    SQLiteConfig = Java.type('org.sqlite.SQLiteConfig');
+} catch (err) {
+    onlyOnceExecute(() => {
+        console.error("载入sqlite依赖库失败,具体异常:" + err);
+    }, "CA30DD03-16D3-449C-7290-A385DC0780DC");
+}

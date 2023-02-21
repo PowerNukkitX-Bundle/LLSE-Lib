@@ -4,11 +4,11 @@ import { TestBlock } from "./object/TestBlock.js";
 import { TestKVDatabase } from "./database/TestKVDatabase.js";
 import { TestEntity } from "./object/TestEntity.js";
 import { TestIniConfig } from './config/TestIniConfig.js';
-import { colorLog, File, log } from "../@LiteLoaderLibs/index.js";
 import { TestDBSession } from './database/TestDBSession.js';
 import { TestPlayer } from './object/TestPlayer.js';
 import { TestJsonConfig } from './config/TestJsonConfig.js';
 import { TestItem } from './object/TestItem.js'
+import { colorLog, File, log } from "@LLSELib/index.js";
 
 /***
  * 总测试入口

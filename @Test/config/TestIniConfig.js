@@ -1,5 +1,5 @@
 import { assertThat, JSAssert } from '../assert/Assert.js';
-import { IniConfigFile } from "../../@LiteLoaderLibs/index.js";
+import { IniConfigFile } from "@LLSELib/index.js";
 
 /**
  * Test suite for the object assertions of jsassert framework.

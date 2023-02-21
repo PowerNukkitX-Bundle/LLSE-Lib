@@ -1,5 +1,5 @@
 import { assertThat, JSAssert } from '../assert/Assert.js';
-import { mc } from '../../@LiteLoaderLibs/index.js';
+import { mc } from '@LLSELib/index.js';
 
 /**
  * Test suite for the object assertions of jsassert framework.

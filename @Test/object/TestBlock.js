@@ -1,7 +1,7 @@
 import { assertThat, JSAssert } from '../assert/Assert.js';
-import { Block } from '../../@LiteLoaderLibs/object/Block.js';
-import { getLevels } from "../../@LiteLoaderLibs/utils/Mixins.js";
-import { NBT } from '../../@LiteLoaderLibs/index.js';
+import { Block } from '@LLSELib/object/Block.js';
+import { getLevels } from "@LLSELib/utils/Mixins.js";
+import { NBT } from '@LLSELib/index.js';
 import { Block as PNXBlock } from 'cn.nukkit.block.Block';
 
 /**

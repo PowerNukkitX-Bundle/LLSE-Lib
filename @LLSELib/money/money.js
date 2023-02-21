@@ -4,11 +4,32 @@ import { data } from '../utils/data.js';
 import { DBSession } from '../database/DBSession.js';
 import { onlyOnceExecute } from '../utils/Mixins.js';
 
-const _API = {};
+
 if (!contain('economyDB')) {// 防止重复database
     exposeObject('economyDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/economy.db' }));
 }
-export var economyDB = contain('economyDB');
+export const economyDB = contain('economyDB');
+
+let _API;
+import('me.onebone.economyapi.EconomyAPI').then(s => {
+    let { EconomyAPI } = s;
+    _API.EconomyAPI = EconomyAPI.getInstance();
+    onlyOnceExecute(() => {
+        console.log("成功载入EconomyAPI");
+    }, "DD681B41-E68F-545F-8CDA-FC89D99F210B");
+}, e => {
+    import('net.lldv.llamaeconomy.LlamaEconomy').then(s => {
+        let { LlamaEconomy } = s;
+        _API.LlamaEconomy = LlamaEconomy.getAPI();
+        onlyOnceExecute(() => {
+            console.log("成功载入LlamaEconomy");
+        }, "E32378ED-4045-C616-A1DA-430A2E0821A1");
+    }, e => {
+        onlyOnceExecute(() => {
+            console.log("没有找到经济插件 money API 已失效，请加载 EconomyAPI / LlamaEconomy 后重载...");
+        }, "7A5E903B-C70B-4546-8AE2-6AA7C9D5B574");
+    });
+});
 
 /**
  * money API
@@ -168,20 +189,6 @@ export class money {
 }
 
 onlyOnceExecute(() => {
-    import('me.onebone.economyapi.EconomyAPI').then(s => {
-        let { EconomyAPI } = s;
-        _API.EconomyAPI = EconomyAPI.getInstance();
-        console.log("成功载入EconomyAPI");
-    }, e => {
-        import('net.lldv.llamaeconomy.LlamaEconomy').then(s => {
-            let { LlamaEconomy } = s;
-            _API.LlamaEconomy = LlamaEconomy.getAPI();
-            console.log("成功载入LlamaEconomy");
-        }, e => {
-            console.warn('没有找到经济插件 money API 已失效，请加载 EconomyAPI / LlamaEconomy 后重载...');
-        });
-    });
-
     if (!economyDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='mtrans'")[1][0]) {
         economyDB.exec(`CREATE TABLE mtrans
                         (

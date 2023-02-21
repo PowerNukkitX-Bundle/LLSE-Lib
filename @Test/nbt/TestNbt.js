@@ -11,7 +11,7 @@ import {
     NbtLong,
     NbtShort,
     NbtString
-} from '../../@LiteLoaderLibs/index.js'
+} from '@LLSELib/index.js';
 import { assertThat, JSAssert } from '../assert/Assert.js'
 
 /**

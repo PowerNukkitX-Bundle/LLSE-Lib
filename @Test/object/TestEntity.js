@@ -1,9 +1,9 @@
 import { assertThat, JSAssert } from '../assert/Assert.js';
-import { getLevels } from "../../@LiteLoaderLibs/utils/Mixins.js";
+import { getLevels } from "@LLSELib/utils/Mixins.js";
 import { Entity as JEntity } from 'cn.nukkit.entity.Entity'
-import { Entity } from '../../@LiteLoaderLibs/object/Entity.js'
+import { Entity } from '@LLSELib/object/Entity.js'
 import { Vector3 } from 'cn.nukkit.math.Vector3';
-import { isNumber } from "../../@LiteLoaderLibs/utils/underscore-esm-min.js";
+import { isNumber } from "@LLSELib/utils/underscore-esm-min.js";
 import { UUID } from "java.util.UUID";
 
 /**

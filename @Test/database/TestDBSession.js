@@ -1,5 +1,5 @@
 import { assertThat, JSAssert } from '../assert/Assert.js'
-import { DBSession } from "../../@LiteLoaderLibs/database/DBSession.js";
+import { DBSession } from "@LLSELib/database/DBSession.js";
 
 /**
  * Test suite for the object assertions of jsassert framework.

@@ -1,14 +1,14 @@
 import { DBSessionMap } from "./database/DBSession.js";
 
 export function main() {
-    console.log("LiteLoader-Libs start");
+    console.log("LLSE-Lib start");
 }
 
 export function close() {
-    console.log("LiteLoader-Libs close");
     DBSessionMap.forEach((v) => {//统一关闭数据库
         v.close();
     });
+    console.log("LLSE-Lib close");
 }
 
 export const log = function () {

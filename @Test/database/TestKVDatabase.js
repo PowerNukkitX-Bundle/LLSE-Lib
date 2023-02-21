@@ -1,5 +1,5 @@
 import { assertThat, JSAssert } from '../assert/Assert.js'
-import { KVDatabase } from "../../@LiteLoaderLibs/database/KVDatabase.js";
+import { KVDatabase } from "@LLSELib/database/KVDatabase.js";
 
 /**
  * Test suite for the object assertions of jsassert framework.

@@ -1,4 +1,4 @@
-import { getLevels, server } from '../../@LiteLoaderLibs/utils/Mixins.js';
+import { getLevels, server } from '@LLSELib/utils/Mixins.js';
 import { assertThat, JSAssert } from '../assert/Assert.js';
 import { Skin } from 'cn.nukkit.entity.data.Skin';
 import { BufferedImage } from 'java.awt.image.BufferedImage';
@@ -7,10 +7,10 @@ import { ProtocolInfo } from 'cn.nukkit.network.protocol.ProtocolInfo';
 import { UUID } from 'java.util.UUID';
 import { Iq80DBFactory } from 'org.iq80.leveldb.impl.Iq80DBFactory';
 import { Long } from 'java.lang.Long';
-import { Player } from "../../@LiteLoaderLibs/object/Player.js";
+import { Player } from "@LLSELib/object/Player.js";
 import { DelegatePlayer } from "org.powernukkit.tests.mocks.DelegatePlayer";
 import { Player as PNXPlayer } from "cn.nukkit.Player";
-import { isEmpty } from '../../@LiteLoaderLibs/utils/underscore-esm-min.js'
+import { isEmpty } from '@LLSELib/utils/underscore-esm-min.js'
 import { loadJar } from ':jvm';
 
 export const TestPlayer = () => {
