@@ -59,7 +59,7 @@ jobs:
           cd ../
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
           cp target/libs -R ../env
-          cd ../ && mkdir env/plugins && cp @LLSELib @Test -R env/plugins
+          cd ../ && mkdir -p env/plugins && cp @LLSELib @Test -R env/plugins
       - name: run test
         run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
         id: test-result
