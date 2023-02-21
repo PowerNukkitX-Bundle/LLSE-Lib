@@ -1,7 +1,7 @@
 export class IntPos {
     /**
      * 创建一个 IntPos 对象
-     * @param position {Position} 坐标对象
+     * @param {cn.nukkit.level.Position} position 坐标对象
      */
     constructor(position) {
         this.position = position;

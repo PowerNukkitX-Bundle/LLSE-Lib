@@ -57,7 +57,7 @@ const impl = new (Java.extend(Java.type('cn.nukkit.form.handler.FormResponseHand
     }
 });
 
-export class Player {
+export class Player extends Entity {
     /**
      * @type {string}
      */
@@ -84,40 +84,29 @@ export class Player {
     static FormCallbackMap = new Map();
 
     /**
-     * @private
-     * @type PNXPlayer
-     */
-    _PNXPlayer;
-
-    /**
-     * @type DirectionAngle
-     */
-    directionAngle;
-
-    /**
      * 用来存放其他LLSE插件对该玩家物品的操作信息，refreshItems函数利用这个执行,refreshItems之后清空
      * @type {Array<PNXItem|string|number>} [pnxItem, type: [hand, offhand], slot: number]
      */
     itemChangeList;
 
     /**
-     * @param {PNXPlayer} player
+     * @param {cn.nukkit.Player} player
      * @returns {Player}
      */
     constructor(player) {
-        this._PNXPlayer = player;
-        this.directionAngle = new DirectionAngle(player);
+        super(player);
+        this._PNXEntity = player;
         this.levels = getLevels();
         this.itemChangeList = [];
     }
 
     /**
      * @pnxonly
-     * @param {PNXPlayer} player
+     * @param {cn.nukkit.Player} player
      * @returns {Player}
      */
     static getPlayer(player) {
-        if (!Player.PlayerMap.has(player.name) || !Player.PlayerMap.get(player.name)._PNXPlayer.isOnline()) {
+        if (!Player.PlayerMap.has(player.name) || !Player.PlayerMap.get(player.name)._PNXEntity.isOnline()) {
             Player.BossBarIdMap.set(player.name, new Map());
             Player.PlayerMap.set(player.name, new Player(player));
             let uuid = String(player.getLoginChainData().getClientUUID()).toLowerCase();
@@ -135,70 +124,70 @@ export class Player {
      * @return {string} 返回玩家名
      */
     get name() {//
-        return this._PNXPlayer.getDisplayName();
+        return this._PNXEntity.getDisplayName();
     }
 
     /**
      * @return {FloatPos} 返回玩家所在坐标
      */
     get pos() {
-        return new FloatPos(this._PNXPlayer.getPosition());
+        return new FloatPos(this._PNXEntity.getPosition());
     }
 
     /**
      * @return {IntPos} 返回玩家所在的方块坐标
      */
     get blockPos() {
-        return new IntPos(this._PNXPlayer.getPosition());
+        return new IntPos(this._PNXEntity.getPosition());
     }
 
     /**
      * @return {string} 返回玩家的真实名字
      */
     get realName() {
-        return this._PNXPlayer.getName();
+        return this._PNXEntity.getName();
     }
 
     /**
      * @return {string} 返回玩家Xuid字符串
      */
     get xuid() {
-        return this._PNXPlayer.getLoginChainData().getXUID();
+        return this._PNXEntity.getLoginChainData().getXUID();
     }
 
     /**
      * @return {string} 返回玩家Uuid字符串
      */
     get uuid() {
-        return this._PNXPlayer.getLoginChainData().getClientUUID();
+        return this._PNXEntity.getLoginChainData().getClientUUID();
     }
 
     /**
      * @return {number} 返回玩家的操作权限等级(0-4)
      */
     get permLevel() {
-        return this._PNXPlayer.isOp() ? 1 : 0;
+        return this._PNXEntity.isOp() ? 1 : 0;
     }
 
     /**
      * @return {number} 返回玩家的游戏模式(0-3)
      */
     get gameMode() {
-        return this._PNXPlayer.getGamemode();
+        return this._PNXEntity.getGamemode();
     }
 
     /**
      * @return {boolean} 玩家是否可以飞行
      */
     get canFly() {
-        return this._PNXPlayer.getAdventureSettings().get(Type.ALLOW_FLIGHT);
+        return this._PNXEntity.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
 
     /**
      * @return {boolean} 玩家是否可以睡觉
      */
     get canSleep() {
-        let time = this._PNXPlayer.getLevel().getTime() % Level.TIME_FULL;
+        let time = this._PNXEntity.getLevel().getTime() % Level.TIME_FULL;
         return time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE;
     }
 
@@ -213,7 +202,7 @@ export class Player {
      * @return {boolean} 玩家是否可以冻结
      */
     get canFreeze() {
-        return this._PNXPlayer.getFreezingEffectStrength() > 0;
+        return this._PNXEntity.getFreezingEffectStrength() > 0;
     }
 
     /**
@@ -227,14 +216,14 @@ export class Player {
      * @return {boolean} 玩家是否可以显示姓名标签
      */
     get canShowNameTag() {
-        return this._PNXPlayer.isNameTagVisible();
+        return this._PNXEntity.isNameTagVisible();
     }
 
     /**
      * @return {boolean} 玩家是否可以开始在床上睡觉
      */
     get canStartSleepInBed() {
-        let time = this._PNXPlayer.getLevel().getTime() % Level.TIME_FULL;
+        let time = this._PNXEntity.getLevel().getTime() % Level.TIME_FULL;
         return time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE;
     }
 
@@ -249,49 +238,49 @@ export class Player {
      * @return {number} 返回玩家最大生命值
      */
     get maxHealth() {
-        return this._PNXPlayer.getMaxHealth();
+        return this._PNXEntity.getMaxHealth();
     }
 
     /**
      * @return {Float} 返回玩家当前生命值
      */
     get health() {
-        return this._PNXPlayer.getHealth();
+        return this._PNXEntity.getHealth();
     }
 
     /**
      * @return {Boolean} 返回玩家当前是否悬空
      */
     get inAir() {
-        return this._PNXPlayer.getInAirTicks() > 0;
+        return this._PNXEntity.getInAirTicks() > 0;
     }
 
     /**
      * @return {Boolean} 玩家当前是否在水中
      */
     get inWater() {
-        return this._PNXPlayer.isSwimming();
+        return this._PNXEntity.isSwimming();
     }
 
     /**
      * @return {Boolean} 玩家是否已经加载
      */
     get isLoading() {
-        return this._PNXPlayer.isLoaderActive();
+        return this._PNXEntity.isLoaderActive();
     }
 
     /**
      * @return {string} 玩家设置的语言的标识符(形如zh_CN)
      */
     get langCode() {
-        return this._PNXPlayer.getLoginChainData().getLanguageCode();
+        return this._PNXEntity.getLoginChainData().getLanguageCode();
     }
 
     /**
      * @returns {boolean} 实体是否在岩浆中
      */
     get inLava() {
-        return this._PNXPlayer.isInsideOfLava();
+        return this._PNXEntity.isInsideOfLava();
     }
 
     /**
@@ -335,7 +324,7 @@ export class Player {
      * @returns {boolean} 玩家是否在云端
      */
     get inClouds() {
-        return this._PNXPlayer.getY() > 192;
+        return this._PNXEntity.getY() > 192;
     }
 
     /**
@@ -356,14 +345,14 @@ export class Player {
      * @returns {boolean} 玩家是否受伤
      */
     get isHurt() {
-        return this._PNXPlayer.getHealth() < this._PNXPlayer.getMaxHealth();
+        return this._PNXEntity.getHealth() < this._PNXEntity.getMaxHealth();
     }
 
     /**
      * @returns {boolean} 玩家是否饿了
      */
     get isHungry() {
-        return this._PNXPlayer.getFoodData().getLevel() < this._PNXPlayer.getFoodData().getMaxLevel();
+        return this._PNXEntity.getFoodData().getLevel() < this._PNXEntity.getFoodData().getMaxLevel();
     }
 
     /**
@@ -423,7 +412,7 @@ export class Player {
      * @returns {boolean} 玩家是否在睡觉
      */
     get isSleeping() {
-        return this._PNXPlayer.isSleeping();
+        return this._PNXEntity.isSleeping();
     }
 
     /**
@@ -431,49 +420,49 @@ export class Player {
      * @returns {boolean} 玩家是否移动
      */
     get isMoving() {
-        return this._PNXPlayer.positionChanged;
+        return this._PNXEntity.positionChanged;
     }
 
     /**
      * @returns {boolean} 玩家是否是冒险模式
      */
     get isAdventure() {
-        return this._PNXPlayer.isAdventure();
+        return this._PNXEntity.isAdventure();
     }
 
     /**
      * @returns {boolean} 玩家是否是生存模式
      */
     get isSurvival() {
-        return this._PNXPlayer.isSurvival();
+        return this._PNXEntity.isSurvival();
     }
 
     /**
      * @returns {boolean} 玩家是否是观众模式
      */
     get isSpectator() {
-        return this._PNXPlayer.isSpectator();
+        return this._PNXEntity.isSpectator();
     }
 
     /**
      * @returns {boolean} 玩家是否是创造模式
      */
     get isCreative() {
-        return this._PNXPlayer.isCreative();
+        return this._PNXEntity.isCreative();
     }
 
     /**
      * @return {Boolean} 玩家当前是否正在潜行
      */
     get sneaking() {
-        return this._PNXPlayer.isSneaking();
+        return this._PNXEntity.isSneaking();
     }
 
     /**
      * @return {Float} 返回玩家当前速度
      */
     get speed() {
-        return this._PNXPlayer.getMovementSpeed();
+        return this._PNXEntity.getMovementSpeed();
     }
 
     /**
@@ -487,14 +476,14 @@ export class Player {
      * @return {String} 返回玩家(实体的)唯一标识符
      */
     get uniqueId() {
-        return this._PNXPlayer.getUniqueId().toString();
+        return this._PNXEntity.getUniqueId().toString();
     }
 
     /**
      * @return {String} 返回玩家(实体的)唯一标识符
      */
     get ip() {
-        return this._PNXPlayer.getRawAddress();
+        return this._PNXEntity.getRawAddress();
     }
 
     /**
@@ -504,7 +493,7 @@ export class Player {
      * @return boolean 玩家是否碰撞到目标方块
      */
     _checkCollisionBlocks(blocks) {
-        for (let block of this._PNXPlayer.getCollisionBlocks()) {
+        for (let block of this._PNXEntity.getCollisionBlocks()) {
             blocks.map((v, i) => {
                 if (block instanceof v) {
                     return true;
@@ -519,7 +508,7 @@ export class Player {
      * @returns {boolean} 玩家是否为OP
      */
     isOP() {
-        return this._PNXPlayer.isOp();
+        return this._PNXEntity.isOp();
     }
 
     /**
@@ -528,7 +517,7 @@ export class Player {
      * @returns {boolean} 是否成功断开连接
      */
     kick(msg) {
-        return this._PNXPlayer.kick(msg);
+        return this._PNXEntity.kick(msg);
     }
 
     /**
@@ -545,7 +534,7 @@ export class Player {
      * @returns {boolean} 是否成功发送
      */
     tell(msg, type = 0) {
-        if (!sendMessage(server.getConsoleSender(), this._PNXPlayer, msg, type)) {
+        if (!sendMessage(server.getConsoleSender(), this._PNXEntity, msg, type)) {
             return false;
         }
         return true;
@@ -565,7 +554,7 @@ export class Player {
      * @returns {boolean} 是否成功发送
      */
     sendToast(title, context) {
-        this._PNXPlayer.sendToast(title, context);
+        this._PNXEntity.sendToast(title, context);
         return true;
     }
 
@@ -575,7 +564,7 @@ export class Player {
      * @returns {boolean} 是否执行成功
      */
     runcmd(cmd) {
-        return server.dispatchCommand(this._PNXPlayer, cmd);
+        return server.dispatchCommand(this._PNXEntity, cmd);
     }
 
     /**
@@ -590,9 +579,9 @@ export class Player {
         args2: text
         */
         if (arguments.length === 2) {
-            return sendMessage(this._PNXPlayer, target._PNXPlayer, text, 1);
+            return sendMessage(this._PNXEntity, target._PNXEntity, text, 1);
         } else if (arguments.length === 1) {
-            var event = new PlayerChatEvent(this._PNXPlayer, target);
+            var event = new PlayerChatEvent(this._PNXEntity, target);
             server.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 server.broadcastMessage(server.getLanguage().translateString(event.getFormat(), [event.getPlayer().getDisplayName(), event.getMessage()]), event.getRecipients());
@@ -613,11 +602,11 @@ export class Player {
         if (pos instanceof Entity) {
             target = pos._PNXEntity;
         } else if (pos instanceof Entity) {
-            target = pos._PNXPlayer;
+            target = pos._PNXEntity;
         } else {
             target = pos.position;
         }
-        return this._PNXPlayer.distanceSquared(target);
+        return this._PNXEntity.distanceSquared(target);
     }
 
     /**
@@ -630,11 +619,11 @@ export class Player {
         if (pos instanceof Entity) {
             target = pos._PNXEntity;
         } else if (pos instanceof Entity) {
-            target = pos._PNXPlayer;
+            target = pos._PNXEntity;
         } else {
             target = pos.position;
         }
-        return this._PNXPlayer.distance(target);
+        return this._PNXEntity.distance(target);
     }
 
     /**
@@ -649,12 +638,12 @@ export class Player {
         args2: pos
         */
         if (arguments.length === 1) {
-            return this._PNXPlayer.teleport(x.position);
+            return this._PNXEntity.teleport(x.position);
         } else if (arguments.length === 4) {
             if (isNumber(dimid) && (0 <= dimid <= 2)) {
                 var level = this.levels[dimid];
             } else return false;
-            return this._PNXPlayer.teleport(Position.fromObject(new Vector3(x, y, z), level));
+            return this._PNXEntity.teleport(Position.fromObject(new Vector3(x, y, z), level));
         } else return false;
     }
 
@@ -663,8 +652,8 @@ export class Player {
      * @returns {boolean} 是否成功执行
      */
     kill() {
-        this._PNXPlayer.kill();
-        return !this._PNXPlayer.isAlive();
+        this._PNXEntity.kill();
+        return !this._PNXEntity.isAlive();
     }
 
     /**
@@ -673,7 +662,7 @@ export class Player {
      * @returns {boolean} 是否造成伤害
      */
     hurt(damage) {
-        return this._PNXPlayer.attack(new EntityDamageByEntityEvent(this._PNXPlayer, EntityDamageEvent.DamageCause.NONE, damage));
+        return this._PNXEntity.attack(new EntityDamageByEntityEvent(this._PNXEntity, EntityDamageEvent.DamageCause.NONE, damage));
     }
 
     /**
@@ -682,7 +671,7 @@ export class Player {
      * @returns {boolean}  治疗是否成功
      */
     heal(health) {
-        return this._PNXPlayer.heal(Math.floor(health) * 2);
+        return this._PNXEntity.heal(Math.floor(health) * 2);
     }
 
     /**
@@ -691,7 +680,7 @@ export class Player {
      * @returns {boolean}  是否成功
      */
     setHealth(health) {
-        return this._PNXPlayer.setHealth(Math.floor(health));
+        return this._PNXEntity.setHealth(Math.floor(health));
     }
 
     /**
@@ -700,7 +689,7 @@ export class Player {
      * @returns {boolean}  为玩家设置属性值是否成功
      */
     setAbsorption(value) {
-        return this._PNXPlayer.setAbsorption(Math.floor(value));
+        return this._PNXEntity.setAbsorption(Math.floor(value));
     }
 
     /**
@@ -742,7 +731,7 @@ export class Player {
      * @returns {boolean}  为玩家设置属性值是否成功
      */
     setMovementSpeed(value) {
-        this._PNXPlayer.setMovementSpeed(value);
+        this._PNXEntity.setMovementSpeed(value);
         return true;
     }
 
@@ -768,7 +757,7 @@ export class Player {
      * @returns {boolean}  为玩家设置属性值是否成功
      */
     setMaxHealth(health) {
-        this._PNXPlayer.setMaxHealth(value);
+        this._PNXEntity.setMaxHealth(value);
         return true;
     }
 
@@ -778,7 +767,7 @@ export class Player {
      * @returns {boolean}  为玩家设置属性值是否成功
      */
     setHungry(hunger) {
-        let data = this._PNXPlayer.getFoodData();
+        let data = this._PNXEntity.getFoodData();
         if (data !== null) {
             data.setLevel(hunger);
             return true;
@@ -793,8 +782,8 @@ export class Player {
      * @returns {boolean} 是否成功着火
      */
     setOnFire(time) {
-        this._PNXPlayer.setOnFire(time);
-        return this._PNXPlayer.isOnFire();
+        this._PNXEntity.setOnFire(time);
+        return this._PNXEntity.isOnFire();
     }
 
     /**
@@ -802,7 +791,7 @@ export class Player {
      * @returns {boolean} 是否已被熄灭
      */
     stopFire() {
-        this._PNXPlayer.setOnFire(0);
+        this._PNXEntity.setOnFire(0);
         return true;
     }
 
@@ -812,7 +801,7 @@ export class Player {
      * @returns {boolean} 玩家是否成功地被缩放
      */
     setScale(scale) {
-        this._PNXPlayer.setScale(scale);
+        this._PNXEntity.setScale(scale);
         return true;
     }
 
@@ -822,7 +811,7 @@ export class Player {
      * @returns {boolean} 是否重命名成功
      */
     rename(newname) {
-        this._PNXPlayer.setDisplayName(newname);
+        this._PNXEntity.setDisplayName(newname);
         return true;
     }
 
@@ -831,7 +820,7 @@ export class Player {
      * @returns {Block} 当前站立在的方块对象
      */
     getBlockStandingOn() {
-        return new Block(this._PNXPlayer.getPosition().add(0, -0.1).getLevelBlock());
+        return new Block(this._PNXEntity.getPosition().add(0, -0.1).getLevelBlock());
     }
 
     /**
@@ -839,7 +828,7 @@ export class Player {
      * @returns {Device} 玩家对应的设备信息对象
      */
     getDevice() {
-        return new Device(this._PNXPlayer);
+        return new Device(this._PNXEntity);
     }
 
     /**
@@ -847,9 +836,9 @@ export class Player {
      * @returns {Item} 玩家主手中的物品对象
      */
     getHand() {
-        const handitem = new Item(this._PNXPlayer.getInventory().getItemInHand());
+        const handitem = new Item(this._PNXEntity.getInventory().getItemInHand());
         if (handitem != null) {
-            this.itemChangeList.push([handitem._PNXItem, 'hand', this._PNXPlayer.getInventory().getHeldItemIndex()]);
+            this.itemChangeList.push([handitem._PNXItem, 'hand', this._PNXEntity.getInventory().getHeldItemIndex()]);
         }
         return handitem;
     }
@@ -859,7 +848,7 @@ export class Player {
      * @returns {Item} Item对象
      */
     getOffHand() {
-        const offhandItem = new Item(this._PNXPlayer.getOffhandInventory().getItem(0));
+        const offhandItem = new Item(this._PNXEntity.getOffhandInventory().getItem(0));
         if (offhandItem != null) {
             this.itemChangeList.push([offhandItem._PNXItem, 'offhand', 0]);
         }
@@ -872,7 +861,7 @@ export class Player {
      * @returns {Container} Container对象
      */
     getInventory() {
-        return new Container(this._PNXPlayer.getInventory());
+        return new Container(this._PNXEntity.getInventory());
     }
 
     /**
@@ -881,7 +870,7 @@ export class Player {
      * @returns {Container} Container对象
      */
     getArmor() {
-        return new PlayerArmorContainer(this._PNXPlayer.getInventory());
+        return new PlayerArmorContainer(this._PNXEntity.getInventory());
     }
 
     /**
@@ -890,7 +879,7 @@ export class Player {
      * @returns {Container} Container对象
      */
     getEnderChest() {
-        return new Container(this._PNXPlayer.getEnderChestInventory());
+        return new Container(this._PNXEntity.getEnderChestInventory());
     }
 
     /**
@@ -898,7 +887,7 @@ export class Player {
      * @returns {IntPos} IntPos对象
      */
     getRespawnPosition() {
-        return new IntPos(this._PNXPlayer.getSpawn());
+        return new IntPos(this._PNXEntity.getSpawn());
     }
 
     /**
@@ -915,12 +904,12 @@ export class Player {
         args2: x,y,z,dimid
         */
         if (arguments.length === 1) {
-            return this._PNXPlayer.setSpawn(x.position);
+            return this._PNXEntity.setSpawn(x.position);
         } else if (arguments.length === 4) {
             if (isNumber(dimid) && (0 <= dimid <= 2)) {
                 var level = this.levels[dimid];
             } else return false;
-            return this._PNXPlayer.setSpawn(Position.fromObject(new Vector3(x, y, z), level));
+            return this._PNXEntity.setSpawn(Position.fromObject(new Vector3(x, y, z), level));
         } else return false;
     }
 
@@ -931,9 +920,9 @@ export class Player {
      */
     giveItem(item) {
         if (item instanceof Item) {
-            this._PNXPlayer.giveItem(item._PNXItem);
+            this._PNXEntity.giveItem(item._PNXItem);
         } else if (item instanceof PNXItem) {
-            this._PNXPlayer.giveItem(item);
+            this._PNXEntity.giveItem(item);
         } else {
             return false;
         }
@@ -948,7 +937,7 @@ export class Player {
     clearItem(type) {
         if (type == null) return 0
         let num = 0;
-        let inv = this._PNXPlayer.getInventory()
+        let inv = this._PNXEntity.getInventory()
         let limit = inv.getSize() + 4
         for (let i = 0; i < limit; i++) {
             if (inv.getItem(i).getNamespaceId() === type) {
@@ -968,11 +957,11 @@ export class Player {
         for (let array of this.itemChangeList) {
             switch (array[1]) {
                 case 'hand': {
-                    this._PNXPlayer.getInventory().setItem(array[2], array[0], true);
+                    this._PNXEntity.getInventory().setItem(array[2], array[0], true);
                     break;
                 }
                 case 'offhand': {
-                    this._PNXPlayer.getOffhandInventory().setItem(array[2], array[0], true);
+                    this._PNXEntity.getOffhandInventory().setItem(array[2], array[0], true);
                     break;
                 }
                 default:
@@ -998,9 +987,9 @@ export class Player {
      */
     setPermLevel(level) {
         if (level < 1) {
-            this._PNXPlayer.setOp(false);
+            this._PNXEntity.setOp(false);
         } else {
-            this._PNXPlayer.setOp(true);
+            this._PNXEntity.setOp(true);
         }
         return true;
     }
@@ -1011,7 +1000,7 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     setGameMode(mode) {
-        return this._PNXPlayer.setGamemode(mode);
+        return this._PNXEntity.setGamemode(mode);
     }
 
     /**
@@ -1023,7 +1012,7 @@ export class Player {
         if (isNaN(count)) {
             return false;
         }
-        this._PNXPlayer.setExperience(this._PNXPlayer.getExperien(), this._PNXPlayer.getExperienceLevel() + Number(count));
+        this._PNXEntity.setExperience(this._PNXEntity.getExperien(), this._PNXEntity.getExperienceLevel() + Number(count));
         return true;
     }
 
@@ -1032,7 +1021,7 @@ export class Player {
      * @returns {number} 玩家经验等级
      */
     getLevel() {
-        return this._PNXPlayer.getExperienceLevel();
+        return this._PNXEntity.getExperienceLevel();
     }
 
     /**
@@ -1040,7 +1029,7 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     resetLevel() {
-        this._PNXPlayer.setExperience(0);
+        this._PNXEntity.setExperience(0);
         return true;
     }
 
@@ -1049,7 +1038,7 @@ export class Player {
      * @returns {number} 玩家升级所需的经验值
      */
     getXpNeededForNextLevel() {
-        return this._PNXPlayer.calculateRequireExperience(this.getLevel()) - this._PNXPlayer.getExperien();
+        return this._PNXEntity.calculateRequireExperience(this.getLevel()) - this._PNXEntity.getExperien();
     }
 
     /**
@@ -1061,7 +1050,7 @@ export class Player {
         if (isNaN(count)) {
             return false;
         }
-        this._PNXPlayer.setExperience(this._PNXPlayer.getExperien() + Number(count), this.getLevel(), true);
+        this._PNXEntity.setExperience(this._PNXEntity.getExperien() + Number(count), this.getLevel(), true);
         return true;
     }
 
@@ -1072,7 +1061,7 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     transServer(server, port = 19132) {
-        this._PNXPlayer.transfer(new InetSocketAddress(server, port));
+        this._PNXEntity.transfer(new InetSocketAddress(server, port));
         return true;
     }
 
@@ -1082,7 +1071,7 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     crash() {
-        this._PNXPlayer.kick('crash');
+        this._PNXEntity.kick('crash');
         return true;
     }
 
@@ -1105,7 +1094,7 @@ export class Player {
             if (isNaN(data[key])) return false;
             score.addLine(key, data[key]);
         }
-        score.addViewer(this._PNXPlayer, DisplaySlot.SIDEBAR);
+        score.addViewer(this._PNXEntity, DisplaySlot.SIDEBAR);
         return true;
     }
 
@@ -1135,17 +1124,17 @@ export class Player {
             title = uid;
             uid = 'default';
         }
-        if (!Player.BossBarIdMap.has(this._PNXPlayer.name)) {
+        if (!Player.BossBarIdMap.has(this._PNXEntity.name)) {
             return false;
         }
-        let mapData = Player.BossBarIdMap.get(this._PNXPlayer.name);
+        let mapData = Player.BossBarIdMap.get(this._PNXEntity.name);
         if (mapData.has(uid)) {
-            this._PNXPlayer.updateBossBar(title, percent, mapData.get(uid));
-            this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
+            this._PNXEntity.updateBossBar(title, percent, mapData.get(uid));
+            this._PNXEntity.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
         } else {
-            mapData.set(uid, this._PNXPlayer.createBossBar(title, percent));
+            mapData.set(uid, this._PNXEntity.createBossBar(title, percent));
             if (color !== 2) {
-                this._PNXPlayer.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
+                this._PNXEntity.getDummyBossBar(mapData.get(uid)).setColor(BossBarColor.values()[color]);
             }
         }
         return true;
@@ -1157,14 +1146,14 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     removeBossBar(uid = 'default') {
-        if (!Player.BossBarIdMap.has(this._PNXPlayer.name)) {
+        if (!Player.BossBarIdMap.has(this._PNXEntity.name)) {
             return false;
         }
-        let mapData = Player.BossBarIdMap.get(this._PNXPlayer.name);
+        let mapData = Player.BossBarIdMap.get(this._PNXEntity.name);
         if (!mapData.has(uid)) {
             return false;
         }
-        this._PNXPlayer.removeBossBar(mapData.get(uid));
+        this._PNXEntity.removeBossBar(mapData.get(uid));
         mapData.delete(uid);
         return true;
     }
@@ -1176,7 +1165,7 @@ export class Player {
      * @returns {boolean} 是否成功，如果pl不存在，返回Null
      */
     sendPacket(packet) {
-        return this._PNXPlayer.dataPacket(packet.dataPacket);
+        return this._PNXEntity.dataPacket(packet.dataPacket);
     }
 
 
@@ -1186,7 +1175,7 @@ export class Player {
      * @returns {NbtCompound} LLSE的NbtCompound对象
      */
     getNbt() {
-        return new NbtCompound(this._PNXPlayer.namedTag);
+        return new NbtCompound(this._PNXEntity.namedTag);
     }
 
     /**
@@ -1197,7 +1186,7 @@ export class Player {
      */
     setNbt(NbtCompound) {
         if (!NbtCompound._pnxNbt.isEmpty()) {
-            this._PNXPlayer.namedTag = NbtCompound._pnxNbt;
+            this._PNXEntity.namedTag = NbtCompound._pnxNbt;
             return true;
         }
         return false;
@@ -1209,10 +1198,10 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     addTag(tag) {
-        if (this._PNXPlayer.containTag(tag)) {
+        if (this._PNXEntity.containTag(tag)) {
             return false;
         }
-        this._PNXPlayer.addTag(tag);
+        this._PNXEntity.addTag(tag);
         return true;
     }
 
@@ -1222,10 +1211,10 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     removeTag(tag) {
-        if (!this._PNXPlayer.containTag(tag)) {
+        if (!this._PNXEntity.containTag(tag)) {
             return false;
         }
-        this._PNXPlayer.removeTag(tag);
+        this._PNXEntity.removeTag(tag);
         return true;
     }
 
@@ -1235,7 +1224,7 @@ export class Player {
      * @returns {boolean} 是否拥有
      */
     hasTag(tag) {
-        return this._PNXPlayer.containTag(tag);
+        return this._PNXEntity.containTag(tag);
     }
 
     /**
@@ -1243,7 +1232,7 @@ export class Player {
      * @returns {String[]} 玩家所有的 tag 字符串列表
      */
     getAllTags() {
-        return this._PNXPlayer.getAllTags().stream().map(item => {
+        return this._PNXEntity.getAllTags().stream().map(item => {
             return item.parseValue()
         }).distinct().collect(Collectors.toList());
     }
@@ -1255,22 +1244,22 @@ export class Player {
      */
     getAbilities() {
         return {
-            "attackmobs": Number(this._PNXPlayer.getAdventureSettings().get(ASType.ATTACK_MOBS)),
-            "attackplayers": Number(this._PNXPlayer.getAdventureSettings().get(ASType.ATTACK_PLAYERS)),
+            "attackmobs": Number(this._PNXEntity.getAdventureSettings().get(ASType.ATTACK_MOBS)),
+            "attackplayers": Number(this._PNXEntity.getAdventureSettings().get(ASType.ATTACK_PLAYERS)),
             "build": 1,// 建造，与nk冲突
-            "doorsandswitches": Number(this._PNXPlayer.getAdventureSettings().get(ASType.DOORS_AND_SWITCHED)),
+            "doorsandswitches": Number(this._PNXEntity.getAdventureSettings().get(ASType.DOORS_AND_SWITCHED)),
             "flySpeed": 0.05000000074505806,
-            "flying": Number(this._PNXPlayer.getAdventureSettings().get(ASType.FILYING)),
+            "flying": Number(this._PNXEntity.getAdventureSettings().get(ASType.FILYING)),
             "instabuild": 0,// 迷惑..
-            "invulnerable": Number(this._PNXPlayer.getAdventureSettings().get(ASType.NO_CLIP)),
+            "invulnerable": Number(this._PNXEntity.getAdventureSettings().get(ASType.NO_CLIP)),
             "lightning": 0,// 迷惑..
-            "mayfly": Number(this._PNXPlayer.getAdventureSettings().get(ASType.ALLOW_FLIGHT)),
+            "mayfly": Number(this._PNXEntity.getAdventureSettings().get(ASType.ALLOW_FLIGHT)),
             "mine": 1,// 破坏，与nk冲突
-            "op": Number(this._PNXPlayer.getAdventureSettings().get(ASType.OPERATOR)),
-            "opencontainers": Number(this._PNXPlayer.getAdventureSettings().get(ASType.OPEN_CONTAINERS)),
-            "permissionsLevel": Number(this._PNXPlayer.getAdventureSettings().get(ASType.OPERATOR)),// 与op相同
+            "op": Number(this._PNXEntity.getAdventureSettings().get(ASType.OPERATOR)),
+            "opencontainers": Number(this._PNXEntity.getAdventureSettings().get(ASType.OPEN_CONTAINERS)),
+            "permissionsLevel": Number(this._PNXEntity.getAdventureSettings().get(ASType.OPERATOR)),// 与op相同
             "playerPermissionsLevel": 2,// [普通权限, ？, OP, 自定义权限]
-            "teleport": Number(this._PNXPlayer.getAdventureSettings().get(ASType.TELEPORT)),
+            "teleport": Number(this._PNXEntity.getAdventureSettings().get(ASType.TELEPORT)),
             "walkSpeed": 0.10000000149011612
         };
     }
@@ -1307,12 +1296,12 @@ export class Player {
                 "Name": javaAttribute.getName()
             }
         });
-        myAttribute[Attribute.MAX_HEALTH].Max = this._PNXPlayer.getMaxHealth();
-        myAttribute[Attribute.MAX_HEALTH].Current = this._PNXPlayer.getHealth() > 0 ? (this._PNXPlayer.getHealth() < this._PNXPlayer.getMaxHealth() ? this._PNXPlayer.getHealth() : this._PNXPlayer.getMaxHealth()) : 0;
-        myAttribute[Attribute.MAX_HUNGER].Current = this._PNXPlayer.getFoodData().getLevel();
-        myAttribute[Attribute.MOVEMENT_SPEED].Current = this._PNXPlayer.getMovementSpeed();
-        myAttribute[Attribute.EXPERIENCE_LEVEL].Current = this._PNXPlayer.getExperienceLevel();
-        myAttribute[Attribute.EXPERIENCE].Current = this._PNXPlayer.getExperience() / this._PNXPlayer.calculateRequireExperience(this._PNXPlayer.getExperienceLevel());
+        myAttribute[Attribute.MAX_HEALTH].Max = this._PNXEntity.getMaxHealth();
+        myAttribute[Attribute.MAX_HEALTH].Current = this._PNXEntity.getHealth() > 0 ? (this._PNXEntity.getHealth() < this._PNXEntity.getMaxHealth() ? this._PNXEntity.getHealth() : this._PNXEntity.getMaxHealth()) : 0;
+        myAttribute[Attribute.MAX_HUNGER].Current = this._PNXEntity.getFoodData().getLevel();
+        myAttribute[Attribute.MOVEMENT_SPEED].Current = this._PNXEntity.getMovementSpeed();
+        myAttribute[Attribute.EXPERIENCE_LEVEL].Current = this._PNXEntity.getExperienceLevel();
+        myAttribute[Attribute.EXPERIENCE].Current = this._PNXEntity.getExperience() / this._PNXEntity.calculateRequireExperience(this._PNXEntity.getExperienceLevel());
         return myAttribute;
     }
 
@@ -1321,7 +1310,7 @@ export class Player {
      * @returns {boolean} 玩家疾跑状态
      */
     isSprinting() {
-        return this._PNXPlayer.isSprinting();
+        return this._PNXEntity.isSprinting();
     }
 
     /**
@@ -1330,7 +1319,7 @@ export class Player {
      * @returns {boolean} 是否成功
      */
     setSprinting(sprinting) {
-        this._PNXPlayer.setSprinting(sprinting);
+        this._PNXEntity.setSprinting(sprinting);
         return this.isSprinting();
     }
 
@@ -1393,7 +1382,7 @@ export class Player {
         form.setCallback(callback);
         form._Form.addHandler(impl);
         Player.FormCallbackMap.set(form._id, form);
-        this._PNXPlayer.showFormWindow(form._Form, form._id);
+        this._PNXEntity.showFormWindow(form._Form, form._id);
         return form._id;
     }
 
@@ -1414,7 +1403,7 @@ export class Player {
         });
         form._Form.addHandler(impl);
         Player.FormCallbackMap.set(form._id, form);
-        this._PNXPlayer.showFormWindow(form._Form, form._id);
+        this._PNXEntity.showFormWindow(form._Form, form._id);
         return form._id;
     }
 
@@ -1446,7 +1435,7 @@ export class Player {
         form.setCallback(callback);
         form._Form.addHandler(impl);
         Player.FormCallbackMap.set(form._id, form);
-        this._PNXPlayer.showFormWindow(form._Form, form._id);
+        this._PNXEntity.showFormWindow(form._Form, form._id);
         return form._id;
     }
 
@@ -1499,8 +1488,11 @@ export class Player {
         return score.deleteScore(this);
     }
 
+    /**
+     * @returns {string}
+     */
     toString() {
-        return JSON.stringify({ realName: this.realName });
+        return JSON.stringify({realName: this.realName});
     }
 }
 
@@ -1530,7 +1522,7 @@ export function sendMessage(sender = '', receiver, msg, type) {
 
 onlyOnceExecute(() => {
     if (!contain('PlayerDB')) {// 防止重复database
-        exposeObject('PlayerDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/PlayerDB.db' }));
+        exposeObject('PlayerDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/PlayerDB.db'}));
     }
     // noinspection SqlNoDataSourceInspection
     if (!PlayerDB.query("SELECT COUNT(*) FROM sqlite_master where type ='table' and name ='player'")[1][0]) {

@@ -4,7 +4,6 @@
 import { EnumLevel } from 'cn.nukkit.level.EnumLevel';
 import { Server } from 'cn.nukkit.Server';
 import { UUID } from 'java.util.UUID';
-import { Level } from 'cn.nukkit.level.Level';
 import { URL as JURL } from "java.net.URL";
 import { File as JFile } from "java.io.File";
 import { Files } from "java.nio.file.Files";
@@ -18,7 +17,7 @@ if (!contain('funMap')) {
 export const funMap = contain('funMap');
 
 /**
- * @return {Level[]}
+ * @return {cn.nukkit.level.Level[]}
  */
 export const getLevels = function getLevels() {
     return [

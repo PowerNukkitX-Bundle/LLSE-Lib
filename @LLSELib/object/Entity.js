@@ -7,6 +7,7 @@ import { Player } from "./Player.js";
 import { PlayerArmorContainer } from "../container/PlayerArmorContainer.js";
 import { Player as PNXPlayer } from 'cn.nukkit.Player';
 import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity';
+import { EntityLiving } from 'cn.nukkit.entity.EntityLiving';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Position } from 'cn.nukkit.level.Position';
 import { getLevels } from '../utils/util.js';
@@ -31,13 +32,19 @@ import { BlockFireSoul } from 'cn.nukkit.block.BlockFireSoul';
 import { BlockFire } from 'cn.nukkit.block.BlockFire';
 import { EntityWolf } from 'cn.nukkit.entity.passive.EntityWolf';
 import { EntityAgeable } from 'cn.nukkit.entity.EntityAgeable';
+import { BlockIterator } from 'cn.nukkit.utils.BlockIterator';
 
 export class Entity {
     /**
-     * @param Entity {PNXEntity}
+     * @type {cn.nukkit.entity.Entity}
      */
-    constructor(Entity) {
-        this._PNXEntity = Entity;
+    _PNXEntity;
+
+    /**
+     * @param {cn.nukkit.entity.Entity} entity
+     */
+    constructor(entity) {
+        this._PNXEntity = entity;
         this.DirectionAngle = new DirectionAngle(this._PNXEntity);
     }
 
@@ -56,7 +63,7 @@ export class Entity {
      * @returns {string}
      */
     get type() {
-        return this._PNXEntity.getOriginalName();
+        return this._PNXEntity.getIdentifier().toString();
     }
 
     /**
@@ -110,7 +117,7 @@ export class Entity {
      * @returns {boolean}
      */
     get canFly() {
-        return this._PNXEntity.getHealth();
+        return true;//todo 完成
     }
 
     /**
@@ -119,7 +126,7 @@ export class Entity {
      * @returns {boolean}
      */
     get canFreeze() {
-        return this._PNXEntity.getHealth();
+        return this._PNXEntity.getFreezingEffectStrength() > 0;
     }
 
     /**
@@ -128,7 +135,9 @@ export class Entity {
      * @returns {boolean}
      */
     get inAir() {
-        return this._PNXEntity.getAirTicks() > 0;
+        if (this instanceof EntityLiving) {
+            return this._PNXEntity.getAirTicks() > 0;
+        } else return false;
     }
 
     /**
@@ -371,7 +380,7 @@ export class Entity {
      */
     _checkCollisionBlocks(blocks) {
         for (let block of this._PNXEntity.getCollisionBlocks()) {
-            blocks.map((v, i) => {
+            blocks.map((v) => {
                 if (block instanceof v) {
                     return true;
                 }
@@ -492,9 +501,7 @@ export class Entity {
      * @returns {Boolean} 这个生物实体是否拥有容器
      */
     hasContainer() {
-        if (this instanceof EntityHumanType) {
-            return true;
-        } else return false;
+        return this instanceof EntityHumanType;
     }
 
     /**
@@ -520,7 +527,7 @@ export class Entity {
         if (this._PNXEntity instanceof EntityHumanType) {
             this._PNXEntity.getInventory().sendContents(this._PNXEntity);
             this._PNXEntity.getInventory().sendArmorContents(this._PNXEntity);
-            return ture;
+            return true;
         } else if (this._PNXEntity instanceof EntityMob || this._PNXEntity instanceof EntityArmorStand) {
             let iter = this._PNXEntity.getViewers().iterator();
             while (iter.hasNext()) {
@@ -596,5 +603,31 @@ export class Entity {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 获取视线方向实体
+     *
+     * @param {number} maxDistance 查找最大距离
+     * @returns {Entity} 视线方向实体，如果获取失败，返回 Null
+     */
+    getEntityFromViewVector(maxDistance = 10) {
+        let boundingBox = this._PNXEntity.boundingBox;
+        let nearbyEntities = this._PNXEntity.getLevel().getNearbyEntities(boundingBox.grow(maxDistance, maxDistance, maxDistance), this._PNXEntity);
+
+        try {
+            let itr = new BlockIterator(this._PNXEntity.getLevel(), this._PNXEntity.getPosition(), this._PNXEntity.getDirectionVector(), this._PNXEntity.getEyeHeight(), maxDistance);
+            let block;
+            while (itr.hasNext()) {
+                block = itr.next();
+                for (let nearestEntity of nearbyEntities) {
+                    if (nearestEntity.getBoundingBox().intersectsWith(block)) {
+                        return new Entity(nearestEntity);
+                    }
+                }
+            }
+        } catch (e) {
+        }
+        return null;
     }
 }

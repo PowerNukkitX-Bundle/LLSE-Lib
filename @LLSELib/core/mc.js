@@ -11,7 +11,7 @@ import { SimpleForm } from '../gui/SimpleForm.js';
 import { CustomForm } from '../gui/CustomForm.js';
 import { NBT } from '../nbt/NBT.js';
 import { NbtCompound } from '../nbt/NbtCompound.js';
-import { server } from '../utils/util.js';
+import { getLevels, server } from '../utils/util.js';
 import { NbtByte } from '../nbt/NbtByte.js';
 import { Entity } from '../object/Entity.js';
 import { IntPos } from '../object/IntPos.js';
@@ -28,6 +28,7 @@ import { Permission } from 'cn.nukkit.permission.Permission';
 import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
 import { EntityItem } from 'cn.nukkit.entity.item.EntityItem';
 import { Entity as PNXEntity } from 'cn.nukkit.entity.Entity';
+import { Identifier } from 'cn.nukkit.utils.Identifier';
 import { Random } from 'java.util.Random';
 import { NBTIO } from 'cn.nukkit.nbt.NBTIO';
 
@@ -38,9 +39,75 @@ server.getPluginManager().addPermission(new Permission("liteloaderlibs.command.o
 server.getPluginManager().addPermission(new Permission("liteloaderlibs.command.console", "liteloader插件console权限", "false"));
 
 /**
+ * 获取当前所有已加载的实体
+ * @returns {Entity[]} 实体对象列表
+ */
+function getAllEntities() {
+    let entities = [];
+    for (const argument of server.getLevels().values()) {
+        entities.push(argument.getEntities());
+    }
+    return entities;
+}
+
+/**
+ * 生成新生物并获取
+ *
+ * 通过此函数，在指定的位置生成一个新生物，并获取它对应的实体对象
+ * @param {string} name 生物的命名空间名称，如 minectaft:creeper
+ * @param {IntPos|FloatPos|number} x 生成生物的位置的坐标对象（或者使用x, y, z, dimid来确定生成位置）
+ * @param {?number} y
+ * @param {?number} z
+ * @param {?number} dimid
+ * @returns {Entity|Null} 生成的实体对象
+ */
+function spawnMob(name, x, y, z, dimid) {
+    if (arguments.length === 2) {
+        PNXEntity.createEntity(new Identifier(name), x.position).spawnToAll();
+    } else if (arguments.length === 5) {
+        PNXEntity.createEntity(new Identifier(name), new Position(x, y, z, getLevels()[dimid])).spawnToAll();
+    }
+}
+
+/**
+ * 复制生物并获取
+ * 通过此函数，在指定的位置复制另一个实体，并获取它对应的实体对象
+ * @param {Entity} entity 需要复制的实体对象
+ * @param {IntPos|FloatPos|number} x 生成生物的位置的坐标对象（或者使用x, y, z, dimid来确定生成位置）
+ * @param {?number} y
+ * @param {?number} z
+ * @param {?number} dimid
+ * @returns {Entity|Null} 复制的实体对象
+ */
+function cloneMob(entity, x, y, z, dimid) {
+    if (arguments.length === 2) {
+        let e = entity._PNXEntity;
+        let copy = PNXEntity.createEntity(e.getNetworkId(), x.position);
+        let tags = e.namedTag.clone().getTags();
+        for (let key in tags) {
+            if (key !== "Pos") {
+                copy.namedTag.put(key, tags[key]);
+            }
+        }
+        copy.spawnToAll();
+    } else if (arguments.length === 5) {
+        let e = entity._PNXEntity;
+        let copy = PNXEntity.createEntity(e.getNetworkId(), new Position(x, y, z, getLevels()[dimid]));
+        let tags = e.namedTag.clone().getTags();
+        for (let key in tags) {
+            if (key !== "Pos") {
+                copy.namedTag.put(key, tags[key]);
+            }
+        }
+        copy.spawnToAll();
+    }
+}
+
+
+/**
  * 获取世界对象
  * @param dim {string|number} 世界名或维度id
- * @returns {cn.nukkit.level}
+ * @returns {cn.nukkit.level.Level}
  */
 function dimToLevel(dim) {
     if (isNaN(dim)) return server.getLevelByName(dim);
@@ -114,7 +181,7 @@ function runcmd(cmd) {
 function runcmdEx(cmd) {
     let rconSender = new RemoteConsoleCommandSender();
     let succ = server.executeCommand(rconSender, cmd) > 0;
-    return { success: succ, output: rconSender.getMessages() };
+    return {success: succ, output: rconSender.getMessages()};
 }
 
 /**
@@ -785,6 +852,9 @@ export const mc = {
     regPlayerCmd,
     regConsoleCmd,
     sendCmdOutput,
+    getAllEntities,
+    spawnMob,
+    cloneMob,
     listen,
     getPlayer,
     getOnlinePlayers,

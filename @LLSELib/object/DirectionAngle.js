@@ -1,7 +1,7 @@
 export class DirectionAngle {
     /**
      * 创建一个DirectionAngle对象
-     * @param PNXEntity {PNXEntity}
+     * @param {cn.nukkit.entity.Entity} PNXEntity
      */
     constructor(PNXEntity) {
         this.entity = PNXEntity;

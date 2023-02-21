@@ -1,7 +1,7 @@
 export class FloatPos {
     /**
      * 创建一个 FloatPos 对象
-     * @param {Position} position 坐标对象
+     * @param {cn.nukkit.level.Position} position 坐标对象
      */
     constructor(position) {
         this.position = position;
