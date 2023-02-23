@@ -109,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib-full
-          path: src
+          path: src/@LLSELib
 
       - name: compress
         uses: nizarmah/auto-minify@v2.1
@@ -123,13 +123,14 @@ jobs:
           cd src
           rm -rf @LLSELib/jsconfig.json
           zip -r @LLSELib.zip @LLSELib
+          cd ..
 
       - name: Archive LLSELib
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib
           path: |
-            src
+            src/@LLSELib
             !**/jsconfig.json
 
       - name: Read version in plugin.yml
