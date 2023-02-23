@@ -66,7 +66,17 @@ jobs:
           cp target/libs -R ../env && cp target/powernukkitx-${{ steps.pom-version.outputs.version }}.jar ../env
           cd ../ && mkdir -p env/plugins && cp @LLSELib @Test -R env/plugins
       - name: run test
-        run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
+        run: |
+          cd env && ls && ./pnx start --stdin=control.txt
+          value=`cat result.txt`
+          readarray -d ';' -t strarr <<<"$value"
+          error=${strarr[1]}
+          if (($error > 0)); then
+              echo "测试失败,失败数量:$error"
+              exit 1
+            else
+              echo "测试成功"
+          fi
         id: test-result
       - name: fail
         if: ${{ steps.test-result.outputs.success == 'false' }}

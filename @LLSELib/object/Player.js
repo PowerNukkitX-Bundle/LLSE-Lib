@@ -469,7 +469,7 @@ export class Player extends Entity {
      * @return {DirectionAngle} 返回玩家当前朝向
      */
     get direction() {
-        return this.directionAngle;
+        return this.DirectionAngle;
     }
 
     /**

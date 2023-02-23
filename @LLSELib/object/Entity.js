@@ -41,11 +41,16 @@ export class Entity {
     _PNXEntity;
 
     /**
+     * @type {DirectionAngle}
+     */
+    directionAngle;
+
+    /**
      * @param {cn.nukkit.entity.Entity} entity
      */
     constructor(entity) {
         this._PNXEntity = entity;
-        this.DirectionAngle = new DirectionAngle(this._PNXEntity);
+        this.directionAngle = new DirectionAngle(this._PNXEntity);
     }
 
     /**
@@ -220,7 +225,7 @@ export class Entity {
      * @returns {DirectionAngle}
      */
     get direction() {
-        return this.DirectionAngle;
+        return this.directionAngle;
     }
 
     /**
