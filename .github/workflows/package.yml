@@ -99,17 +99,53 @@ jobs:
           mkdir $GITHUB_WORKSPACE/src
           mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
 
+      - name: zip full plugin
+        run: |
+          cd src
+          zip -r @LLSELib-full.zip @LLSELib
+          cd ..
+
+      - name: Archive LLSELib-full
+        uses: actions/upload-artifact@v3
+        with:
+          name: LLSELib-full
+          path: src/@LLSELib
+
       - name: compress
         uses: nizarmah/auto-minify@v2.1
         with:
           overwrite: true
-          directory: ./src/@LLSELib
+          directory: src/@LLSELib
           js_engine: uglify-js
 
-      - name: upload artifact
+      - name: zip minify plugin
+        run: |
+          cd src
+          rm -rf @LLSELib/jsconfig.json
+          zip -r @LLSELib.zip @LLSELib
+          cd ..
+
+      - name: Archive LLSELib
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib
           path: |
-            src
+            src/@LLSELib
             !**/jsconfig.json
+
+      - name: Read version in plugin.yml
+        id: plugin-data
+        uses: CumulusDS/get-yaml-paths-action@v0.1.0
+        with:
+          file: src/@LLSELib/plugin.yml
+          version: version
+
+      - name: Release new version
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && contains(github.ref_name, 'master') && contains(github.event.commits[0].message, '+u')
+        with:
+          artifacts: "src/@LLSELib-full.zip,src/@LLSELib.zip"
+          tag: ${{ steps.plugin-data.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit: ${{ github.ref_name }}
+          allowUpdates: true
