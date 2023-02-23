@@ -117,13 +117,13 @@ jobs:
       - name: Archive LLSELib-full
         uses: actions/upload-artifact@v3
         with:
-          name: @LLSELib-full
+          name: LLSELib-full
           path: @LLSELib-full.zip
 
       - name: Archive LLSELib
         uses: actions/upload-artifact@v3
         with:
-          name: @LLSELib.zip
+          name: LLSELib
           path: @LLSELib.zip
 
       - name: Read plugin.yml
