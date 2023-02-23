@@ -100,7 +100,7 @@ jobs:
           mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
 
       - name: zip full plugin
-        run: zip -r @LLSELib-full.zip src
+        run: zip -r @LLSELib-full.zip src/@LLSELib
 
       - name: compress
         uses: nizarmah/auto-minify@v2.1
@@ -112,25 +112,29 @@ jobs:
       - name: zip minify plugin
         run: |
           rm -rf src/@LLSELib/jsconfig.json
-          zip -r @LLSELib.zip src
+          zip -r @LLSELib.zip src/@LLSELib
 
-      - name: upload artifact
+      - name: Archive LLSELib-full
         uses: actions/upload-artifact@v3
         with:
-          name: LLSELib
-          path: |
-            @LLSELib-full.zip
-            @LLSELib.zip
+          name: @LLSELib-full
+          path: @LLSELib-full.zip
 
-      - name: Run list-yml-keys-action action
-        id: yaml-data
-        uses: rmakovyak/list-yml-keys-action@main
+      - name: Archive LLSELib
+        uses: actions/upload-artifact@v3
         with:
-          file: 'src/@LLSELib/plugin.yml'
-          key-path: '["version"]'
+          name: @LLSELib.zip
+          path: @LLSELib.zip
 
-      - name: Display list-yml-keys-action output
-        run: echo "${{ steps.yaml-data.outputs.data }}"
+      - name: Read plugin.yml
+        id: plugin-data
+        uses: CumulusDS/get-yaml-paths-action@v0.1.0
+        with:
+          file: src/@LLSELib/plugin.yml
+          version: version
+
+      - name: output
+        run: echo ${{ steps.plugin-data.outputs.version }}
 
 #      - name: Release new version
 #        uses: ncipollo/release-action@v1
