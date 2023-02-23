@@ -41,11 +41,16 @@ export class Entity {
     _PNXEntity;
 
     /**
+     * @type {DirectionAngle}
+     */
+    directionAngle;
+
+    /**
      * @param {cn.nukkit.entity.Entity} entity
      */
     constructor(entity) {
         this._PNXEntity = entity;
-        this.DirectionAngle = new DirectionAngle(this._PNXEntity);
+        this.directionAngle = new DirectionAngle(this._PNXEntity);
     }
 
     /**
@@ -135,7 +140,7 @@ export class Entity {
      * @returns {boolean}
      */
     get inAir() {
-        if (this instanceof EntityLiving) {
+        if (this._PNXEntity instanceof EntityLiving) {
             return this._PNXEntity.getAirTicks() > 0;
         } else return false;
     }
@@ -220,7 +225,7 @@ export class Entity {
      * @returns {DirectionAngle}
      */
     get direction() {
-        return this.DirectionAngle;
+        return this.directionAngle;
     }
 
     /**

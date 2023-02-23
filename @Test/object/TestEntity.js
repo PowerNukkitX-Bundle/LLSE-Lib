@@ -19,12 +19,13 @@ export const TestEntity = () => {
     JSAssert.addTestSuite("Test Entity", {
         testProperty: function () {
             assertThat(entity.name).equals("Pig", "name属性读取异常");
-            assertThat(entity.type).equals("Pig", "type属性读取异常");
+            assertThat(entity.type).equals("minecraft:pig", "type属性读取异常");
             assertThat(isNumber(entity.id)).isTrue("id属性读取异常");
             assertThat(entity.pos.toString()).equals(`{"x":0,"y":300,"z":0,"dim":"world","dimid":0}`, "pos属性读取异常");
             assertThat(entity.blockPos.toString()).equals(`{"x":0,"y":300,"z":0,"dim":"world","dimid":0}`, "blockPos属性读取异常");
             assertThat(entity.maxHealth).equals(10, "maxHealth属性读取异常");
             assertThat(entity.health).equals(10, "health属性读取异常");
+            console.log(entity.inAir);
             assertThat(entity.inAir).equals(true, "inAir属性读取异常");
             assertThat(entity.inWater).equals(false, "inWater属性读取异常");
             assertThat(entity.speed).equals(0.10000000149011612, "speed属性读取异常");

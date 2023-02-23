@@ -4,46 +4,92 @@ import { data } from '../utils/data.js';
 import { DBSession } from '../database/DBSession.js';
 import { download, onlyOnceExecute, server } from '../utils/util.js';
 import { File as JFile } from "java.io.File";
-import { MoneyAddEvent } from "cn.coolloong.economyevent.MoneyAddEvent";
-import { MoneyReduceEvent } from "cn.coolloong.economyevent.MoneyReduceEvent";
-import { MoneySetEvent } from "cn.coolloong.economyevent.MoneySetEvent";
-import { MoneyTransEvent } from "cn.coolloong.economyevent.MoneyTransEvent";
-import { BeforeMoneyAddEvent } from "cn.coolloong.economyevent.BeforeMoneyAddEvent";
-import { BeforeMoneyReduceEvent } from "cn.coolloong.economyevent.BeforeMoneyReduceEvent";
-import { BeforeMoneySetEvent } from "cn.coolloong.economyevent.BeforeMoneySetEvent";
-import { BeforeMoneyTransEvent } from "cn.coolloong.economyevent.BeforeMoneyTransEvent";
+
+//define
+/**
+ * @typedef {Object} Main
+ * @property {function(string,number): cn.nukkit.event.Event} createMoneyAddEvent
+ * @property {function(string,number): cn.nukkit.event.Event} createMoneyReduceEvent
+ * @property {function(string,number): cn.nukkit.event.Event} createMoneySetEvent
+ * @property {function(string,string,number): cn.nukkit.event.Event} createMoneyTransEvent
+ * @property {function(string,number): cn.nukkit.event.Event} createBeforeMoneyAddEvent
+ * @property {function(string,number): cn.nukkit.event.Event} createBeforeMoneyReduceEvent
+ * @property {function(string,number): cn.nukkit.event.Event} createBeforeMoneySetEvent
+ * @property {function(string,string,number): cn.nukkit.event.Event} createBeforeMoneyTransEvent
+ */
+
+/**
+ * @typedef {Object} _API.EconomyAPI
+ * @property {function} setMoney
+ * @property {function} myMoney
+ * @property {function} addMoney
+ * @property {function} reduceMoney
+ */
+
+/**
+ * @typedef {Object} _API.LlamaEconomy
+ * @property {function} setMoney
+ * @property {function} getMoney
+ * @property {function} addMoney
+ * @property {function} reduceMoney
+ */
+
 
 if (!contain('economyDB')) {// 防止重复database
-    exposeObject('economyDB', new DBSession('sqlite3', { path: './plugins/LiteLoaderLibs/economy.db' }));
+    exposeObject('economyDB', new DBSession('sqlite3', {path: './plugins/LiteLoaderLibs/economy.db'}));
 }
 export const economyDB = contain('economyDB');
-
-import("cn.coolloong.economyevent.Main").then(() => {
-}, e => {
-    onlyOnceExecute(() => {
-        console.log("没有找到经济事件前置，正在为你自动下载 EconomyEvent...");
-        const fileName = "EconomyEvent-1.0.jar";
-        const folder = "plugins";
-        download("https://cloudburstmc.org/resources/economyapi.14/download", folder, fileName, () => {
-            const file = new JFile(folder, fileName);
-            server.getPluginManager().loadPlugin(file);
-        });
-    }, "64D1B2FC-E3BA-44A8-DCD4-91F117D6397D");
-})
 
 /**
  * @type {Object}
  */
+let EconomyEvent;
+/**
+ * @type {Object}
+ */
 let _API;
+
+import("cn.coolloong.economyevent.Main").then(s => {
+    let {Main} = s;
+    EconomyEvent.createMoneyAddEvent = Main.createMoneyAddEvent;
+    EconomyEvent.createMoneyReduceEvent = Main.createMoneyReduceEvent;
+    EconomyEvent.createMoneySetEvent = Main.createMoneySetEvent;
+    EconomyEvent.createMoneyTransEvent = Main.createMoneyTransEvent;
+    EconomyEvent.createBeforeMoneyAddEvent = Main.createBeforeMoneyAddEvent;
+    EconomyEvent.createBeforeMoneyReduceEvent = Main.createBeforeMoneyReduceEvent;
+    EconomyEvent.createBeforeMoneySetEvent = Main.createBeforeMoneySetEvent;
+    EconomyEvent.createBeforeMoneyTransEvent = Main.createBeforeMoneyTransEvent;
+}, e => {
+    onlyOnceExecute(() => {
+        console.log("没有找到经济事件前置，正在为你自动下载 EconomyEvent...");
+        const fileName = "EconomyEvent-1.0.1.jar";
+        const folder = "plugins";
+        download("https://res.nullatom.com/file/pnx/EconomyEvent-1.0.1.jar", folder, fileName, () => {
+            const file = new JFile(folder, fileName);
+            server.getPluginManager().loadPlugin(file);
+        });
+        import("cn.coolloong.economyevent").then(s2 => {
+            let {Main} = s2;
+            EconomyEvent.createMoneyAddEvent = Main.createMoneyAddEvent;
+            EconomyEvent.createMoneyReduceEvent = Main.createMoneyReduceEvent;
+            EconomyEvent.createMoneySetEvent = Main.createMoneySetEvent;
+            EconomyEvent.createMoneyTransEvent = Main.createMoneyTransEvent;
+            EconomyEvent.createBeforeMoneyAddEvent = Main.createBeforeMoneyAddEvent;
+            EconomyEvent.createBeforeMoneyReduceEvent = Main.createBeforeMoneyReduceEvent;
+            EconomyEvent.createBeforeMoneySetEvent = Main.createBeforeMoneySetEvent;
+            EconomyEvent.createBeforeMoneyTransEvent = Main.createBeforeMoneyTransEvent;
+        })
+    }, "64D1B2FC-E3BA-44A8-DCD4-91F117D6397D");
+});
 import('me.onebone.economyapi.EconomyAPI').then(s => {
-    let { EconomyAPI } = s;
+    let {EconomyAPI} = s;
     _API.EconomyAPI = EconomyAPI.getInstance();
     onlyOnceExecute(() => {
         console.log("成功载入EconomyAPI");
     }, "DD681B41-E68F-545F-8CDA-FC89D99F210B");
 }, e => {
     import('net.lldv.llamaeconomy.LlamaEconomy').then(s => {
-        let { LlamaEconomy } = s;
+        let {LlamaEconomy} = s;
         _API.LlamaEconomy = LlamaEconomy.getAPI();
         onlyOnceExecute(() => {
             console.log("成功载入LlamaEconomy");
@@ -74,7 +120,7 @@ export class money {
      * @returns {boolean} 是否成功
      */
     static set(xuid, money) {
-        let ev1 = new BeforeMoneySetEvent(xuid, money);
+        let ev1 = EconomyEvent.createBeforeMoneySetEvent(xuid, money);
         server.getPluginManager().callEvent(ev1);
         if (ev1.isCancelled()) {
             return false;
@@ -92,7 +138,7 @@ export class money {
         UPDATE
             SET Money=${money}`);
 
-        let ev2 = new MoneySetEvent(xuid, money);
+        let ev2 = EconomyEvent.createMoneySetEvent(xuid, money);
         server.getPluginManager().callEvent(ev2);
         return true;
     }
@@ -103,7 +149,7 @@ export class money {
      * @returns {number} 玩家的资金数值
      */
     static get(xuid) {
-        var value = 0;
+        let value = 0
         if (_API.EconomyAPI) {
             value = _API.EconomyAPI.myMoney(data.str2name(xuid));
         } else if (_API.LlamaEconomy) {
@@ -123,7 +169,7 @@ export class money {
      * @returns {boolean} 是否成功
      */
     static add(xuid, _money) {
-        let ev1 = new BeforeMoneyAddEvent(xuid, _money);
+        let ev1 = EconomyEvent.createBeforeMoneyAddEvent(xuid, _money);
         server.getPluginManager().callEvent(ev1);
         if (ev1.isCancelled()) {
             return false;
@@ -136,7 +182,7 @@ export class money {
         }
         money.get(data.str2name(xuid));// 更新数据库
 
-        let ev2 = new MoneyAddEvent(xuid, _money);
+        let ev2 = EconomyEvent.createMoneyAddEvent(xuid, _money);
         server.getPluginManager().callEvent(ev2);
         return true;
     }
@@ -148,7 +194,7 @@ export class money {
      * @returns {boolean} 是否成功
      */
     static reduce(xuid, _money) {
-        let ev1 = new BeforeMoneyReduceEvent(xuid, _money);
+        let ev1 = EconomyEvent.createBeforeMoneyReduceEvent(xuid, _money);
         server.getPluginManager().callEvent(ev1);
         if (ev1.isCancelled()) {
             return false;
@@ -166,7 +212,7 @@ export class money {
         }
         money.get(data.str2name(xuid));// 更新数据库
 
-        let ev2 = new MoneyReduceEvent(xuid, _money);
+        let ev2 = EconomyEvent.createMoneyReduceEvent(xuid, _money);
         server.getPluginManager().callEvent(ev2);
         return true;
     }
@@ -180,7 +226,7 @@ export class money {
      * @returns {boolean} 是否成功
      */
     static trans(xuid1, xuid2, money_, note = '') {
-        let ev1 = new BeforeMoneyTransEvent(xuid1, xuid2, money_);
+        let ev1 = EconomyEvent.createBeforeMoneyTransEvent(xuid1, xuid2, money_);
         server.getPluginManager().callEvent(ev1);
         if (ev1.isCancelled()) {
             return false;
@@ -194,7 +240,7 @@ export class money {
             money.get(data.str2name(xuid1));// 更新数据库
             money.get(data.str2name(xuid2));
 
-            let ev2 = new MoneyTransEvent(xuid1, xuid2, money_);
+            let ev2 = EconomyEvent.createMoneyTransEvent(xuid1, xuid2, money_);
             server.getPluginManager().callEvent(ev2);
             return true;
         }
@@ -217,7 +263,7 @@ export class money {
      */
     static getHistory(xuid, time) {
         let res = [];
-        let d = economyDB.qreuy(`SELECT *
+        let d = economyDB.query(`SELECT *
                                  FROM mtrans
                                  WHERE (tFrom = '${xuid}' OR tTo = '${xuid}')
                                    AND Time BETWEEN ${~~(new Date().getTime() / 1e3)}
@@ -236,7 +282,7 @@ export class money {
 
     /**
      * 删除账单历史记录
-     * @param xuid {string} 要操作的玩家的Xuid标识符
+     *
      * @param time {number} 删除从现在开始往前time秒的记录
      * @returns {boolean} 是否删除成功
      */

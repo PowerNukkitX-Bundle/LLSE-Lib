@@ -28,22 +28,26 @@ jobs:
     steps:
       - name: checkout source
         uses: actions/checkout@v3
+
       - name: checkout PNX source
         uses: actions/checkout@v3
         with:
           repository: 'PowerNukkitX/PowerNukkitX'
           path: 'core'
+
       - name: checkout LLSE Lib TestRuntime
         uses: actions/checkout@v3
         with:
           repository: 'PowerNukkitX/LLSE-Lib-TestRuntime'
           path: 'env'
+
       - name: setup-graalvm-ce
         uses: rinx/setup-graalvm-ce@v0.0.5
         with:
           graalvm-version: "22.1.0"
           java-version: "java17"
           native-image: "false"
+
       - name: Cache local Maven repository
         uses: actions/cache@v3
         with:
@@ -51,11 +55,13 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
       - name: get-pom-version
         id: pom-version
-        uses: CptMokoena/maven-get-version-action@master
+        uses: CptMokoena/maven-get-version-action@1.0.3
         with:
           path: core
+
       - name: setup running environment
         run: |
           cd env
@@ -65,12 +71,20 @@ jobs:
           cd core/ && mvn -B package -DskipTests=true -Darguments="-Dmaven.javadoc.skip=true" -P dev
           cp target/libs -R ../env && cp target/powernukkitx-${{ steps.pom-version.outputs.version }}.jar ../env
           cd ../ && mkdir -p env/plugins && cp @LLSELib @Test -R env/plugins
+
       - name: run test
-        run: cd env && ls && ./pnx start --stdin=control.txt && chmod +x test.sh && ./test.sh
+        run: |
+          cd env && ls && ./pnx start --stdin=control.txt
+          value=`cat result.txt`
+          readarray -d ';' -t strarr <<<"$value"
+          error=${strarr[1]}
+          if (($error > 0)); then
+              echo "测试失败,失败数量:$error"
+              exit 1
+            else
+              echo "测试成功"
+          fi
         id: test-result
-      - name: fail
-        if: ${{ steps.test-result.outputs.success == 'false' }}
-        uses: cutenode/action-always-fail@v1.0.0
 
   build:
     if: github.event_name == 'push' && (!contains(github.ref_name, 'patch'))
@@ -79,16 +93,19 @@ jobs:
     steps:
       - name: checkout source
         uses: actions/checkout@master
+
       - name: move
         run: |
           mkdir $GITHUB_WORKSPACE/src
           mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
+
       - name: compress
         uses: nizarmah/auto-minify@v2.1
         with:
           overwrite: true
           directory: ./src/@LLSELib
           js_engine: uglify-js
+
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
