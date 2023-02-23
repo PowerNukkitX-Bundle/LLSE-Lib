@@ -140,7 +140,7 @@ export class Entity {
      * @returns {boolean}
      */
     get inAir() {
-        if (this instanceof EntityLiving) {
+        if (this._PNXEntity instanceof EntityLiving) {
             return this._PNXEntity.getAirTicks() > 0;
         } else return false;
     }
