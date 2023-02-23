@@ -126,23 +126,19 @@ jobs:
           name: LLSELib
           path: $GITHUB_WORKSPACE/@LLSELib.zip
 
-      - name: Read plugin.yml
+      - name: Read version in plugin.yml
         id: plugin-data
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
         with:
           file: src/@LLSELib/plugin.yml
           version: version
 
-      - name: output
-        run: echo ${{ steps.plugin-data.outputs.version }}
-
-#      - name: Release new version
-#        uses: ncipollo/release-action@v1
-#        if: github.event_name == 'push' && contains(github.ref_name, 'master') && contains(github.event.commits[0].message, '+u')
-#        with:
-#          artifacts: "@LLSELib-full.zip,@LLSELib.zip"
-#          tag: ${{ steps.getVersion.outputs.version }}
-#          body: ${{ steps.getVersion.outputs.version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          commit: ${{ github.ref_name }}
-#          allowUpdates: true
+      - name: Release new version
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && contains(github.ref_name, 'master') && contains(github.event.commits[0].message, '+u')
+        with:
+          artifacts: "@LLSELib-full.zip,@LLSELib.zip"
+          tag: ${{ steps.plugin-data.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit: ${{ github.ref_name }}
+          allowUpdates: true
