@@ -4,8 +4,8 @@ import { File as JFile } from 'java.io.File'
 
 export class IniConfigFile {
     /**
-     * @param path {string} 配置文件所在路径，以 PNX 根目录为基准
-     * @param [defaultContext='{}'] {string} 如果初始化时目标文件不存在，则新建一个配置文件并将此处的默认内容写入文件中。
+     * @param {string} path 配置文件所在路径，以 PNX 根目录为基准
+     * @param {string} [defaultContext='{}'] 如果初始化时目标文件不存在，则新建一个配置文件并将此处的默认内容写入文件中。
      */
     constructor(path, defaultContext = '') {
         if (!new JFile(path).exists()) {// 文件不存在
@@ -39,9 +39,9 @@ export class IniConfigFile {
 
     /**
      * 初始化配置项
-     * @param section {string} 配置项键名
-     * @param name {string} 配置项名字
-     * @param [defaultContext=null] {any} 配置项初始化时写入的值
+     * @param {string} section 配置项键名
+     * @param {string} name 配置项名字
+     * @param {any} [defaultContext=null] 配置项初始化时写入的值
      * @returns {any}
      */
     init(section, name, defaultContext = null) {
@@ -54,9 +54,9 @@ export class IniConfigFile {
 
     /**
      * 写入配置项
-     * @param section {string} 配置项键名
-     * @param name {string} 配置项名字
-     * @param data {any} 要写入的配置数据
+     * @param {string} section 配置项键名
+     * @param {string} name 配置项名字
+     * @param {any} data 要写入的配置数据
      * @returns {boolean} 是否写入成功
      */
     set(section, name, data) {
@@ -82,9 +82,9 @@ export class IniConfigFile {
     /**
      * 读取配置项
      * @pnxonly
-     * @param section {string} 配置项键名
-     * @param name {string} 配置项名字
-     * @param [defaultContext=null] {any} 当读取失败时返回的默认值
+     * @param {string} section 配置项键名
+     * @param {string} name 配置项名字
+     * @param {any} [defaultContext=null] 当读取失败时返回的默认值
      * @returns {string|number|boolean}
      */
     get(section, name, defaultContext = null) {
@@ -137,8 +137,8 @@ export class IniConfigFile {
 
     /**
      * 删除配置项
-     * @param section {string} 配置项键名
-     * @param name {string} 配置项名字
+     * @param {string} section 配置项键名
+     * @param {string} name 配置项名字
      * @returns {boolean} 是否成功
      */
     delete(section, name) {
@@ -215,7 +215,7 @@ export class IniConfigFile {
 
     /**
      * 写入整个配置文件的内容
-     * @param content {string} 内容
+     * @param {string} content 内容
      * @returns {boolean} 是否成功
      */
     write(content) {

@@ -188,11 +188,11 @@ export class Command {
 
     /**
      * 新增一个可选参数
-     * @param name {string} 参数名，用于执行指令时识别参数
-     * @param type {ParamType} 命令参数类型
-     * @param [enumName] {string} 枚举名（仅 ParamType 为 Enum 时有效，用于区分枚举选项）
-     * @param [identifier] {string} 参数标识，特殊情况下用于唯一识别参数，一般可用 enumName 或 name 代替
-     * @param [enumOptions=0] {number} 参数选项，设置为 1 可在指令提示中展开枚举选项 如 <action : TagChangeAction> 会变成 <add|remove>
+     * @param {string} name 参数名，用于执行指令时识别参数
+     * @param {ParamType} type 命令参数类型
+     * @param {string} [enumName] 枚举名（仅 ParamType 为 Enum 时有效，用于区分枚举选项）
+     * @param {string} [identifier] 参数标识，特殊情况下用于唯一识别参数，一般可用 enumName 或 name 代替
+     * @param {number} [enumOptions=0] 参数选项，设置为 1 可在指令提示中展开枚举选项 如 <action : TagChangeAction> 会变成 <add|remove>
      * @returns {boolean} 是否成功设置
      */
     optional(name, type, enumName, identifier, enumOptions) {
@@ -212,7 +212,7 @@ export class Command {
 
     /**
      * 新增一条指令重载,作用是实现多条子命令,类似于PNX中的CommandParameters
-     * @param params {Array<string>} 参数标识符，重载所用到的参数列表，可用 参数标识符、枚举名、参数名。注意不能使用无法区分具体参数的标识符，如两个参数都叫 action 但枚举选项不同，此时应该使用枚举名而不是参数名
+     * @param {Array<string>} params 参数标识符，重载所用到的参数列表，可用 参数标识符、枚举名、参数名。注意不能使用无法区分具体参数的标识符，如两个参数都叫 action 但枚举选项不同，此时应该使用枚举名而不是参数名
      * @returns {boolean} 是否成功设置
      */
     overload(params) {

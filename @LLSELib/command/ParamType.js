@@ -107,7 +107,7 @@ export class ParamType {
 
 /**
  * 将ParamType转为js的值，方便用于比较
- * @param arg {ParamType} 命令参数类型
+ * @param {ParamType} arg 命令参数类型
  * @returns {Object | number}
  */
 export function typeToObject(arg) {

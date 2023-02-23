@@ -31,7 +31,7 @@ export class Container {
 
     /**
      * 放入物品对象到容器中
-     * @param item {Item} 待放入的物品对象
+     * @param {Item} item 待放入的物品对象
      * @returns {boolean}
      */
     addItem(item) {
@@ -51,7 +51,7 @@ export class Container {
 
     /**
      * 放入物品对象到容器的第一个空格子
-     * @param item {Item} 待增加的物品对象
+     * @param {Item} item 待增加的物品对象
      * @returns {boolean}
      */
     addItemToFirstEmptySlot(item) {
@@ -61,7 +61,7 @@ export class Container {
 
     /**
      * 检查容器中是否（有空间）可以放入此物品
-     * @param item {Item} 待放入的物品对象
+     * @param {Item} item 待放入的物品对象
      * @returns {boolean}
      */
     hasRoomFor(item) {
@@ -75,8 +75,8 @@ export class Container {
 
     /**
      * 减少容器中的某个物品对象
-     * @param item {Item} 减少的物品对象
-     * @param count {Number} 减少的数量。如果大于等于此格子物品堆叠的数量，则物品堆将被整个清除
+     * @param {number} index 减少的物品对象所在的格子序号
+     * @param {Number} count 减少的数量。如果大于等于此格子物品堆叠的数量，则物品堆将被整个清除
      * @returns {boolean}
      */
     removeItem(index, count) {
@@ -93,7 +93,7 @@ export class Container {
 
     /**
      * 获取容器某个格子的物品对象
-     * @param index {number} 格子序号
+     * @param {number} index 格子序号
      * @returns {Item}
      */
     getItem(index) {
@@ -105,8 +105,8 @@ export class Container {
 
     /**
      * 设置容器某个格子的物品对象
-     * @param index {number} 待设置的格子序号
-     * @param item {Item} 物品对象
+     * @param {number} index 待设置的格子序号
+     * @param {Item} item 物品对象
      * @returns {boolean}
      */
     setItem(index, item) {
@@ -125,8 +125,8 @@ export class Container {
 
     /**
      * 获取容器所有格子的物品对象列表
-     * @param item {Item} 待放入的物品对象
-     * @returns {Array<Item,Item,...>} 容器中所有的物品对象
+     *
+     * @returns {Array<Item>} 容器中所有的物品对象
      */
     getAllItems() {
         let slots = [];
@@ -138,6 +138,7 @@ export class Container {
 
     /**
      * 清空容器
+     *
      * @returns {boolean}
      */
     removeAllItems() {

@@ -165,7 +165,7 @@ function setMaxPlayers(num) {
 // 🎨 游戏元素接口文档
 /**
  * 执行一条命令并返回是否成功
- * @param cmd {string} 命令
+ * @param {string} cmd 命令
  * @returns {boolean} 是否成功
  */
 function runcmd(cmd) {
@@ -175,7 +175,7 @@ function runcmd(cmd) {
 /**
  * 执行一条命令并返回更多信息
  * @todo 待完善
- * @param cmd {string} 命令
+ * @param {string} cmd 命令
  * @returns {{success: boolean, output: string}} 是否成功与输出信息
  */
 function runcmdEx(cmd) {
