@@ -118,13 +118,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib-full
-          path: @LLSELib-full.zip
+          path: $GITHUB_WORKSPACE/@LLSELib-full.zip
 
       - name: Archive LLSELib
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib
-          path: @LLSELib.zip
+          path: $GITHUB_WORKSPACE/@LLSELib.zip
 
       - name: Read plugin.yml
         id: plugin-data
