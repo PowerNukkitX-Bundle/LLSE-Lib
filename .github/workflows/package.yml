@@ -99,8 +99,11 @@ jobs:
           mkdir $GITHUB_WORKSPACE/src
           mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
 
-      - name: zip full plugin
-        run: zip -r src/@LLSELib-full.zip src/@LLSELib
+      - name: Archive LLSELib-full
+        uses: actions/upload-artifact@v3
+        with:
+          name: LLSELib-full
+          path: src
 
       - name: compress
         uses: nizarmah/auto-minify@v2.1
@@ -109,22 +112,13 @@ jobs:
           directory: src/@LLSELib
           js_engine: uglify-js
 
-      - name: zip minify plugin
-        run: |
-          rm -rf src/@LLSELib/jsconfig.json
-          zip -r src/@LLSELib.zip src/@LLSELib
-
-      - name: Archive LLSELib-full
-        uses: actions/upload-artifact@v3
-        with:
-          name: LLSELib-full
-          path: src/@LLSELib-full.zip
-
       - name: Archive LLSELib
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib
-          path: src/@LLSELib.zip
+          path: |
+            src
+            !**/jsconfig.json
 
       - name: Read version in plugin.yml
         id: plugin-data
