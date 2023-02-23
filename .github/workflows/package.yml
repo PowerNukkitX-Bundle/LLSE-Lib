@@ -99,17 +99,46 @@ jobs:
           mkdir $GITHUB_WORKSPACE/src
           mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
 
+      - name: zip full plugin
+        run: zip -r @LLSELib-full.zip src
+
       - name: compress
         uses: nizarmah/auto-minify@v2.1
         with:
           overwrite: true
-          directory: ./src/@LLSELib
+          directory: src/@LLSELib
           js_engine: uglify-js
+
+      - name: zip minify plugin
+        run: |
+          rm -rf src/@LLSELib/jsconfig.json
+          zip -r @LLSELib.zip src
 
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib
           path: |
-            src
-            !**/jsconfig.json
+            @LLSELib-full.zip
+            @LLSELib.zip
+
+      - name: Run list-yml-keys-action action
+        id: yaml-data
+        uses: rmakovyak/list-yml-keys-action@main
+        with:
+          file: 'src/@LLSELib/plugin.yml'
+          key-path: '["version"]'
+
+      - name: Display list-yml-keys-action output
+        run: echo "${{ steps.yaml-data.outputs.data }}"
+
+#      - name: Release new version
+#        uses: ncipollo/release-action@v1
+#        if: github.event_name == 'push' && contains(github.ref_name, 'master') && contains(github.event.commits[0].message, '+u')
+#        with:
+#          artifacts: "@LLSELib-full.zip,@LLSELib.zip"
+#          tag: ${{ steps.getVersion.outputs.version }}
+#          body: ${{ steps.getVersion.outputs.version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          commit: ${{ github.ref_name }}
+#          allowUpdates: true
