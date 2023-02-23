@@ -99,6 +99,12 @@ jobs:
           mkdir $GITHUB_WORKSPACE/src
           mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
 
+      - name: zip full plugin
+        run: |
+          cd src
+          zip -r @LLSELib-full.zip @LLSELib
+          cd ..
+
       - name: Archive LLSELib-full
         uses: actions/upload-artifact@v3
         with:
@@ -111,6 +117,12 @@ jobs:
           overwrite: true
           directory: src/@LLSELib
           js_engine: uglify-js
+
+      - name: zip minify plugin
+        run: |
+          cd src
+          rm -rf @LLSELib/jsconfig.json
+          zip -r @LLSELib.zip @LLSELib
 
       - name: Archive LLSELib
         uses: actions/upload-artifact@v3
