@@ -100,7 +100,7 @@ jobs:
           mv $GITHUB_WORKSPACE/@LLSELib $GITHUB_WORKSPACE/src/@LLSELib
 
       - name: zip full plugin
-        run: zip -r @LLSELib-full.zip src/@LLSELib
+        run: zip -r src/@LLSELib-full.zip src/@LLSELib
 
       - name: compress
         uses: nizarmah/auto-minify@v2.1
@@ -112,19 +112,19 @@ jobs:
       - name: zip minify plugin
         run: |
           rm -rf src/@LLSELib/jsconfig.json
-          zip -r @LLSELib.zip src/@LLSELib
+          zip -r src/@LLSELib.zip src/@LLSELib
 
       - name: Archive LLSELib-full
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib-full
-          path: $GITHUB_WORKSPACE/@LLSELib-full.zip
+          path: src/@LLSELib-full.zip
 
       - name: Archive LLSELib
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib
-          path: $GITHUB_WORKSPACE/@LLSELib.zip
+          path: src/@LLSELib.zip
 
       - name: Read version in plugin.yml
         id: plugin-data
@@ -137,7 +137,7 @@ jobs:
         uses: ncipollo/release-action@v1
         if: github.event_name == 'push' && contains(github.ref_name, 'master') && contains(github.event.commits[0].message, '+u')
         with:
-          artifacts: "@LLSELib-full.zip,@LLSELib.zip"
+          artifacts: "src/@LLSELib-full.zip,src/@LLSELib.zip"
           tag: ${{ steps.plugin-data.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.ref_name }}
