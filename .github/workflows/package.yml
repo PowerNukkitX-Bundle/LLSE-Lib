@@ -53,7 +53,7 @@ jobs:
             ${{ runner.os }}-maven-
       - name: get-pom-version
         id: pom-version
-        uses: CptMokoena/maven-get-version-action@master
+        uses: CptMokoena/maven-get-version-action@1.0.3
         with:
           path: core
       - name: setup running environment
