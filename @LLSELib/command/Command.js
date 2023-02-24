@@ -9,9 +9,11 @@ import { CommandParamOption } from 'cn.nukkit.command.data.CommandParamOption';
 import { CommandParamType } from 'cn.nukkit.command.data.CommandParamType';
 import { ConsoleCommandSender } from 'cn.nukkit.command.ConsoleCommandSender';
 import { PlayersNode } from 'cn.nukkit.command.tree.node.PlayersNode';
+import { RemoteConsoleCommandSender } from 'cn.nukkit.command.RemoteConsoleCommandSender';
 import { isArray, isNumber, isString, isUndefined } from '../utils/underscore-esm-min.js';
 import { Item } from "../object/Item.js";
 import { Block } from "../object/Block.js";
+import { OriginType } from './OriginType.js';
 
 /**@typedef ParamType number*/
 export class Command {
@@ -88,6 +90,13 @@ export class Command {
                 entity: sender.isEntity() ? new Entity(sender) : null,// 执行指令的实体（可空）	Entity
                 player: sender.isPlayer() ? Player.getPlayer(sender.asPlayer()) : null // 执行指令的玩家（可空）	Player
             };
+            if (sender.isEntity()) {// TODO: 还需要更多类型的判断
+                origin.type = OriginType.Player;
+            } else if (sender.isEntity()) {
+                origin.type = OriginType.Actor;
+            } else if (sender instanceof RemoteConsoleCommandSender) {
+                origin.type = OriginType.Server;
+            }
             let output = {
                 success: (msg) => {
                     log.addSuccess(msg).output();
