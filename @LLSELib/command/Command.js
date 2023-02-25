@@ -122,14 +122,14 @@ export class Command {
                 } else if (param.type === CommandParamType.BLOCK_POSITION) {
                     r[param.name] = new IntPos(list.getResult(i));
                 } else if (param.type === CommandParamType.TARGET) {
-                    let targets = list.getResult(i);
                     let result = [];
-                    if (targets[0].isPlayer()) {
-                        targets.forEach((v, i, array) => {
+                    let targets = list.getResult(i);
+                    if (param.paramNode instanceof PlayersNode) {
+                        targets.forEach((v) => {
                             result.push(new Player(v));
                         });
                     } else {
-                        targets.forEach((v, i, array) => {
+                        targets.forEach((v) => {
                             result.push(new Entity(v));
                         });
                     }

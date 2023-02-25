@@ -3,6 +3,7 @@ import { CommandEnum } from 'cn.nukkit.command.data.CommandEnum';
 
 /**
  * 枚举 命令参数类型和数据值类型的对应关系如下
+ * @enum {number}
  */
 export class ParamType {
     /**
