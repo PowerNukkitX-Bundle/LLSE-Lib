@@ -144,7 +144,7 @@ function getServerProtocolVersion() {
 
 /**
  * 设置Motd
- * @param motd {string} 目标 Motd 字符串
+ * @param {string} motd 目标 Motd 字符串
  * @returns {boolean} 是否成功
  */
 function setMotd(motd) {
@@ -154,7 +154,7 @@ function setMotd(motd) {
 
 /**
  * 设置最大玩家数量
- * @param num {number} 最大玩家数
+ * @param {number} num 最大玩家数
  * @returns {boolean} 是否成功
  */
 function setMaxPlayers(num) {
@@ -187,10 +187,10 @@ function runcmdEx(cmd) {
 /**
  * 注册一条顶层命令
  * @param cmd {string} 命令
- * @param description {string} 描述文本
- * @param [permission=0] {number} 执行所需权限0~2（默认0）
- * @param [flag=0x80] {number} 默认值（默认0x80）
- * @param [alias] {string} 命令别名（默认空值）
+ * @param {string} description 描述文本
+ * @param {number} [permission=0] 执行所需权限0~2（默认0）
+ * @param {number} [flag=0x80] 默认值（默认0x80）
+ * @param {string} [alias] 命令别名（默认空值）
  * @returns {Command} 指令对象
  */
 function newCommand(cmd, description, permission = PermType.GameMasters, flag, alias) {
@@ -211,10 +211,10 @@ function newCommand(cmd, description, permission = PermType.GameMasters, flag, a
 
 /**
  * 注册一个新的玩家命令（假命令）
- * @param cmd {string} 待注册的命令
- * @param description {string} 描述文本
- * @param callback {Function} 注册的这个命令被执行时，接口自动调用的回调函数。
- * @param [level=0] {number} 默认值（默认0）
+ * @param {string} cmd 待注册的命令
+ * @param {string} description 描述文本
+ * @param {Function} callback 注册的这个命令被执行时，接口自动调用的回调函数。
+ * @param {number} [level=0] 默认值（默认0）
  * @returns {boolean} 是否成功
  */
 function regPlayerCmd(cmd, description, callback, level = 0) {
@@ -294,8 +294,8 @@ function sendCmdOutput(output) {
 
 /**
  * 注册指定的监听函数
- * @param event {string} 要监听的事件名
- * @param callback {Function} 注册的监听函数
+ * @param {string} event 要监听的事件名
+ * @param {Function} callback 注册的监听函数
  * @returns {boolean} 是否成功监听事件
  */
 function listen(event, callback) {
@@ -304,7 +304,7 @@ function listen(event, callback) {
 
 /**
  * 获取玩家对象
- * @param info {string} 玩家名/xuid
+ * @param {string} info 玩家名/xuid
  * @returns {Player|null} 玩家对象
  */
 function getPlayer(info) {
@@ -355,8 +355,8 @@ function getOnlinePlayers() {
 
 /**
  * 发给所有玩家一条消息
- * @param msg {string} 消息内容
- * @param [type=0] {number} 消息类型（默认0）
+ * @param {string} msg 消息内容
+ * @param {number} [type=0] 消息类型（默认0）
  * @returns {boolean} 是否成功
  */
 function broadcast(msg, type = 0) {
@@ -368,7 +368,7 @@ function broadcast(msg, type = 0) {
 
 /**
  * 在指定位置制造一次爆炸
- * @param pos {IntPos | FloatPos} 引发爆炸的位置坐标(或者使用x,y,z,dimid来确定实体位置)
+ * @param {IntPos | FloatPos} pos 引发爆炸的位置坐标(或者使用x,y,z,dimid来确定实体位置)
  * @param source {Entity} 设置爆炸来源的实体对象，可以为 Null
  * @param power {Float} 爆炸的威力值，影响爆炸的伤害大小和破坏范围
  * @param range {Float} 爆炸的范围半径，影响爆炸的波及范围
@@ -394,8 +394,8 @@ function explode(x, y, z, dimid, source, power, range, isDestroy, isFire) {
 // 物品对象
 /**
  * 生成新的物品对象
- * @param name {String} 物品的标准类型名，如 minecraft:bread
- * @param count {number} 物品堆叠数量
+ * @param {String} name 物品的标准类型名，如 minecraft:bread
+ * @param {number} count 物品堆叠数量
  * @args1 name, count
  * @args2 NbtCompound
  * @returns {Item|null}
@@ -410,7 +410,7 @@ function newItem(name, count) {
 
 /**
  * 根据物品对象生成掉落物实体
- * @todo 应该返回Entity LLSE类型
+ *
  * @param item {Item}
  * @param pos {IntPos|FloatPos}
  * @returns {Entity|null}
@@ -473,7 +473,7 @@ function newCustomForm() {
 // 记分榜相关
 /**
  * 移除一个已存在的计分项
- * @param name {string} 计分项名称
+ * @param {string} name 计分项名称
  * @returns {boolean} 是否清除成功
  */
 function removeScoreObjective(name) {
@@ -487,7 +487,7 @@ function removeScoreObjective(name) {
 
 /**
  * 使计分项停止显示
- * @param slot {string} 显示槽位名称字符串，可以为 sidebar/belowname/list
+ * @param {string} slot 显示槽位名称字符串，可以为 sidebar/belowname/list
  * @returns {boolean} 是否清除成功
  */
 function clearDisplayObjective(slot) {
@@ -516,10 +516,10 @@ function clearDisplayObjective(slot) {
 //📦 方块对象 API
 /**
  * 通过坐标获取方块
- * @param x {number} x
- * @param y {number} y
- * @param z {number} z
- * @param dimid {number} 维度ID
+ * @param {number} x x
+ * @param {number} y y
+ * @param {number} z z
+ * @param {number} dimid 维度ID
  * @args1 pos
  * @args2 x, y, z, dim
  * @args3 x, y, z, dimid
@@ -541,12 +541,12 @@ function getBlock(x, y, z, dimid) {
 
 /**
  * 设置指定位置的方块
- * @param x {number} x
- * @param y {number} y
- * @param z {number} z
- * @param dimid {number} 维度ID
- * @param block {string|Block|NbtCompound} 要设置成的方块标准类型名（如 minecraft:stone）、方块对象或方块 NBT 数据
- * @param [tiledata=0] {number} 方块状态值（默认0）
+ * @param {number} x x
+ * @param {number} y y
+ * @param {number} z z
+ * @param {number} dimid 维度ID
+ * @param {string|Block|NbtCompound} block 要设置成的方块标准类型名（如 minecraft:stone）、方块对象或方块 NBT 数据
+ * @param {number} [tiledata=0] 方块状态值（默认0）
  * @args1 pos, block, tiledata = 0
  * @args2 x, y, z, dim, block, tiledata = 0
  * @args3 x, y, z, dimid, block, tiledata = 0
@@ -628,11 +628,11 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
 
 /**
  * 在指定位置生成粒子效果
- * @param x {number} x
- * @param y {number} y
- * @param z {number} z
- * @param dimid {number} 维度ID
- * @param type {string} 粒子效果名例如 minecraft:heart_particle
+ * @param {number} x x
+ * @param {number} y y
+ * @param {number} z z
+ * @param {number} dimid 维度ID
+ * @param {string} type 粒子效果名例如 minecraft:heart_particle
  * @args1 pos, type
  * @args2 x, y, z, dim, type
  * @args3 x, y, z, dimid, type
@@ -660,8 +660,8 @@ function spawnParticle(x, y, z, dimid, type) {
 /**
  * 创建一个新的计分项
  * 此接口的作用类似命令 /scoreboard objectives add <name> <displayName> dummy
- * @param name {string} 计分项名称
- * @param displayName  {string} 计分项显示名称
+ * @param {string} name 计分项名称
+ * @param {string} displayName 计分项显示名称
  * @returns {ScoreObjectives|null} 新增创建的计分项对象
  */
 function newScoreObjective(name, displayName) {
@@ -670,7 +670,7 @@ function newScoreObjective(name, displayName) {
 
 /**
  * 获取某个已存在的计分项
- * @param name {string} 要获取的计分项名称
+ * @param {string} name 要获取的计分项名称
  * @returns {ScoreObjectives|null} 对应的计分项对象
  */
 function getScoreObjective(name) {
@@ -688,7 +688,7 @@ function getAllScoreObjectives() {
 
 /**
  * 获取某个处于显示状态的计分项
- * @param slot {string} 待查询的显示槽位名称，可以为"sidebar"/"belowname"/"list"
+ * @param {string} slot 待查询的显示槽位名称，可以为"sidebar"/"belowname"/"list"
  * @returns {ScoreObjectives|null} 正在slot槽位显示的计分项
  */
 function getDisplayObjective(slot) {
@@ -697,10 +697,10 @@ function getDisplayObjective(slot) {
 
 /**
  * 生成一个整数坐标对象
- * @param x {number} x 坐标
- * @param y {number} y 坐标
- * @param z {number} z 坐标
- * @param dimid {number|string} 维度ID：0 代表主世界，1 代表下界，2 代表末地
+ * @param {number} x x 坐标
+ * @param {number} y y 坐标
+ * @param {number} z z 坐标
+ * @param {number|string} dimid 维度ID：0 代表主世界，1 代表下界，2 代表末地
  * @returns {IntPos|null} 错误的世界则返回null
  */
 function newIntPos(x, y, z, dimid) {
@@ -712,10 +712,10 @@ function newIntPos(x, y, z, dimid) {
 
 /**
  * 生成一个浮点数坐标对象
- * @param x {number} x 坐标
- * @param y {number} y 坐标
- * @param z {number} z 坐标
- * @param dimid {number|string} 维度ID：0 代表主世界，1 代表下界，2 代表末地
+ * @param {number} x x 坐标
+ * @param {number} y y 坐标
+ * @param {number} z z 坐标
+ * @param {number|string} dimid 维度ID：0 代表主世界，1 代表下界，2 代表末地
  * @returns {IntPos|null} 错误的世界则返回null
  */
 function newFloatPos(x, y, z, dimid) {
@@ -728,10 +728,10 @@ function newFloatPos(x, y, z, dimid) {
 /**
  * 获取结构NBT
  * @todo 未实现实体Entities
- * @param pos1 {IntPos} 位置1
- * @param pos2 {IntPos} pos2 位置2
- * @param ignoreBlocks {boolean} 是否忽略方块(默认false)
- * @param ignoreEntities {boolean}  是否忽略实体(默认false)
+ * @param {IntPos} pos1 位置1
+ * @param{IntPos}  pos2 pos2 位置2
+ * @param {boolean} ignoreBlocks 是否忽略方块(默认false)
+ * @param {boolean} ignoreEntities 是否忽略实体(默认false)
  * @returns {NbtCompound} 结构的NBT数据
  */
 function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) {
@@ -806,10 +806,10 @@ function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) 
 /**
  * 设置结构NBT
  * @todo 实现镜像与旋转
- * @param nbt {NbtCompound} 结构的NBT数据
- * @param pos {IntPos} 放置的位置，向递增坐标的方向构建
- * @param mirror {number} 镜像 0:None 1:X 2:Z 3:XZ
- * @param ignoreEntities {number} 旋转 0:None 1:Rotate90 2:Rotate180 3:Rotate270
+ * @param {NbtCompound} nbt 结构的NBT数据
+ * @param {IntPos} pos 放置的位置，向递增坐标的方向构建
+ * @param {number} mirror 镜像 0:None 1:X 2:Z 3:XZ
+ * @param {number} rotation 旋转 0:None 1:Rotate90 2:Rotate180 3:Rotate270
  * @returns {boolean} 是否成功
  */
 function setStructure(nbt, pos, mirror = 0, rotation = 0) {

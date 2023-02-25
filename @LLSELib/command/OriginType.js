@@ -1,5 +1,6 @@
 /**
  * 定义一个名为OriginType的对象来表示类型DamageEvent.DamageCause;
+ * @enum {number}
  */
 export class OriginType {
     static Player = 0;              // 玩家
@@ -18,6 +19,5 @@ export class OriginType {
     static GameDirectorEntity = 13; // 游戏指导员实体
     static Script = 14;             // 脚本
     static ExecuteContext = 15;     // 执行上下文
-
     static DedicatedServer = 7;// 专用服务器，与Server值相同
 }
