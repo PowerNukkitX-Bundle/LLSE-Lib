@@ -575,15 +575,24 @@ function setBlock(x, y, z, dimid, block, tiledata = 0) {
     if (!isNaN(_block)) _block = Number(_block);
     switch (_block.constructor.name) {
         case 'Number':
-            _block = JBlock.get(_block, tiledata);
+            try {
+                _block = JBlock.get(_block, tiledata);
+            } catch(err){
+                _block = JBlock.get(blockid, 0);
+            }
             break;
         case 'String':
             var blockid = _block.indexOf(":air") > -1 ? 0 : BlockStateRegistry.getBlockId(_block);
-            if (!blockid && isNaN(blockid)) {
+            if (!blockid && blockid != 0) {
+                console.log(blockid)
                 console.error('Unknow block: ' + _block);
                 return false;
             }
-            _block = JBlock.get(blockid, tiledata);
+            try {
+                _block = JBlock.get(blockid, tiledata);
+            } catch(err){
+                _block = JBlock.get(blockid, 0);
+            }
             break;
         case 'Block':
             _block = _block._PNXBlock;
@@ -772,6 +781,11 @@ function getStructure(pos1, pos2, ignoreBlocks = false, ignoreEntities = false) 
             ]
         }
     }
+    
+    const level = dimToLevel(pos1.dim);
+    //level.getChunk(minPos[0] >> 4, minPos[2] >> 4).getSection(minPos[1] & 0x0f)
+    //sec.getBlockState(x, y, z)
+
     let paletteMap = [];
     for (let x = minPos[0]; x <= maxPos[0]; ++x) {
         if (ignoreBlocks) { // 忽略方块时直接返回

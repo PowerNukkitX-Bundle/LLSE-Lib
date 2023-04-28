@@ -548,6 +548,63 @@ export class Player extends Entity {
     }
 
     /**
+     * 设置玩家显示标题
+     * @todo 待测试
+     * @param {String} content - 欲设置标题内容
+     * @param {Integer} [type=2] - （可选参数）设置的标题类型，默认为2
+     *    0 - 清空（Clear）
+     *    1 - 重设（Reset）
+     *    2 - 设置主标题（SetTitle）
+     *    3 - 设置副标题（SetSubTitle）
+     *    4 - 设置Actionbar（SetActionBar） 将会发送
+     *    5 - 设置显示时间（SetDurations）
+     *    6 - Json型主标题（TitleTextObject）
+     *    7 - Json型副标题（SubtitleTextObject）
+     *    8 - Json型Actionbar（ActionbarTextObject）
+     * @param {Integer} [fadeInTime=10] - （可选参数）淡入时间，单位为 Tick ，默认为10
+     * @param {Integer} [stayTime=70] - （可选参数）停留时间，单位为 Tick ，默认为70
+     * @param {Integer} [fadeOutTime=20] - （可选参数）淡出时间，单位为 Tick，默认为20
+     * @returns {Boolean} 是否成功发送
+     */
+    setTitle(content, type = 2, fadeInTime = 10, stayTime = 70, fadeOutTime = 20) {
+        if (arguments.length > 2) {
+            this._PNXEntity.setTitleAnimationTimes(fadeInTime/20, stayTime/20, fadeOutTime/20);
+            if (type === 5) {
+                return false;
+            }
+        }
+        switch (type) {
+            case 0:
+                this._PNXEntity.clearTitle();
+                break;
+            case 1:
+                this._PNXEntity.resetTitleSettings();
+                break;
+            case 2:
+                this._PNXEntity.sendTitle(content);
+                break;
+            case 3:
+                this._PNXEntity.setSubtitle(content);
+                break;
+            case 4:
+                this._PNXEntity.sendActionBar(content, fadeInTime, stayTime, fadeOutTime);
+                break;
+            case 5:
+                break;
+            case 6:
+                this._PNXEntity.setRawTextTitle(content);
+                break;
+            case 7:
+                this._PNXEntity.setRawTextSubTitle(content);
+                break;
+            case 8:
+                this._PNXEntity.setRawTextActionBar(content, fadeInTime, stayTime, fadeOutTime);
+                break;
+        }
+        return true;
+    }
+
+    /**
      * 在屏幕上方显示消息 (类似于成就完成)
      * @param title {string} 待发送的标题
      * @param context {string} 待发送的文本

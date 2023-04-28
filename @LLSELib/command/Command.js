@@ -94,7 +94,7 @@ export class Command {
                 origin.type = OriginType.Player;
             } else if (sender.isEntity()) {
                 origin.type = OriginType.Actor;
-            } else if (sender instanceof RemoteConsoleCommandSender) {
+            } else if (sender instanceof RemoteConsoleCommandSender || sender instanceof ConsoleCommandSender) {
                 origin.type = OriginType.Server;
             }
             let output = {
