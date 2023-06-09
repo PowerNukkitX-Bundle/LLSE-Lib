@@ -14,8 +14,8 @@ export class ScoreObjectives {
      * 生产新的 ScoreObjectives 对象
      * @returns {ScoreObjectives} 计分项对象
      */
-    constructor(name) {
-        this._ObjectivesName = name;
+    constructor(pnxScoreObject) {
+        this._pnxScoreObject = pnxScoreObject;
     }
 
     static ScoreMap = new Map();
@@ -31,7 +31,7 @@ export class ScoreObjectives {
             return null;
         }
         if (!ScoreObjectives.ScoreMap.has(name)) {
-            ScoreObjectives.ScoreMap.set(name, new ScoreObjectives(name));
+            ScoreObjectives.ScoreMap.set(name, new ScoreObjectives(manager.getScoreboard(name)));
         }
         return ScoreObjectives.ScoreMap.get(name);
     }
@@ -49,7 +49,7 @@ export class ScoreObjectives {
         if (manager.containScoreboard(name)) {
             return null;
         }
-        manager.addScoreboard(new Scoreboard(name, displayName, 'dummy', SortOrder.ASCENDING, manager));
+        manager.addScoreboard(new Scoreboard(name, displayName, 'dummy', SortOrder.ASCENDING));
         return ScoreObjectives.getObjectives(name);
     }
 
@@ -76,7 +76,7 @@ export class ScoreObjectives {
      */
     static getDisplayObjective(slot) {
         const manager = server.getScoreboardManager();
-        var objectiveName = null;
+        let objectiveName;
         switch (slot) {
             case 'sidebar':
                 objectiveName = manager.getDisplaySlot(DisplaySlot.SIDEBAR);
@@ -93,12 +93,12 @@ export class ScoreObjectives {
         return ScoreObjectives.getObjectives(objectiveName);
     }
 
-    get _PNXScore() {
-        const manager = server.getScoreboardManager();
-        if (!manager.containScoreboard(this._ObjectivesName)) {
-            return null;
-        }
-        return manager.getScoreboards().get(this._ObjectivesName);
+    get name() {
+        return this._pnxScoreObject.getObjectiveName();
+    }
+
+    get displayName() {
+        return this._pnxScoreObject.getDisplayName();
     }
 
 
@@ -108,7 +108,7 @@ export class ScoreObjectives {
      * @returns {number|null} 该目标 / 玩家在此计分项中的分数
      */
     getScore(target) {
-        const scoreboard = this._PNXScore;
+        const scoreboard = this._pnxScoreObject;
         const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
@@ -129,7 +129,7 @@ export class ScoreObjectives {
      * @returns {number|null} 该目标 / 玩家在操作后的分数
      */
     setScore(target, score) {
-        const scoreboard = this._PNXScore;
+        const scoreboard = this._pnxScoreObject;
         const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
@@ -149,7 +149,7 @@ export class ScoreObjectives {
      * @see setScore
      */
     addScore(target, score) {
-        const scoreboard = this._PNXScore;
+        const scoreboard = this._pnxScoreObject;
         const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
@@ -169,7 +169,7 @@ export class ScoreObjectives {
      * @see setScore
      */
     reduceScore(target, score) {
-        const scoreboard = this._PNXScore;
+        const scoreboard = this._pnxScoreObject;
         const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty() || wildcard) {
             return null;
@@ -190,7 +190,7 @@ export class ScoreObjectives {
      * @returns {boolean} 是否成功删除
      */
     deleteScore(target) {
-        const scoreboard = this._PNXScore;
+        const scoreboard = this._pnxScoreObject;
         const [wildcard, scorers] = parseTarget(target, scoreboard);
         if (scorers.isEmpty()) {
             return false;
@@ -209,7 +209,7 @@ export class ScoreObjectives {
      */
     setDisplay(slot, sortOrder = 0) {
         const manager = server.getScoreboardManager();
-        if (!manager.hasScoreboard(this._ObjectivesName)) {// 没有该记分榜时
+        if (!manager.hasScoreboard(this._pnxScoreObject.getObjectiveName())) {// 没有该记分榜时
             return false;
         }
         switch (slot) {
@@ -229,8 +229,8 @@ export class ScoreObjectives {
                 return false;
             }
         }
-        manager.setDisplay(slot, this._ObjectivesName);
-        this._PNXScore.setSortOrder(sortOrder ? SortOrder.DESCENDING : SortOrder.ASCENGING);
+        manager.setDisplay(slot, this._pnxScoreObject.getObjectiveName());
+        this._pnxScoreObject.setSortOrder(sortOrder ? SortOrder.DESCENDING : SortOrder.ASCENGING);
         return true;
     }
 }
@@ -242,8 +242,8 @@ export class ScoreObjectives {
  * @returns {(boolean|java.util.ArrayList)[]} 返回数组为 是否为通配符，目标列表
  */
 export function parseTarget(target, scoreboard) {
-    var scorers = new JList();
-    var wildcard = false;
+    let scorers = new JList();
+    let wildcard = false;
     if (scoreboard === null) {
         return [wildcard, scorers];
     }
