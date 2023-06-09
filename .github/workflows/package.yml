@@ -107,7 +107,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib-full
-          path: src/@LLSELib
+          path: src
 
       - name: compress
         uses: nizarmah/auto-minify@v2.1
@@ -125,7 +125,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LLSELib
-          path: src/@LLSELib
+          path: src
 
       - name: Read version in plugin.yml
         id: plugin-data
