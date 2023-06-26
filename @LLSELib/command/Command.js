@@ -176,7 +176,7 @@ export class Command {
      * @param {string} name  参数名，用于执行指令时识别参数
      * @param {ParamType} type  命令参数类型
      * @param {string} [enumName]  枚举名（仅 ParamType 为 Enum 时有效，用于区分枚举选项）
-     * @param {string} [identifier]  参数标识，特殊情况下用于唯一识别参数，一般可用 enumName 或 name 代替
+     * @param {string|number} [identifier]  参数标识，特殊情况下用于唯一识别参数，一般可用 enumName 或 name 代替
      * @param {number} [enumOptions=0]  参数选项，设置为 1 可在指令提示中展开枚举选项 如 <action : TagChangeAction> 会变成 <add|remove>
      * @returns {boolean} 是否成功设置
      */
